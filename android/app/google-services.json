@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "26146558211",
+    "firebase_url": "https://hysor-5e8ed.firebaseio.com",
+    "project_id": "hysor-5e8ed",
+    "storage_bucket": "hysor-5e8ed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:26146558211:android:5948d89e993d22d9625936",
+        "android_client_info": {
+          "package_name": "com.hollywood.cafe_hollywood"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "26146558211-grlfmeuojiffh46oqmv23u1700ft68fq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDScYW4Lfi1bjWt4xn9z_I2uxX0i6rhkAo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "26146558211-grlfmeuojiffh46oqmv23u1700ft68fq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "26146558211-o1f3qlfgn2tijt59cktn1d3fp9avvb3o.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.dsn.cafehollywood"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

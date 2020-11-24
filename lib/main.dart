@@ -5,12 +5,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
   // runApp(MainTabBar());
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MaterialApp(
     home: MainTabBar(),
-    theme: ThemeData(primarySwatch: Colors.red),
+    theme: ThemeData(primarySwatch: Colors.green),
   ));
 }
 
