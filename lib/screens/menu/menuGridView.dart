@@ -1,4 +1,6 @@
 import 'package:cafe_hollywood/models/menu.dart';
+import 'package:cafe_hollywood/screens/menu/meal_list_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class MenuGridView extends StatefulWidget {
@@ -24,6 +26,11 @@ class _MenuGridViewState extends State<MenuGridView> {
             ),
             onTap: () {
               //TODO: GO TO A NEW CONTROLLER
+              Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                    builder: (context) => MealListPage(),
+                  ));
               print('$index ${widget.menus[index].menuTitle}');
             },
           );

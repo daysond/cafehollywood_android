@@ -1,3 +1,4 @@
+import 'package:cafe_hollywood/services/auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -61,7 +62,14 @@ class AuthHomePage extends StatelessWidget {
                       height: 48,
                       buttonColor: Colors.white,
                       child: RaisedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          dynamic result = AuthService().signInAnon();
+                          if (result == null) {
+                            print('can not sign in');
+                          } else {
+                            print(result.toString());
+                          }
+                        },
                         child: Text(
                           'LOG IN',
                           style: TextStyle(
