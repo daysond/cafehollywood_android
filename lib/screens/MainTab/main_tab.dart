@@ -25,6 +25,8 @@ class MainTabHome extends StatefulWidget {
 }
 
 class _MainTabHomeState extends State<MainTabHome> {
+  bool isButtonsCollapsed = true;
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -93,6 +95,26 @@ class _MainTabHomeState extends State<MainTabHome> {
                 print('pressed');
               },
             )),
+        Positioned(
+          bottom: MediaQuery.of(context).size.width / 2 - 32,
+          left: MediaQuery.of(context).size.width / 2.0 - 25,
+          child: Container(
+            height: 50,
+            width: 50,
+            color: Colors.red,
+            alignment: Alignment.center,
+            child: FloatingActionButton(
+              child: Icon(
+                Icons.add,
+              ),
+              elevation: 0,
+              onPressed: () {
+                //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
+                print('pressed');
+              },
+            ),
+          ),
+        )
       ],
     );
   }
