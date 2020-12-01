@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class BlackButton extends StatelessWidget {
   final String title;
-  final Function handler;
-  String subtitle = '';
+  final void Function() handler;
+  String? subtitle = '';
   BlackButton(this.title, this.handler, {this.subtitle});
   @override
   Widget build(BuildContext context) {
