@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  String _currentUID(User user) {
-    return user != null ? user.uid : null;
+  String _currentUID(User? user) {
+    return user != null ? user.uid : throw ArgumentError('user does not exist');
   }
 
   Stream<String> get currentUserID {
