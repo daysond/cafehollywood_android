@@ -1,13 +1,13 @@
 import 'package:cafe_hollywood/models/table_order.dart';
 
 class Table {
-  static Table? _instance;
+  static Table _instance;
   Table._internal() {
     _instance = this;
   }
   factory Table() => _instance ?? Table._internal();
 
-  String? tableNumber;
+  String tableNumber;
   List<TableOrder> tableOrders = [];
   List<String> get orderIDs {
     return tableOrders.map((e) => e.orderID).toList();

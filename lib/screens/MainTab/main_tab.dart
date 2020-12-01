@@ -86,7 +86,7 @@ class _MainTabHomeState extends State<MainTabHome> {
                               return;
                             }
 
-                            Navigator.of(context)!
+                            Navigator.of(context)
                                 .push(CupertinoPageRoute(builder: (context) {
                               return DetailScreen(index.toString());
                             }));

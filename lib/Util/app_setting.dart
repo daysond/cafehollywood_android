@@ -1,5 +1,5 @@
 class AppSetting {
-  static AppSetting? _instance;
+  static AppSetting _instance;
   AppSetting._internal() {
     _instance = this;
   }

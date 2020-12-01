@@ -4,12 +4,12 @@ class Meal {
   final String uid;
   final String name;
   final Decimal price;
-  final String? details;
-  final String? imageURL;
+  final String details;
+  final String imageURL;
   final String mealDescription;
-  final int? comboMealTag;
+  final int comboMealTag;
 
-  List<String>? preferences;
+  List<String> preferences;
   //combo type
   //is favourite
   //combo tag ?

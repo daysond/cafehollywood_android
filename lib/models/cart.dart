@@ -2,7 +2,7 @@ import 'package:cafe_hollywood/models/meal.dart';
 import 'package:decimal/decimal.dart';
 
 class Cart {
-  static Cart? _instance;
+  static Cart _instance;
 
   Cart._internal() {
     _instance = this;
@@ -11,7 +11,7 @@ class Cart {
 
   List<Meal> meals = [];
   Map<String, String> giftOptionContent = {};
-  Meal? selectedGiftOption;
+  Meal selectedGiftOption;
   Decimal get discountAmount {
     return Decimal.parse('0');
   }

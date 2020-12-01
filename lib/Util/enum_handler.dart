@@ -22,7 +22,7 @@ class EnumHandler {
     }
   }
 
-  static OrderStatus? rawValueToOrderStatus(int rawValue) {
+  static OrderStatus rawValueToOrderStatus(int rawValue) {
     switch (rawValue) {
       case 0:
         return OrderStatus.cancelled;
