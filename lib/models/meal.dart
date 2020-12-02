@@ -1,3 +1,4 @@
+import 'package:cafe_hollywood/models/preference.dart';
 import 'package:decimal/decimal.dart';
 
 class Meal {
@@ -9,7 +10,7 @@ class Meal {
   final String mealDescription;
   final int comboMealTag;
 
-  List<String> preferences;
+  List<Preference> preferences;
   //combo type
   //is favourite
   //combo tag ?

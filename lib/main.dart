@@ -29,11 +29,12 @@ class MyApp extends StatelessWidget {
           home: Wrapper(),
           title: "Cafe Hollywood",
           theme: CupertinoThemeData(
+            primaryColor: Colors.black,
             textTheme: CupertinoTextThemeData(
               navLargeTitleTextStyle: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 60,
-                color: CupertinoColors.systemRed,
+                color: CupertinoColors.white,
               ),
             ),
           ),

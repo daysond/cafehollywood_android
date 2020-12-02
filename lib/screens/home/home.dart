@@ -12,12 +12,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   void _showPanel(Widget panel) {
     showModalBottomSheet(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
         context: context,
         builder: (context) {
-          return Container(
-            padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
-            child: panel,
-          );
+          return SafeArea(child: panel);
         });
   }
   // void _showQuickOrderPanel() {

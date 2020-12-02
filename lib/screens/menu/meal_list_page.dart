@@ -6,7 +6,12 @@ import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
-class MealListPage extends StatelessWidget {
+class MealListPage extends StatefulWidget {
+  @override
+  _MealListPageState createState() => _MealListPageState();
+}
+
+class _MealListPageState extends State<MealListPage> {
   final List<Meal> mealList = [
     Meal('300', 'Tea', Decimal.parse('2.5'), 'this is Tea',
         imageURL: 'wings.png'),
@@ -26,21 +31,66 @@ class MealListPage extends StatelessWidget {
         imageURL: 'hwcb.png'),
   ];
 
-  void viewCartButtonHandler() {}
+  ScrollController _scrollController;
+
+  bool lastStatus = true;
+  double appBarHeight = 0;
+  bool get isShrink {
+    return _scrollController.hasClients &&
+        _scrollController.offset > (appBarHeight - kToolbarHeight);
+  }
+
+  _scrollListener() {
+    if (isShrink != lastStatus) {
+      setState(() {
+        lastStatus = isShrink;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    super.dispose();
+  }
+
+  void viewCartButtonHandler() {
+    print('view cart');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.of(context).size;
+    appBarHeight = screenSize.width * 9.0 / 16.0;
     return CupertinoPageScaffold(
       child: Stack(children: [
         CustomScrollView(
+          controller: _scrollController,
           slivers: [
             SliverAppBar(
-              title: Text('Menu A'),
+              leading: IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  color: isShrink ? Colors.black : Colors.white,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+              expandedHeight: screenSize.width * 9.0 / 16.0,
+              backgroundColor: Colors.white,
+              title: Text(isShrink ? 'Menu A' : '',
+                  style: TextStyle(
+                    color: isShrink ? Colors.black : Colors.white,
+                  )),
               floating: false,
               pinned: true,
               flexibleSpace: FlexibleSpaceBar(
                 centerTitle: false,
-                // title: Text('This is my menu'),
                 background: Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
@@ -73,15 +123,12 @@ class MealListPage extends StatelessWidget {
                   ),
                 ),
               ),
-              expandedHeight: MediaQuery.of(context).size.width * 9.0 / 16.0,
             ),
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (context, index) => MealTile(mealList[index]),
                 childCount: mealList.length,
               ),
-              //  SliverChildListDelegate(
-              //     mealList.map((meal) => MealTile(meal)).toList()),
             ),
           ],
         ),

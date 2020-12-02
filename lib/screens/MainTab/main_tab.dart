@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'package:cafe_hollywood/test.dart';
 import 'package:cafe_hollywood/screens/OrderHistory/order_page.dart';
 import 'package:cafe_hollywood/screens/cart/cart_page.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +28,7 @@ class MainTabHome extends StatefulWidget {
 
 class _MainTabHomeState extends State<MainTabHome> {
   bool isButtonsCollapsed = true;
+  bool isButtonHidden = true;
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +37,7 @@ class _MainTabHomeState extends State<MainTabHome> {
     double padding = 16;
     double sin120 = sin(120 * pi / 180);
     double cos120 = cos(120 * pi / 180);
+
     const double buttonWidth = 50.0;
     return Stack(
       children: [
@@ -63,170 +65,185 @@ class _MainTabHomeState extends State<MainTabHome> {
                   case 1: //Menu
                     return MenuPage();
                   case 3: //Cart
-                    return CartPage();
+                    return PickerPage();
                   case 4: //Order History
                     return OrderHistoryPage();
 
-                  default:
-                    return CupertinoPageScaffold(
-                        navigationBar: CupertinoNavigationBar(
-                          middle: Text(index.toString()),
-                        ),
-                        child: Center(
-                            child: CupertinoButton(
-                          child: Text(
-                            'this is button $index',
-                            style: CupertinoTheme.of(context)
-                                .textTheme
-                                .actionTextStyle
-                                .copyWith(fontSize: 32),
-                          ),
-                          onPressed: () {
-                            if (Navigator.of(context) == null) {
-                              return;
-                            }
-
-                            Navigator.of(context)
-                                .push(CupertinoPageRoute(builder: (context) {
-                              return DetailScreen(index.toString());
-                            }));
-                          },
-                        )));
+                  // default:
+                  //   return CupertinoPageScaffold(
+                  //       navigationBar: CupertinoNavigationBar(
+                  //         middle: Text(index.toString()),
+                  //       ),
+                  //       child: Center(
+                  //           child: Text(
+                  //             'this is button $index',
+                  //             style: CupertinoTheme.of(context)
+                  //                 .textTheme
+                  //                 .actionTextStyle
+                  //                 .copyWith(fontSize: 32),
+                  //           )));
                 }
               });
             }),
         AnimatedPositioned(
-          bottom: isButtonsCollapsed ? 0 : (radius - padding),
+          bottom: isButtonsCollapsed ? -26 : (radius - padding),
           left: radius - 25,
+          // height: buttonWidth,
+          // width: buttonWidth,
           duration: Duration(milliseconds: 250),
           curve: Curves.easeOutSine,
-          child: Container(
-            height: buttonWidth,
-            width: buttonWidth,
-            color: Colors.red,
-            alignment: Alignment.center,
-            child: FloatingActionButton(
-              child: Icon(
-                Icons.add,
-              ),
-              elevation: 0,
-              onPressed: () {
-                //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
-                print('pressed');
-              },
+          child: Opacity(
+            opacity: isButtonHidden ? 0.0 : 1.0,
+            child: Column(
+              children: [
+                FloatingActionButton(
+                  child: Icon(
+                    Icons.add,
+                  ),
+                  elevation: 0,
+                  onPressed: () {
+                    //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
+                    print('pressed');
+                  },
+                ),
+                Text(isButtonsCollapsed ? '' : 'this'),
+              ],
             ),
           ),
         ),
         AnimatedPositioned(
-          bottom: isButtonsCollapsed ? 0 : (radius - padding) * sin120,
+          bottom: isButtonsCollapsed ? -26 : (radius - padding) * sin120,
           left: isButtonsCollapsed
               ? radius - buttonWidth / 2
               : radius + (radius - padding) * cos120 - buttonWidth / 2,
           duration: Duration(milliseconds: 250),
           curve: Curves.easeOutSine,
-          child: Container(
-            height: 50,
-            width: 50,
-            color: Colors.amber,
-            alignment: Alignment.center,
-            child: FloatingActionButton(
-              child: Icon(
-                Icons.account_box,
-              ),
-              elevation: 0,
-              onPressed: () {
-                //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
-                print('pressed');
-              },
+          child: Opacity(
+            opacity: isButtonHidden ? 0.0 : 1.0,
+            child: Column(
+              children: [
+                FloatingActionButton(
+                  child: Icon(
+                    Icons.account_box,
+                  ),
+                  elevation: 0,
+                  onPressed: () {
+                    //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
+                    print('pressed');
+                  },
+                ),
+                Text(isButtonsCollapsed ? '' : 'this'),
+              ],
             ),
           ),
         ),
         AnimatedPositioned(
-          bottom: isButtonsCollapsed ? 0 : (radius - padding) * sin120,
+          bottom: isButtonsCollapsed ? -26 : (radius - padding) * sin120,
           left: isButtonsCollapsed
               ? radius - buttonWidth / 2
               : radius - (radius - padding) * cos120 - buttonWidth / 2,
           duration: Duration(milliseconds: 250),
           curve: Curves.easeOutSine,
-          child: Container(
-            height: 50,
-            width: 50,
-            color: Colors.green,
-            alignment: Alignment.center,
-            child: FloatingActionButton(
-              child: Icon(
-                Icons.add,
-              ),
-              elevation: 0,
-              onPressed: () {
-                //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
-                print('pressed');
-              },
+          child: Opacity(
+            opacity: isButtonHidden ? 0.0 : 1.0,
+            child: Column(
+              children: [
+                FloatingActionButton(
+                  child: Icon(
+                    Icons.add,
+                  ),
+                  elevation: 0,
+                  onPressed: () {
+                    //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
+                    print('pressed');
+                  },
+                ),
+                Text(isButtonsCollapsed ? '' : 'this'),
+              ],
             ),
           ),
         ),
         AnimatedPositioned(
-          bottom: isButtonsCollapsed ? 0 : (radius - padding) * -cos120,
+          bottom: isButtonsCollapsed ? -26 : (radius - padding) * -cos120,
           left: isButtonsCollapsed
               ? radius - 25
               : radius - (radius - padding) * -sin120 - buttonWidth / 2,
           duration: Duration(milliseconds: 250),
           curve: Curves.easeOutSine,
-          child: Container(
-            height: 50,
-            width: 50,
-            color: Colors.yellow,
-            alignment: Alignment.center,
-            child: FloatingActionButton(
-              child: Icon(
-                Icons.add,
-              ),
-              elevation: 0,
-              onPressed: () {
-                //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
-                print('pressed');
-              },
+          child: Opacity(
+            opacity: isButtonHidden ? 0.0 : 1.0,
+            child: Column(
+              children: [
+                FloatingActionButton(
+                  child: Icon(
+                    Icons.add,
+                  ),
+                  elevation: 0,
+                  onPressed: () {
+                    //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
+                    print('pressed');
+                  },
+                ),
+                Text(isButtonsCollapsed ? '' : 'this'),
+              ],
             ),
           ),
         ),
         AnimatedPositioned(
-          bottom: isButtonsCollapsed ? 0 : (radius - padding) * -cos120,
+          bottom: isButtonsCollapsed ? -26 : (radius - padding) * -cos120,
           left: isButtonsCollapsed
               ? radius - 25
               : radius - (radius - padding) * sin120 - buttonWidth / 2,
           duration: Duration(milliseconds: 250),
           curve: Curves.easeOutSine,
-          child: Container(
-            height: 50,
-            width: 50,
-            color: Colors.purple,
-            alignment: Alignment.center,
-            child: FloatingActionButton(
-              child: Icon(
-                Icons.add,
-              ),
-              elevation: 0,
-              onPressed: () {
-                //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
-                print('pressssssssssssssssssed');
-              },
+          onEnd: () {
+            print('ended');
+            setState(() {
+              isButtonHidden = isButtonsCollapsed;
+            });
+          },
+          child: Opacity(
+            opacity: isButtonHidden ? 0.0 : 1.0,
+            child: Column(
+              children: [
+                FloatingActionButton(
+                  child: Icon(
+                    Icons.add,
+                  ),
+                  elevation: 0,
+                  onPressed: () {
+                    //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
+                    print('pressssssssssssssssssed');
+                  },
+                ),
+                Text(isButtonsCollapsed ? '' : 'this'),
+              ],
             ),
           ),
         ),
         Align(
             alignment: Alignment.bottomCenter,
-            child: FloatingActionButton(
-              child: Icon(
-                Icons.add,
+            child: Container(
+              // color: Colors.red,
+              width: MediaQuery.of(context).size.width / 5.0,
+              height: kToolbarHeight + 4,
+              child: FloatingActionButton(
+                backgroundColor: Colors.black,
+                child: Icon(
+                  Icons.add,
+                ),
+                elevation: 0,
+                onPressed: () {
+                  //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
+                  print('pressedddddddd');
+                  setState(() {
+                    if (isButtonsCollapsed) {
+                      isButtonHidden = false;
+                    }
+                    isButtonsCollapsed = !isButtonsCollapsed;
+                  });
+                },
               ),
-              elevation: 0,
-              onPressed: () {
-                //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
-                print('pressedddddddd');
-                setState(() {
-                  isButtonsCollapsed = !isButtonsCollapsed;
-                });
-              },
             )),
       ],
     );
