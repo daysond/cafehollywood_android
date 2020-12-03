@@ -2,19 +2,7 @@ import 'package:cafe_hollywood/screens/shared/black_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
-
-const List<String> colors = const <String>[
-  'Red',
-  'Yellow',
-  'Amber',
-  'Blue',
-  'Black',
-  'Pink',
-  'Purple',
-  'White',
-  'Grey',
-  'Green',
-];
+import 'package:intl/intl.dart';
 
 class BookingPanel extends StatefulWidget {
   @override
@@ -22,9 +10,31 @@ class BookingPanel extends StatefulWidget {
 }
 
 class _BookingPanelState extends State<BookingPanel> {
-  int _selectedHour = 0;
-  int _selectedMinute = 1;
+  String _selectedDate = '';
+  int _selectedTime = 1;
   int _selectedSize = 2;
+  final List<String> dates = [];
+  final List<String> times = [];
+
+  @override
+  void initState() {
+    for (var i = 0; i < 15; i++) {
+      final now = DateTime.now();
+      final date = DateTime(now.year, now.month, now.day + i);
+      dates.add(DateFormat('E, MMM dd y').format(date));
+    }
+
+    for (var i = 11; i < 22; i++) {
+      times.add('${i.toString()}:00');
+      times.add('${i.toString()}:15');
+      times.add('${i.toString()}:30');
+      times.add('${i.toString()}:45');
+    }
+
+    _selectedDate = dates[0];
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,35 +107,37 @@ class _BookingPanelState extends State<BookingPanel> {
                     child: CupertinoPicker(
                         backgroundColor: Colors.grey[200],
                         scrollController: new FixedExtentScrollController(
-                          initialItem: _selectedHour,
+                          initialItem: 0,
                         ),
                         itemExtent: 32.0,
                         onSelectedItemChanged: (int index) {
                           setState(() {
-                            _selectedHour = index;
+                            _selectedDate = dates[index];
                           });
                         },
-                        children: new List<Widget>.generate(24, (int index) {
+                        children: new List<Widget>.generate(14, (int index) {
                           return new Center(
-                            child: new Text('${index + 1}'),
+                            child: new Text(dates[index]
+                                .substring(0, dates[index].length - 5)),
                           );
                         })),
                   ),
                   Expanded(
                     child: CupertinoPicker(
                         scrollController: new FixedExtentScrollController(
-                          initialItem: _selectedMinute,
+                          initialItem: 0,
                         ),
                         itemExtent: 32.0,
                         backgroundColor: Colors.grey[200],
                         onSelectedItemChanged: (int index) {
                           setState(() {
-                            _selectedMinute = index;
+                            _selectedTime = index;
                           });
                         },
-                        children: new List<Widget>.generate(60, (int index) {
+                        children: new List<Widget>.generate(times.length,
+                            (int index) {
                           return new Center(
-                            child: new Text('${index + 1}'),
+                            child: new Text(times[index]),
                           );
                         })),
                   ),
