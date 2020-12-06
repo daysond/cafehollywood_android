@@ -2,6 +2,8 @@ import 'package:cafe_hollywood/models/menu.dart';
 import 'package:cafe_hollywood/screens/menu/meal_list_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:cafe_hollywood/models/cart.dart';
 
 class MenuGridView extends StatefulWidget {
   final List<Menu> menus;
@@ -26,11 +28,12 @@ class _MenuGridViewState extends State<MenuGridView> {
             ),
             onTap: () {
               //TODO: GO TO A NEW CONTROLLER
-              Navigator.push(
-                  context,
-                  CupertinoPageRoute(
-                    builder: (context) => MealListPage(),
-                  ));
+              Navigator.push(context, CupertinoPageRoute(
+                builder: (context) {
+                  return ChangeNotifierProvider(
+                      create: (context) => Cart(), child: MealListPage());
+                },
+              ));
               print('$index ${widget.menus[index].menuTitle}');
             },
           );

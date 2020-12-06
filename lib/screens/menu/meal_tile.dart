@@ -14,7 +14,7 @@ class MealTile extends StatelessWidget {
       onTap: () {
         print(meal.name);
         Navigator.push(context,
-            CupertinoPageRoute(builder: (context) => MealDetailPage()));
+            CupertinoPageRoute(builder: (context) => MealDetailPage(meal)));
       },
       child: Card(
           margin: EdgeInsets.fromLTRB(10, 6, 20, 0),

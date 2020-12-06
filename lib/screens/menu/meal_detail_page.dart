@@ -1,3 +1,4 @@
+import 'package:cafe_hollywood/models/cart.dart';
 import 'package:cafe_hollywood/models/preference.dart';
 import 'package:cafe_hollywood/models/preference_item.dart';
 import 'package:cafe_hollywood/screens/menu/item_tile.dart';
@@ -9,28 +10,21 @@ import 'package:cafe_hollywood/models/meal.dart';
 import 'package:cafe_hollywood/screens/shared/black_button.dart';
 
 class MealDetailPage extends StatefulWidget {
+  Meal meal;
+
+  MealDetailPage(Meal meal) {
+    // this.meal = meal;
+    this.meal = Meal(meal.uid, meal.name, meal.price, meal.mealDescription,
+        preferences: meal.preferences,
+        comboMealTag: meal.comboMealTag,
+        imageURL: meal.imageURL);
+  }
+
   @override
   _MealDetailPageState createState() => _MealDetailPageState();
 }
 
 class _MealDetailPageState extends State<MealDetailPage> {
-  final Meal meal = Meal(
-      '301', 'Coffee', Decimal.parse('3.20'), 'this is coffee 301',
-      preferences: [
-        Preference('uid', true, 'p1', 1, 1, [
-          PreferenceItem(
-              'item1', 'item1name', 'this isitem 1', Decimal.parse('1.5'), 1),
-          PreferenceItem(
-              'item2', 'item2name', 'this is item 2', Decimal.parse('1.3'), 1)
-        ]),
-        Preference('uid2', true, 'preference2', 2, 2, [
-          PreferenceItem(
-              'item1', 'p2 i1 name', 'this isitem 1', Decimal.parse('1.5'), 1),
-          PreferenceItem(
-              'item2', 'p2 i2 name', 'this is item 2', Decimal.parse('1.3'), 1)
-        ])
-      ]);
-
   ScrollController _scrollController;
   bool lastStatus = true;
   double appBarHeight = 0;
@@ -60,7 +54,12 @@ class _MealDetailPageState extends State<MealDetailPage> {
     super.dispose();
   }
 
-  void cartButtonTapped() {}
+  void cartButtonTapped() {
+    print('adding to cart');
+    Cart().meals.add(widget.meal);
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
@@ -122,14 +121,16 @@ class _MealDetailPageState extends State<MealDetailPage> {
               ),
               expandedHeight: MediaQuery.of(context).size.width * 9.0 / 16.0,
             ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) => PreferenceTile(meal.preferences[index]),
-                childCount: meal.preferences.length,
+            if (widget.meal.preferences != null)
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) =>
+                      PreferenceTile(widget.meal.preferences[index]),
+                  childCount: widget.meal.preferences.length,
+                ),
+                //  SliverChildListDelegate(
+                //     mealList.map((meal) => MealTile(meal)).toList()),
               ),
-              //  SliverChildListDelegate(
-              //     mealList.map((meal) => MealTile(meal)).toList()),
-            ),
             SliverFixedExtentList(
                 delegate: SliverChildBuilderDelegate(
                   (BuildContext context, int index) {
@@ -147,7 +148,7 @@ class _MealDetailPageState extends State<MealDetailPage> {
               margin: EdgeInsets.only(bottom: 8),
               width: MediaQuery.of(context).size.width,
               height: 50,
-              child: BlackButton(
+              child: new BlackButton(
                 'Add To Cart',
                 cartButtonTapped,
                 subtitle: '99',

@@ -1,7 +1,8 @@
 import 'package:cafe_hollywood/models/meal.dart';
 import 'package:decimal/decimal.dart';
+import 'package:flutter/foundation.dart';
 
-class Cart {
+class Cart extends ChangeNotifier {
   static Cart _instance;
 
   Cart._internal() {
@@ -25,7 +26,9 @@ class Cart {
   }
 
   Decimal get cartTotal {
-    return Decimal.parse('0');
+    return meals.length == 0
+        ? Decimal.parse('0')
+        : meals.map((e) => e.price).toList().reduce((a, b) => a + b);
   }
 
   String get orderTimestamp {
@@ -42,6 +45,11 @@ class Cart {
 
   bool get isEmpty {
     return meals.isEmpty;
+  }
+
+  void addMealToCart(Meal meal) {
+    meals.add(meal);
+    notifyListeners();
   }
 
   void resetCart() {
