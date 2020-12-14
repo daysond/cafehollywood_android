@@ -30,8 +30,8 @@ class _MenuGridViewState extends State<MenuGridView> {
               //TODO: GO TO A NEW CONTROLLER
               Navigator.push(context, CupertinoPageRoute(
                 builder: (context) {
-                  return ChangeNotifierProvider(
-                      create: (context) => Cart(), child: MealListPage());
+                  return ChangeNotifierProvider<Cart>.value(
+                      value: Cart(), child: MealListPage());
                 },
               ));
               print('$index ${widget.menus[index].menuTitle}');

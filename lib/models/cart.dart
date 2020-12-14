@@ -47,6 +47,8 @@ class Cart extends ChangeNotifier {
     return meals.isEmpty;
   }
 
+  Function didUpdateCart;
+
   void addMealToCart(Meal meal) {
     meals.add(meal);
     notifyListeners();

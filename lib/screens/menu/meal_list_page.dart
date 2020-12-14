@@ -76,103 +76,96 @@ class _MealListPageState extends State<MealListPage> {
 
   @override
   void dispose() {
+    print('disposed');
     _scrollController.removeListener(_scrollListener);
     super.dispose();
   }
 
   void viewCartButtonHandler() {
-    // setState(() {});
-    var meal = Meal('301', 'Coffee', Decimal.parse('1.5'), 'this is coffee',
-        imageURL: 'hwcb.png');
-    Cart().addMealToCart(meal);
     print('view cart ${Cart().meals.length} ${Cart().cartTotal}');
   }
 
   @override
   Widget build(BuildContext context) {
+    final Cart cart = Provider.of<Cart>(context);
     Size screenSize = MediaQuery.of(context).size;
     appBarHeight = screenSize.width * 9.0 / 16.0;
-    return ChangeNotifierProvider(
-      create: (_) => Cart(),
-      child: CupertinoPageScaffold(
-        child: Stack(children: [
-          CustomScrollView(
-            controller: _scrollController,
-            slivers: [
-              SliverAppBar(
-                leading: IconButton(
-                    icon: Icon(Icons.arrow_back),
+    return CupertinoPageScaffold(
+      child: Stack(children: [
+        CustomScrollView(
+          controller: _scrollController,
+          slivers: [
+            SliverAppBar(
+              leading: IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  color: isShrink ? Colors.black : Colors.white,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+              expandedHeight: screenSize.width * 9.0 / 16.0,
+              backgroundColor: Colors.white,
+              title: Text(isShrink ? 'Menu A' : '',
+                  style: TextStyle(
                     color: isShrink ? Colors.black : Colors.white,
-                    onPressed: () {
-                      Navigator.pop(context);
-                    }),
-                expandedHeight: screenSize.width * 9.0 / 16.0,
-                backgroundColor: Colors.white,
-                title: Text(isShrink ? 'Menu A' : '',
-                    style: TextStyle(
-                      color: isShrink ? Colors.black : Colors.white,
-                    )),
-                floating: false,
-                pinned: true,
-                flexibleSpace: FlexibleSpaceBar(
-                  centerTitle: false,
-                  background: Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                            "https://images.pexels.com/photos/396547/pexels-photo-396547.jpeg?auto=compress&cs=tinysrgb&h=350"),
-                      ),
+                  )),
+              floating: false,
+              pinned: true,
+              flexibleSpace: FlexibleSpaceBar(
+                centerTitle: false,
+                background: Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: NetworkImage(
+                          "https://images.pexels.com/photos/396547/pexels-photo-396547.jpeg?auto=compress&cs=tinysrgb&h=350"),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(32, 32, 32, 32),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'title',
-                              style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                            Text(
-                              'subtitle',
-                              style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.white),
-                            ),
-                          ]),
-                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(32, 32, 32, 32),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'title',
+                            style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white),
+                          ),
+                          Text(
+                            'subtitle',
+                            style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w300,
+                                color: Colors.white),
+                          ),
+                        ]),
                   ),
                 ),
               ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) => MealTile(mealList[index]),
-                  childCount: mealList.length,
-                ),
-              ),
-            ],
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: SafeArea(
-              child: Container(
-                margin: EdgeInsets.only(bottom: 8),
-                width: MediaQuery.of(context).size.width,
-                height: 50,
-                child: Consumer<Cart>(builder: (context, cart, child) {
-                  return BlackButton('View Cart', viewCartButtonHandler,
-                      subtitle: '\$${cart.cartTotal.toString()}');
-                }),
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => MealTile(mealList[index]),
+                childCount: mealList.length,
               ),
             ),
+          ],
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: SafeArea(
+            child: Container(
+              margin: EdgeInsets.only(bottom: 8),
+              width: MediaQuery.of(context).size.width,
+              height: 50,
+              child: BlackButton('View Cart', viewCartButtonHandler,
+                  subtitle: '\$${cart.cartTotal}'),
+            ),
           ),
-        ]),
-      ),
+        ),
+      ]),
     );
 
     // CupertinoPageScaffold(

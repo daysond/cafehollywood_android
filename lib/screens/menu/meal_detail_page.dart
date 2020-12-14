@@ -56,7 +56,8 @@ class _MealDetailPageState extends State<MealDetailPage> {
 
   void cartButtonTapped() {
     print('adding to cart');
-    Cart().meals.add(widget.meal);
+    Cart().addMealToCart(widget.meal);
+    print('${Cart().cartTotal}');
     Navigator.pop(context);
   }
 
@@ -151,7 +152,7 @@ class _MealDetailPageState extends State<MealDetailPage> {
               child: new BlackButton(
                 'Add To Cart',
                 cartButtonTapped,
-                subtitle: '99',
+                subtitle: widget.meal.price.toString(),
               ),
             ),
           ),

@@ -23,7 +23,7 @@ class BlackButton extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 16.0),
                   child: Text(
-                    '\$99',
+                    subtitle,
                     style: TextStyle(color: Colors.white),
                   ),
                 ),

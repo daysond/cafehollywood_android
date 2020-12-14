@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 class ItemTile extends StatefulWidget {
   final PreferenceItem item;
   bool enableMultiPick;
-  ItemTile(this.item, this.enableMultiPick);
+  int maxPick;
+  int maxQuantity;
+  ItemTile(this.item, this.enableMultiPick, this.maxPick, this.maxQuantity);
   @override
   _ItemTileState createState() => _ItemTileState();
 }
@@ -42,24 +44,50 @@ class _ItemTileState extends State<ItemTile> {
               });
             },
             child: Card(
+              color: Colors.amber,
               //Single item
               elevation: 0,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    widget.item.isSelected
-                        ? Icon(Icons.add)
-                        : SizedBox(width: 0),
-                    SizedBox(width: 8),
-                    Text(widget.item.name),
-                    new Spacer(),
-                    Text('\$${widget.item.price}'),
-                    SizedBox(width: 8),
-                  ],
-                ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    left: 0,
+                    width: 40,
+                    top: 8,
+                    bottom: 8,
+                    child: _handleSelection(),
+                  ),
+                  Positioned(
+                    top: 8,
+                    left: 40,
+                    right: 8,
+                    bottom: 8,
+                    child: Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(widget.item.name),
+                          new Spacer(),
+                          Text('\$${widget.item.price}'),
+                          SizedBox(width: 8),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           );
+  }
+
+  _handleSelection() {
+    if (widget.item.isSelected) {
+      return Icon(
+        Icons.add,
+        // size: 32,
+      );
+    } else {
+      return SizedBox(width: 0);
+    }
   }
 }

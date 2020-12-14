@@ -46,8 +46,8 @@ class AuthHomePage extends StatelessWidget {
                 ],
               ),
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
+            Positioned(
+              bottom: 0,
               child: Container(
                 height: MediaQuery.of(context).size.height * 0.2,
                 width: MediaQuery.of(context).size.width,
@@ -55,11 +55,11 @@ class AuthHomePage extends StatelessWidget {
                 child: Column(
                   children: [
                     SizedBox(
-                      height: 32,
+                      height: 16,
                     ),
                     ButtonTheme(
                       minWidth: MediaQuery.of(context).size.width * 0.6,
-                      height: 48,
+                      height: 42,
                       buttonColor: Colors.white,
                       child: RaisedButton(
                         onPressed: () async {
@@ -83,7 +83,7 @@ class AuthHomePage extends StatelessWidget {
                     SizedBox(height: 16.0),
                     ButtonTheme(
                       minWidth: MediaQuery.of(context).size.width * 0.6,
-                      height: 48,
+                      height: 40,
                       buttonColor: Colors.white,
                       child: RaisedButton(
                         onPressed: () {},

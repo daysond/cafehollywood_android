@@ -79,7 +79,11 @@ class _PreferenceTileState extends State<PreferenceTile>
   _buildItemTiles(Preference preference) {
     List<Widget> content = [];
     for (PreferenceItem item in preference.preferenceItems) {
-      content.add(new ItemTile(item, preference.maxItemQuantity > 1));
+      content.add(Container(
+          height: 50,
+          // color: Colors.red,
+          child: new ItemTile(item, preference.maxItemQuantity > 1,
+              preference.maxPick, preference.maxItemQuantity)));
     }
     return content;
   }
