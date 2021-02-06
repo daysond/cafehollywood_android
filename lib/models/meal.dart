@@ -6,9 +6,9 @@ class Meal {
   final String name;
   final Decimal price;
   final String details;
-  final String imageURL;
+  String imageURL;
   final String mealDescription;
-  final int comboMealTag;
+  int comboMealTag;
   bool isBogo = false;
 
   List<Preference> preferences;

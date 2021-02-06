@@ -4,6 +4,7 @@ import 'package:cafe_hollywood/models/preference.dart';
 import 'package:cafe_hollywood/models/preference_item.dart';
 import 'package:cafe_hollywood/screens/menu/meal_tile.dart';
 import 'package:cafe_hollywood/screens/shared/black_button.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -92,6 +93,53 @@ class _MealListPageState extends State<MealListPage> {
     print('view cart ${Cart().meals.length} ${Cart().cartTotal}');
   }
 
+  Future<List<Meal>> getMeals() async {
+    print('STEP 1');
+
+    List<Meal> meals = [];
+    var futures = List<Future<Meal>>();
+
+    widget.menu.mealsInUID.forEach((uid) {
+      futures.add(getMeal(uid));
+    });
+
+    await Future.wait(futures).then((result) {
+      print('STEP 4 ${meals.length} ${meals}');
+      meals = result;
+    });
+    print('ALL DONE!!!');
+    return meals;
+  }
+
+  Future<Meal> getMeal(String uid) async {
+    print('STEP 2');
+    var doc = FirebaseFirestore.instance.collection('meals').doc(uid);
+    return doc.get().then((value) {
+      print('STEP 3 ON ' + value.id);
+      if (value.data() != null) {
+        print('STEP 3 ON  ${value.data()}');
+        final data = value.data();
+        var meal = Meal(value.id, data['name'],
+            Decimal.parse('${data['price']}'), data['description'],
+            details: data['detail']);
+        print('STEP 3 ON MEAL');
+        if (data['comboTag'] != null) {
+          meal.comboMealTag = data['comboTag'];
+        }
+        if (data['imageURL'] != null) {
+          meal.imageURL = '${data['imageURL']}.jpg';
+        }
+        if (data['isBOGO'] != null) {
+          meal.isBogo = data['isBOGO'];
+        }
+        print('did get meal ${meal.name}');
+        print('STEP 3 Done');
+        return meal;
+        // return meal;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     print(widget.menu.mealsInUID);
@@ -102,67 +150,79 @@ class _MealListPageState extends State<MealListPage> {
       create: (_) => Cart(),
       child: CupertinoPageScaffold(
         child: Stack(children: [
-          CustomScrollView(
-            controller: _scrollController,
-            slivers: [
-              SliverAppBar(
-                leading: IconButton(
-                    icon: Icon(Icons.arrow_back),
-                    color: isShrink ? Colors.black : Colors.white,
-                    onPressed: () {
-                      Navigator.pop(context);
-                    }),
-                expandedHeight: screenSize.width * 9.0 / 16.0,
-                backgroundColor: Colors.white,
-                title: Text(isShrink ? 'Menu A' : '',
-                    style: TextStyle(
-                      color: isShrink ? Colors.black : Colors.white,
-                    )),
-                floating: false,
-                pinned: true,
-                flexibleSpace: FlexibleSpaceBar(
-                  centerTitle: false,
-                  background: Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                            "https://images.pexels.com/photos/396547/pexels-photo-396547.jpeg?auto=compress&cs=tinysrgb&h=350"),
+          FutureBuilder<List<Meal>>(
+              future: getMeals(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return CustomScrollView(
+                    controller: _scrollController,
+                    slivers: [
+                      SliverAppBar(
+                        leading: IconButton(
+                            icon: Icon(Icons.arrow_back),
+                            color: isShrink ? Colors.black : Colors.white,
+                            onPressed: () {
+                              Navigator.pop(context);
+                            }),
+                        expandedHeight: screenSize.width * 9.0 / 16.0,
+                        backgroundColor: Colors.white,
+                        title: Text(isShrink ? 'Menu A' : '',
+                            style: TextStyle(
+                              color: isShrink ? Colors.black : Colors.white,
+                            )),
+                        floating: false,
+                        pinned: true,
+                        flexibleSpace: FlexibleSpaceBar(
+                          centerTitle: false,
+                          background: Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: NetworkImage(
+                                    "https://images.pexels.com/photos/396547/pexels-photo-396547.jpeg?auto=compress&cs=tinysrgb&h=350"),
+                              ),
+                            ),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(32, 32, 32, 32),
+                              child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'title',
+                                      style: TextStyle(
+                                          fontSize: 30,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white),
+                                    ),
+                                    Text(
+                                      'subtitle',
+                                      style: TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.w300,
+                                          color: Colors.white),
+                                    ),
+                                  ]),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(32, 32, 32, 32),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'title',
-                              style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
-                            ),
-                            Text(
-                              'subtitle',
-                              style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.white),
-                            ),
-                          ]),
-                    ),
-                  ),
-                ),
-              ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) => MealTile(mealList[index]),
-                  childCount: mealList.length,
-                ),
-              ),
-            ],
-          ),
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) => MealTile(snapshot.data[index]),
+                          childCount: snapshot.data.length,
+                        ),
+                      ),
+                      // ),
+                    ],
+                  );
+                } else {
+                  return Center(
+                    child: Text('Loading'),
+                  );
+                }
+              }),
           Align(
             alignment: Alignment.bottomCenter,
             child: SafeArea(

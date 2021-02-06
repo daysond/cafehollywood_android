@@ -48,11 +48,11 @@ class _MealDetailPageState extends State<MealDetailPage> {
     super.initState();
   }
 
-  @override
-  void dispose() {
-    _scrollController.removeListener(_scrollListener);
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _scrollController.removeListener(_scrollListener);
+  //   super.dispose();
+  // }
 
   void cartButtonTapped() {
     print('adding to cart');

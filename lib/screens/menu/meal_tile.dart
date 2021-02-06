@@ -6,7 +6,7 @@ import 'package:cafe_hollywood/models/meal.dart';
 class MealTile extends StatelessWidget {
   final Meal meal;
   MealTile(this.meal) {
-    debugPrint('init: ${meal.name}');
+    debugPrint('init: ${meal.name} image ${meal.imageURL}');
   }
   @override
   Widget build(BuildContext context) {
@@ -40,17 +40,18 @@ class MealTile extends StatelessWidget {
                   ),
                 ),
               ),
-              Container(
-                height: 80,
-                width: 80,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/${meal.imageURL}'),
-                    fit: BoxFit.cover,
+              if (meal.imageURL != null)
+                Container(
+                  height: 80,
+                  width: 80,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/${meal.imageURL}'),
+                      fit: BoxFit.cover,
+                    ),
+                    shape: BoxShape.rectangle,
                   ),
-                  shape: BoxShape.rectangle,
                 ),
-              ),
             ],
           )),
     );
