@@ -3,6 +3,9 @@ import 'package:cafe_hollywood/screens/menu/menuGridView.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:cafe_hollywood/services/fs_service.dart';
+import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MenuPage extends StatefulWidget {
   @override
@@ -11,11 +14,11 @@ class MenuPage extends StatefulWidget {
 
 class _MenuPageState extends State<MenuPage> {
   int _sliding = 0;
-  List<Menu> foodMenu = [
-    Menu('uid', 'menuTitle', ['123', '456'], 'hwcb.png'),
-    Menu('uid', 'menuTitle', ['123', '456'], 'wings.png')
-  ];
-  List<String> l2 = ['a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'];
+  // List<Menu> foodMenu = [
+  //   Menu('uid', 'menuTitle', ['123', '456'], 'hwcb.png'),
+  //   Menu('uid', 'menuTitle', ['123', '456'], 'wings.png')
+  // ];
+  // List<String> l2 = ['a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'];
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -47,8 +50,10 @@ class _MenuPageState extends State<MenuPage> {
             ];
           },
           body: new TabBarView(children: [
-            MenuGridView(foodMenu),
-            Container(),
+            StreamProvider<List<Menu>>.value(
+                value: FSService().foodMenuSnapshots, child: MenuGridView()),
+            StreamProvider<List<Menu>>.value(
+                value: FSService().drinkMenuSnapshots, child: MenuGridView()),
             // MenuGridView(l1),
           ] // <--- the array item is a ListView
               ),

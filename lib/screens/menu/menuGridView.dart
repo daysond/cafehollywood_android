@@ -4,10 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cafe_hollywood/models/cart.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 
 class MenuGridView extends StatefulWidget {
-  final List<Menu> menus;
-  MenuGridView(this.menus);
+  // final List<Menu> menus;
+  // MenuGridView(this.menus);
   @override
   _MenuGridViewState createState() => _MenuGridViewState();
 }
@@ -15,15 +17,17 @@ class MenuGridView extends StatefulWidget {
 class _MenuGridViewState extends State<MenuGridView> {
   @override
   Widget build(BuildContext context) {
+    final foodMenus = Provider.of<List<Menu>>(context);
+
     return GridView.builder(
         padding: EdgeInsets.symmetric(horizontal: 8),
-        itemCount: widget.menus.length,
+        itemCount: foodMenus.length ?? 0,
         gridDelegate:
             new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         itemBuilder: (context, index) {
           return GestureDetector(
             child: Image.asset(
-              'assets/${widget.menus[index].imageURL}',
+              'assets/${foodMenus[index].imageURL}',
               fit: BoxFit.cover,
             ),
             onTap: () {
@@ -31,10 +35,11 @@ class _MenuGridViewState extends State<MenuGridView> {
               Navigator.push(context, CupertinoPageRoute(
                 builder: (context) {
                   return ChangeNotifierProvider(
-                      create: (context) => Cart(), child: MealListPage());
+                      create: (context) => Cart(),
+                      child: MealListPage(foodMenus[index]));
                 },
               ));
-              print('$index ${widget.menus[index].menuTitle}');
+              print('$index ${foodMenus[index].menuTitle}');
             },
           );
         });

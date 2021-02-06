@@ -9,6 +9,7 @@ class Meal {
   final String imageURL;
   final String mealDescription;
   final int comboMealTag;
+  bool isBogo = false;
 
   List<Preference> preferences;
   //combo type
@@ -18,5 +19,9 @@ class Meal {
   int quantity = 1;
 
   Meal(this.uid, this.name, this.price, this.mealDescription,
-      {this.imageURL, this.comboMealTag, this.preferences, this.details});
+      {this.imageURL,
+      this.comboMealTag,
+      this.preferences,
+      this.details,
+      this.isBogo});
 }

@@ -1,4 +1,5 @@
 import 'package:cafe_hollywood/models/meal.dart';
+import 'package:cafe_hollywood/models/menu.dart';
 import 'package:cafe_hollywood/models/preference.dart';
 import 'package:cafe_hollywood/models/preference_item.dart';
 import 'package:cafe_hollywood/screens/menu/meal_tile.dart';
@@ -10,6 +11,9 @@ import 'package:cafe_hollywood/models/cart.dart';
 import 'package:provider/provider.dart';
 
 class MealListPage extends StatefulWidget {
+  final Menu menu;
+  MealListPage(this.menu);
+
   @override
   _MealListPageState createState() => _MealListPageState();
 }
@@ -35,7 +39,11 @@ class _MealListPageState extends State<MealListPage> {
     Meal('300', 'Tea', Decimal.parse('2.5'), 'this is Tea',
         imageURL: 'wings.png'),
     Meal('301', 'Coffee', Decimal.parse('1.5'), 'this is coffee',
-        imageURL: 'hwcb.png'),
+        imageURL: 'wings.png'),
+    Meal('300', 'Tea', Decimal.parse('2.5'), 'this is Tea',
+        imageURL: 'wings.png'),
+    Meal('301', 'Coffee', Decimal.parse('1.5'), 'this is coffee',
+        imageURL: 'wings.png'),
     Meal('300', 'Tea', Decimal.parse('2.5'), 'this is Tea',
         imageURL: 'wings.png'),
     Meal('301', 'Coffee', Decimal.parse('1.5'), 'this is coffee',
@@ -43,11 +51,7 @@ class _MealListPageState extends State<MealListPage> {
     Meal('300', 'Tea', Decimal.parse('2.5'), 'this is Tea',
         imageURL: 'wings.png'),
     Meal('301', 'Coffee', Decimal.parse('1.5'), 'this is coffee',
-        imageURL: 'hwcb.png'),
-    Meal('300', 'Tea', Decimal.parse('2.5'), 'this is Tea',
         imageURL: 'wings.png'),
-    Meal('301', 'Coffee', Decimal.parse('1.5'), 'this is coffee',
-        imageURL: 'hwcb.png'),
   ];
 
   ScrollController _scrollController;
@@ -90,6 +94,8 @@ class _MealListPageState extends State<MealListPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.menu.mealsInUID);
+
     Size screenSize = MediaQuery.of(context).size;
     appBarHeight = screenSize.width * 9.0 / 16.0;
     return ChangeNotifierProvider(
