@@ -20,41 +20,6 @@ class MealListPage extends StatefulWidget {
 }
 
 class _MealListPageState extends State<MealListPage> {
-  final List<Meal> mealList = [
-    Meal('301', 'Coffee', Decimal.parse('3.20'), 'this is coffee 301',
-        imageURL: 'wings.png',
-        preferences: [
-          Preference('uid', true, 'p1', 1, 1, [
-            PreferenceItem(
-                'item1', 'item1name', 'this isitem 1', Decimal.parse('1.5'), 1),
-            PreferenceItem(
-                'item2', 'item2name', 'this is item 2', Decimal.parse('1.3'), 1)
-          ]),
-          Preference('uid2', true, 'preference2', 2, 2, [
-            PreferenceItem('item1', 'p2 i1 name', 'this isitem 1',
-                Decimal.parse('1.5'), 1),
-            PreferenceItem('item2', 'p2 i2 name', 'this is item 2',
-                Decimal.parse('1.3'), 1)
-          ])
-        ]),
-    Meal('300', 'Tea', Decimal.parse('2.5'), 'this is Tea',
-        imageURL: 'wings.png'),
-    Meal('301', 'Coffee', Decimal.parse('1.5'), 'this is coffee',
-        imageURL: 'wings.png'),
-    Meal('300', 'Tea', Decimal.parse('2.5'), 'this is Tea',
-        imageURL: 'wings.png'),
-    Meal('301', 'Coffee', Decimal.parse('1.5'), 'this is coffee',
-        imageURL: 'wings.png'),
-    Meal('300', 'Tea', Decimal.parse('2.5'), 'this is Tea',
-        imageURL: 'wings.png'),
-    Meal('301', 'Coffee', Decimal.parse('1.5'), 'this is coffee',
-        imageURL: 'hwcb.png'),
-    Meal('300', 'Tea', Decimal.parse('2.5'), 'this is Tea',
-        imageURL: 'wings.png'),
-    Meal('301', 'Coffee', Decimal.parse('1.5'), 'this is coffee',
-        imageURL: 'wings.png'),
-  ];
-
   ScrollController _scrollController;
 
   bool lastStatus = true;
@@ -146,8 +111,9 @@ class _MealListPageState extends State<MealListPage> {
 
     Size screenSize = MediaQuery.of(context).size;
     appBarHeight = screenSize.width * 9.0 / 16.0;
-    return ChangeNotifierProvider(
-      create: (_) => Cart(),
+    return ChangeNotifierProvider.value(
+      value: Cart(),
+      // create: (_) => Cart(),
       child: CupertinoPageScaffold(
         child: Stack(children: [
           FutureBuilder<List<Meal>>(
@@ -184,22 +150,22 @@ class _MealListPageState extends State<MealListPage> {
                             ),
                             child: Padding(
                               padding:
-                                  const EdgeInsets.fromLTRB(32, 32, 32, 32),
+                                  const EdgeInsets.fromLTRB(16, 32, 32, 16),
                               child: Column(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'title',
+                                      widget.menu.menuTitle,
                                       style: TextStyle(
-                                          fontSize: 30,
+                                          fontSize: 24,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white),
                                     ),
                                     Text(
-                                      'subtitle',
+                                      widget.menu.menuDetail,
                                       style: TextStyle(
-                                          fontSize: 24,
+                                          fontSize: 20,
                                           fontWeight: FontWeight.w300,
                                           color: Colors.white),
                                     ),

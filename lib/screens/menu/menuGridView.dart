@@ -1,5 +1,6 @@
 import 'package:cafe_hollywood/models/menu.dart';
 import 'package:cafe_hollywood/screens/menu/meal_list_page.dart';
+import 'package:cafe_hollywood/screens/shared/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,29 +20,37 @@ class _MenuGridViewState extends State<MenuGridView> {
   Widget build(BuildContext context) {
     final foodMenus = Provider.of<List<Menu>>(context);
 
-    return GridView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 8),
-        itemCount: foodMenus.length ?? 0,
-        gridDelegate:
-            new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            child: Image.asset(
-              'assets/${foodMenus[index].imageURL}',
-              fit: BoxFit.cover,
-            ),
-            onTap: () {
-              //TODO: GO TO A NEW CONTROLLER
-              Navigator.push(context, CupertinoPageRoute(
-                builder: (context) {
-                  return ChangeNotifierProvider(
-                      create: (context) => Cart(),
-                      child: MealListPage(foodMenus[index]));
-                },
-              ));
-              print('$index ${foodMenus[index].menuTitle}');
-            },
-          );
-        });
+    // print('foodmenu ${foodMenus.length}');
+
+    if (foodMenus != null) {
+      return GridView.builder(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          itemCount: foodMenus.length,
+          gridDelegate:
+              new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              child: Image.asset(
+                'assets/${foodMenus[index].imageURL}',
+                fit: BoxFit.cover,
+              ),
+              onTap: () {
+                //TODO: GO TO A NEW CONTROLLER
+                Navigator.push(context, CupertinoPageRoute(
+                  builder: (context) {
+                    return ChangeNotifierProvider(
+                        create: (context) => Cart(),
+                        child: MealListPage(foodMenus[index]));
+                  },
+                ));
+                print('$index ${foodMenus[index].menuTitle}');
+              },
+            );
+          });
+    } else {
+      return Center(
+        child: Text('Loading'),
+      );
+    }
   }
 }
