@@ -59,8 +59,6 @@ class _MealListPageState extends State<MealListPage> {
   }
 
   Future<List<Meal>> getMeals() async {
-    print('STEP 1');
-
     List<Meal> meals = [];
     var futures = List<Future<Meal>>();
 
@@ -69,25 +67,19 @@ class _MealListPageState extends State<MealListPage> {
     });
 
     await Future.wait(futures).then((result) {
-      print('STEP 4 ${meals.length} ${meals}');
       meals = result;
     });
-    print('ALL DONE!!!');
     return meals;
   }
 
   Future<Meal> getMeal(String uid) async {
-    print('STEP 2');
     var doc = FirebaseFirestore.instance.collection('meals').doc(uid);
-    return doc.get().then((value) {
-      print('STEP 3 ON ' + value.id);
+    return doc.get().then((value) async {
       if (value.data() != null) {
-        print('STEP 3 ON  ${value.data()}');
         final data = value.data();
         var meal = Meal(value.id, data['name'],
             Decimal.parse('${data['price']}'), data['description'],
             details: data['detail']);
-        print('STEP 3 ON MEAL');
         if (data['comboTag'] != null) {
           meal.comboMealTag = data['comboTag'];
         }
@@ -97,10 +89,64 @@ class _MealListPageState extends State<MealListPage> {
         if (data['isBOGO'] != null) {
           meal.isBogo = data['isBOGO'];
         }
-        print('did get meal ${meal.name}');
-        print('STEP 3 Done');
+
+        if (data['preferences'] != null) {
+          var futures = List<Future<Preference>>();
+          List<String> uids =
+              (data['preferences'] as List).map((e) => e as String).toList();
+          uids.forEach((uid) {
+            futures.add(getPreference(uid));
+          });
+
+          await Future.wait(futures).then((preferences) {
+            meal.preferences = preferences;
+          });
+        }
+
         return meal;
-        // return meal;
+      }
+    });
+  }
+
+  Future<Preference> getPreference(String uid) async {
+    var futures = List<Future<PreferenceItem>>();
+    var doc = FirebaseFirestore.instance.collection('preferences').doc(uid);
+    var items = List<PreferenceItem>();
+    return doc.get().then((value) async {
+      if (value.data() != null) {
+        final data = value.data();
+        List<String> itemUIDs =
+            (data['items'] as List).map((e) => e as String).toList();
+        itemUIDs.forEach((uid) {
+          futures.add(getPreferenceItem(uid));
+        });
+
+        await Future.wait(futures).then((result) {
+          items = result;
+        });
+
+        Preference preference = Preference(value.id, data['isRequired'],
+            data['name'], data['maxPick'], data['maxItemQuantity'], items);
+
+        return preference;
+      }
+    });
+  }
+
+  Future<PreferenceItem> getPreferenceItem(String uid) async {
+    var doc = FirebaseFirestore.instance.collection('preferenceItems').doc(uid);
+    return doc.get().then((value) {
+      if (value.data() != null) {
+        final data = value.data();
+        PreferenceItem item =
+            PreferenceItem(data['uid'], data['name'], data['description']);
+        if (data['price'] != null) {
+          item.price = Decimal.parse('${data['price']}');
+        }
+        if (data['comboTag'] != null) {
+          item.comboTag = data['comboTag'];
+        }
+        return item;
       }
     });
   }

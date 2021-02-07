@@ -28,7 +28,8 @@ class _ItemTileState extends State<ItemTile> {
                     SizedBox(width: 8),
                     Text(widget.item.name),
                     new Spacer(),
-                    Text('\$${widget.item.price}'),
+                    if (widget.item.price != null)
+                      Text('\$${widget.item.price}'),
                     SizedBox(width: 8),
                   ],
                 ),
@@ -54,7 +55,8 @@ class _ItemTileState extends State<ItemTile> {
                     SizedBox(width: 8),
                     Text(widget.item.name),
                     new Spacer(),
-                    Text('\$${widget.item.price}'),
+                    if (widget.item.price != null)
+                      Text('\$${widget.item.price}'),
                     SizedBox(width: 8),
                   ],
                 ),

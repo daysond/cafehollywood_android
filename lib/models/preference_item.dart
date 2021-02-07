@@ -4,11 +4,10 @@ class PreferenceItem {
   final String uid;
   final String itemDescription;
   final String name;
-  final Decimal price;
-  int quantity;
+  Decimal price;
+  int quantity = 1;
   int comboTag;
   bool isSelected = false;
 
-  PreferenceItem(
-      this.uid, this.name, this.itemDescription, this.price, this.quantity);
+  PreferenceItem(this.uid, this.name, this.itemDescription, {this.price});
 }
