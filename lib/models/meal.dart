@@ -24,4 +24,14 @@ class Meal {
       this.preferences,
       this.details,
       this.isBogo});
+
+  Meal copy(Meal meal) {
+    Meal newMeal = Meal(meal.uid, meal.name, meal.price, meal.mealDescription,
+        imageURL: meal.imageURL,
+        comboMealTag: meal.comboMealTag,
+        isBogo: meal.isBogo,
+        preferences: meal.preferences.map((e) => e.copy(e)).toList());
+    newMeal.quantity = meal.quantity;
+    return newMeal;
+  }
 }

@@ -56,8 +56,21 @@ class _MealDetailPageState extends State<MealDetailPage> {
 
   void cartButtonTapped() {
     print('adding to cart');
-    Cart().meals.add(widget.meal);
+    Meal newMeal = widget.meal.copy(widget.meal);
+    Cart().addMealToCart(newMeal);
+    resetMeal();
     Navigator.pop(context);
+  }
+
+  void resetMeal() {
+    widget.meal.quantity = 1;
+    widget.meal.preferences.forEach((preference) {
+      preference.isSectionCollapsed = false;
+      preference.preferenceItems.forEach((item) {
+        item.quantity = 1;
+        item.isSelected = false;
+      });
+    });
   }
 
   @override
@@ -151,7 +164,7 @@ class _MealDetailPageState extends State<MealDetailPage> {
               child: new BlackButton(
                 'Add To Cart',
                 cartButtonTapped,
-                subtitle: '99',
+                subtitle: '${widget.meal.price}',
               ),
             ),
           ),

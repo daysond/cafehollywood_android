@@ -10,4 +10,13 @@ class PreferenceItem {
   bool isSelected = false;
 
   PreferenceItem(this.uid, this.name, this.itemDescription, {this.price});
+
+  PreferenceItem copy(PreferenceItem item) {
+    PreferenceItem newItem = PreferenceItem(
+        item.uid, item.name, item.itemDescription,
+        price: item.price);
+    newItem.isSelected = item.isSelected;
+    newItem.quantity = item.quantity;
+    return newItem;
+  }
 }

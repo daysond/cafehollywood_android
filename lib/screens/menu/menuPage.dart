@@ -14,11 +14,7 @@ class MenuPage extends StatefulWidget {
 
 class _MenuPageState extends State<MenuPage> {
   int _sliding = 0;
-  // List<Menu> foodMenu = [
-  //   Menu('uid', 'menuTitle', ['123', '456'], 'hwcb.png'),
-  //   Menu('uid', 'menuTitle', ['123', '456'], 'wings.png')
-  // ];
-  // List<String> l2 = ['a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'];
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(

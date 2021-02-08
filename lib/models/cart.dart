@@ -50,6 +50,7 @@ class Cart extends ChangeNotifier {
   void addMealToCart(Meal meal) {
     meals.add(meal);
     notifyListeners();
+    print('meal added!');
   }
 
   void resetCart() {

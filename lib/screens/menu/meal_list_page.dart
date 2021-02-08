@@ -50,9 +50,6 @@ class _MealListPageState extends State<MealListPage> {
 
   void viewCartButtonHandler() {
     // setState(() {});
-    var meal = Meal('301', 'Coffee', Decimal.parse('1.5'), 'this is coffee',
-        imageURL: 'hwcb.png');
-    Cart().addMealToCart(meal);
     print('view cart ${Cart().meals.length} ${Cart().cartTotal}');
   }
 
