@@ -46,6 +46,54 @@ class _PreferenceTileState extends State<PreferenceTile>
     super.dispose();
   }
 
+  void itemOnTap(String uid) {
+    print('did tap on' + uid);
+    PreferenceItem item = widget.preference.preferenceItems
+        .firstWhere((element) => element.uid == uid);
+    final int maxPick = widget.preference.maxPick;
+    final int maxItemQuantity = widget.preference.maxItemQuantity;
+    setState(() {
+      if (maxPick == 1 && maxItemQuantity == 1) {
+        item.isSelected = !item.isSelected;
+
+        widget.preference.preferenceItems.forEach((item) {
+          if (item.uid != uid) {
+            item.isSelected = false;
+          }
+        });
+      } else if (maxPick == 1 && maxItemQuantity > 1) {
+        item.isSelected = true;
+      } else {
+        // maxPick = items.length, maxItemQuantity = 1
+        item.isSelected = !item.isSelected;
+      }
+    });
+  }
+
+  void itemDidChangeQuantity(String uid, bool increased) {
+    print('item did change q');
+    PreferenceItem item = widget.preference.preferenceItems
+        .firstWhere((element) => element.uid == uid);
+    setState(() {
+      switch (increased) {
+        case true:
+          {
+            item.quantity++;
+          }
+          break;
+        case false:
+          {
+            if (item.quantity == 1) {
+              item.isSelected = false;
+            } else if (item.quantity > 1) {
+              item.quantity--;
+            }
+          }
+          break;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -79,7 +127,8 @@ class _PreferenceTileState extends State<PreferenceTile>
   _buildItemTiles(Preference preference) {
     List<Widget> content = [];
     for (PreferenceItem item in preference.preferenceItems) {
-      content.add(new ItemTile(item, preference.maxItemQuantity > 1));
+      content.add(
+          new ItemTile(item, preference, itemOnTap, itemDidChangeQuantity));
     }
     return content;
   }

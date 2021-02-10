@@ -10,6 +10,7 @@ class Meal {
   final String mealDescription;
   int comboMealTag;
   bool isBogo = false;
+  String instruction;
 
   List<Preference> preferences;
   //combo type
@@ -18,15 +19,12 @@ class Meal {
   bool isSelected = false;
   int quantity = 1;
 
-  Meal(this.uid, this.name, this.price, this.mealDescription,
-      {this.imageURL,
-      this.comboMealTag,
-      this.preferences,
-      this.details,
-      this.isBogo});
+  Meal(this.uid, this.name, this.price, this.mealDescription, this.details,
+      {this.imageURL, this.comboMealTag, this.preferences, this.isBogo});
 
   Meal copy(Meal meal) {
-    Meal newMeal = Meal(meal.uid, meal.name, meal.price, meal.mealDescription,
+    Meal newMeal = Meal(
+        meal.uid, meal.name, meal.price, meal.mealDescription, meal.details,
         imageURL: meal.imageURL,
         comboMealTag: meal.comboMealTag,
         isBogo: meal.isBogo,

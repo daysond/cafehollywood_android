@@ -58,9 +58,13 @@ class FSService {
     return doc.get().then((value) async {
       if (value.data() != null) {
         final data = value.data();
-        var meal = Meal(value.id, data['name'],
-            Decimal.parse('${data['price']}'), data['description'],
-            details: data['detail']);
+        print('tag: ${data['detail']}');
+        var meal = Meal(
+            value.id,
+            data['name'],
+            Decimal.parse('${data['price']}'),
+            data['description'],
+            data['detail']);
         if (data['comboTag'] != null) {
           meal.comboMealTag = data['comboTag'];
         }
@@ -120,7 +124,7 @@ class FSService {
       if (value.data() != null) {
         final data = value.data();
         PreferenceItem item =
-            PreferenceItem(data['uid'], data['name'], data['description']);
+            PreferenceItem(value.id, data['name'], data['description']);
         if (data['price'] != null) {
           item.price = Decimal.parse('${data['price']}');
         }

@@ -10,15 +10,16 @@ import 'package:cafe_hollywood/models/meal.dart';
 import 'package:cafe_hollywood/screens/shared/black_button.dart';
 
 class MealDetailPage extends StatefulWidget {
-  Meal meal;
-
-  MealDetailPage(Meal meal) {
-    // this.meal = meal;
-    this.meal = Meal(meal.uid, meal.name, meal.price, meal.mealDescription,
-        preferences: meal.preferences,
-        comboMealTag: meal.comboMealTag,
-        imageURL: meal.imageURL);
-  }
+  final Meal meal;
+  MealDetailPage(this.meal);
+  // MealDetailPage(Meal meal) {
+  //   // this.meal = meal;
+  //   this.meal = Meal(
+  //       meal.uid, meal.name, meal.price, meal.mealDescription, meal.details,
+  //       preferences: meal.preferences,
+  //       comboMealTag: meal.comboMealTag,
+  //       imageURL: meal.imageURL);
+  // }
 
   @override
   _MealDetailPageState createState() => _MealDetailPageState();
@@ -26,8 +27,10 @@ class MealDetailPage extends StatefulWidget {
 
 class _MealDetailPageState extends State<MealDetailPage> {
   ScrollController _scrollController;
+  final instructionTextController = TextEditingController();
   bool lastStatus = true;
   double appBarHeight = 0;
+  bool shouldHideBlackButton = false;
   bool get isShrink {
     return _scrollController.hasClients &&
         _scrollController.offset > (appBarHeight - kToolbarHeight);
@@ -90,7 +93,7 @@ class _MealDetailPageState extends State<MealDetailPage> {
                   onPressed: () {
                     Navigator.pop(context);
                   }),
-              title: Text(isShrink ? 'Menu A' : '',
+              title: Text(isShrink ? widget.meal.name : '',
                   style: TextStyle(
                     color: isShrink ? Colors.black : Colors.white,
                   )),
@@ -104,32 +107,51 @@ class _MealDetailPageState extends State<MealDetailPage> {
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       fit: BoxFit.cover,
-                      image: NetworkImage(
-                          "https://images.pexels.com/photos/396547/pexels-photo-396547.jpeg?auto=compress&cs=tinysrgb&h=350"),
+                      image: widget.meal.imageURL == null
+                          ? NetworkImage(
+                              "https://images.pexels.com/photos/396547/pexels-photo-396547.jpeg?auto=compress&cs=tinysrgb&h=350")
+                          : AssetImage('assets/${widget.meal.imageURL}'),
                     ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(32, 32, 32, 32),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'title',
-                            style: TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                          Text(
-                            'subtitle',
-                            style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w300,
-                                color: Colors.white),
-                          ),
-                        ]),
-                  ),
+                  child: Stack(children: [
+                    Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          gradient: LinearGradient(
+                              begin: FractionalOffset.topCenter,
+                              end: FractionalOffset.bottomCenter,
+                              colors: [
+                                Colors.grey.withOpacity(0.0),
+                                Colors.black.withOpacity(0.9),
+                              ],
+                              stops: [
+                                0.0,
+                                1.0
+                              ])),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 32, 32, 16),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.meal.name,
+                              style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                            Text(
+                              widget.meal.details ?? '',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w300,
+                                  color: Colors.white),
+                            ),
+                          ]),
+                    ),
+                  ]),
                 ),
               ),
               expandedHeight: MediaQuery.of(context).size.width * 9.0 / 16.0,
@@ -154,21 +176,22 @@ class _MealDetailPageState extends State<MealDetailPage> {
                 itemExtent: 300),
           ],
         ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: SafeArea(
-            child: Container(
-              margin: EdgeInsets.only(bottom: 8),
-              width: MediaQuery.of(context).size.width,
-              height: 50,
-              child: new BlackButton(
-                'Add To Cart',
-                cartButtonTapped,
-                subtitle: '${widget.meal.price}',
+        if (!shouldHideBlackButton)
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: SafeArea(
+              child: Container(
+                margin: EdgeInsets.only(bottom: 8),
+                width: MediaQuery.of(context).size.width,
+                height: 50,
+                child: new BlackButton(
+                  'Add To Cart',
+                  cartButtonTapped,
+                  subtitle: '${widget.meal.price}',
+                ),
               ),
             ),
           ),
-        ),
       ]),
     );
   }
@@ -180,18 +203,42 @@ class _MealDetailPageState extends State<MealDetailPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Special Instructions:'),
-          // SizedBox(height: 8),
-          TextButton(
-              onPressed: () {
-                print('go to special instruction');
-              },
-              child: Text(
-                'Special instructions?',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey,
-                ),
-              )),
+          SizedBox(height: 8),
+          CupertinoTextField(
+            placeholder: 'Any Special Instructions?',
+            controller: instructionTextController,
+            onTap: () {
+              print('did tappp ta3pp tapp ');
+              setState(() {
+                shouldHideBlackButton = true;
+              });
+            },
+            onEditingComplete: () {
+              setState(() {
+                FocusScopeNode currentFocus = FocusScope.of(context);
+
+                if (!currentFocus.hasPrimaryFocus) {
+                  currentFocus.unfocus();
+                }
+                shouldHideBlackButton = false;
+                if (instructionTextController.text != '') {
+                  print('hey');
+                  widget.meal.instruction = instructionTextController.text;
+                }
+              });
+            },
+          ),
+          // TextButton(
+          //     onPressed: () {
+          //       print('go to special instruction');
+          //     },
+          //     child: Text(
+          //       'Special instructions?',
+          //       style: TextStyle(
+          //         fontSize: 16,
+          //         color: Colors.grey,
+          //       ),
+          //     )),
           SizedBox(
             height: 16,
           ),
@@ -200,11 +247,26 @@ class _MealDetailPageState extends State<MealDetailPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.add),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      widget.meal.quantity++;
+                    });
+                  },
+                  child: Icon(Icons.add),
+                ),
                 SizedBox(width: 16),
-                Text('1'),
+                Text(widget.meal.quantity.toString()),
                 SizedBox(width: 16),
-                Icon(Icons.remove),
+                GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        if (widget.meal.quantity > 1) {
+                          widget.meal.quantity--;
+                        }
+                      });
+                    },
+                    child: Icon(Icons.remove)),
               ],
             ),
           )
