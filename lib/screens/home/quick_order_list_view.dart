@@ -10,7 +10,7 @@ class _QuickOrderListViewState extends State<QuickOrderListView> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text('quick order'),
+      child: Text('Feature Coming Soon ...'),
     );
   }
 }

@@ -152,7 +152,7 @@ class _BookingPanelState extends State<BookingPanel> {
             child: BlackButton('Done', () {
               print('done');
               Navigator.pop(context);
-            }),
+            }, true),
           ),
         ],
       ),

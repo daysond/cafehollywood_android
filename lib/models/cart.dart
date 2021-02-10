@@ -28,7 +28,7 @@ class Cart extends ChangeNotifier {
   Decimal get cartTotal {
     return meals.length == 0
         ? Decimal.parse('0')
-        : meals.map((e) => e.price).toList().reduce((a, b) => a + b);
+        : meals.map((e) => e.totalPrice).toList().reduce((a, b) => a + b);
   }
 
   String get orderTimestamp {

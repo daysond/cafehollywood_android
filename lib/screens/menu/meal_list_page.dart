@@ -82,7 +82,7 @@ class _MealListPageState extends State<MealListPage> {
                               }),
                           expandedHeight: screenSize.width * 9.0 / 16.0,
                           backgroundColor: Colors.white,
-                          title: Text(isShrink ? 'Menu A' : '',
+                          title: Text(isShrink ? widget.menu.menuTitle : '',
                               style: TextStyle(
                                 color: isShrink ? Colors.black : Colors.white,
                               )),
@@ -149,7 +149,7 @@ class _MealListPageState extends State<MealListPage> {
                 width: MediaQuery.of(context).size.width,
                 height: 50,
                 child: Consumer<Cart>(builder: (context, cart, child) {
-                  return BlackButton('View Cart', viewCartButtonHandler,
+                  return BlackButton('View Cart', viewCartButtonHandler, true,
                       subtitle: '\$${cart.cartTotal.toString()}');
                 }),
               ),

@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 
-class BlackButton extends StatelessWidget {
+class BlackButton extends StatefulWidget {
   final String title;
   final void Function() handler;
   String subtitle;
-  BlackButton(this.title, this.handler, {this.subtitle});
+  bool isButtonEnabled;
+  BlackButton(this.title, this.handler, this.isButtonEnabled, {this.subtitle});
+
+  @override
+  _BlackButtonState createState() => _BlackButtonState();
+}
+
+class _BlackButtonState extends State<BlackButton> {
   @override
   Widget build(BuildContext context) {
-    return subtitle == null
+    return widget.subtitle == null
         ? _buildButton()
         : Stack(
             children: [
@@ -23,7 +30,7 @@ class BlackButton extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(right: 16.0),
                   child: Text(
-                    '${subtitle}',
+                    '${widget.subtitle}',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -34,10 +41,10 @@ class BlackButton extends StatelessWidget {
 
   _buildButton() {
     return RaisedButton(
-      onPressed: handler,
-      color: Colors.black,
+      onPressed: widget.isButtonEnabled ? widget.handler : () {},
+      color: widget.isButtonEnabled ? Colors.black : Colors.grey[600],
       child: Text(
-        title,
+        widget.title,
         style: TextStyle(color: Colors.white, fontSize: 18),
       ),
     );

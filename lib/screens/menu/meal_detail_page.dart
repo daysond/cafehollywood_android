@@ -12,14 +12,6 @@ import 'package:cafe_hollywood/screens/shared/black_button.dart';
 class MealDetailPage extends StatefulWidget {
   final Meal meal;
   MealDetailPage(this.meal);
-  // MealDetailPage(Meal meal) {
-  //   // this.meal = meal;
-  //   this.meal = Meal(
-  //       meal.uid, meal.name, meal.price, meal.mealDescription, meal.details,
-  //       preferences: meal.preferences,
-  //       comboMealTag: meal.comboMealTag,
-  //       imageURL: meal.imageURL);
-  // }
 
   @override
   _MealDetailPageState createState() => _MealDetailPageState();
@@ -31,6 +23,7 @@ class _MealDetailPageState extends State<MealDetailPage> {
   bool lastStatus = true;
   double appBarHeight = 0;
   bool shouldHideBlackButton = false;
+  bool shouldEnableCartButton = false;
   bool get isShrink {
     return _scrollController.hasClients &&
         _scrollController.offset > (appBarHeight - kToolbarHeight);
@@ -76,10 +69,52 @@ class _MealDetailPageState extends State<MealDetailPage> {
     });
   }
 
+  void didUpdatePreference() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
     appBarHeight = screenSize.width * 9.0 / 16.0;
+
+    if (widget.meal.preferences == null) {
+      shouldEnableCartButton = true;
+    } else {
+      for (Preference preference in widget.meal.preferences) {
+        if (preference.isRequired) {
+          for (PreferenceItem preferenceItem in preference.preferenceItems) {
+            // if item is selected, stop searching and move onto next
+            if (preferenceItem.isSelected == true) {
+              shouldEnableCartButton = true;
+              break;
+            } else {
+              shouldEnableCartButton = false;
+            }
+          }
+
+          if (shouldEnableCartButton == false) {
+            break;
+          }
+        } else {
+          shouldEnableCartButton = true;
+        }
+      }
+      ;
+    }
+    /*
+        
+   
+        
+        for preference in preferences {
+            
+
+        }
+        
+        addToCartButton.backgroundColor = shouldEnableButton ? .black : .lightGray
+        
+*/
+
     return CupertinoPageScaffold(
       child: Stack(children: [
         CustomScrollView(
@@ -159,8 +194,8 @@ class _MealDetailPageState extends State<MealDetailPage> {
             if (widget.meal.preferences != null)
               SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (context, index) =>
-                      PreferenceTile(widget.meal.preferences[index]),
+                  (context, index) => PreferenceTile(
+                      widget.meal.preferences[index], didUpdatePreference),
                   childCount: widget.meal.preferences.length,
                 ),
                 //  SliverChildListDelegate(
@@ -187,7 +222,8 @@ class _MealDetailPageState extends State<MealDetailPage> {
                 child: new BlackButton(
                   'Add To Cart',
                   cartButtonTapped,
-                  subtitle: '${widget.meal.price}',
+                  shouldEnableCartButton,
+                  subtitle: '${widget.meal.totalPrice}',
                 ),
               ),
             ),

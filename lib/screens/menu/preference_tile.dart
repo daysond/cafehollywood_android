@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:cafe_hollywood/models/preference.dart';
 import 'package:cafe_hollywood/models/preference_item.dart';
 import 'package:cafe_hollywood/screens/menu/item_tile.dart';
@@ -7,7 +6,8 @@ import 'package:flutter/material.dart';
 
 class PreferenceTile extends StatefulWidget {
   final Preference preference;
-  PreferenceTile(this.preference);
+  void Function() updatePage;
+  PreferenceTile(this.preference, this.updatePage);
   @override
   _PreferenceTileState createState() => _PreferenceTileState();
 }
@@ -32,9 +32,6 @@ class _PreferenceTileState extends State<PreferenceTile>
       ..addListener(() {
         setState(() {});
       });
-    // ..addStatusListener((status) {
-    //   print(status);
-    // });
 
     _controller.reverse();
     super.initState();
@@ -52,46 +49,46 @@ class _PreferenceTileState extends State<PreferenceTile>
         .firstWhere((element) => element.uid == uid);
     final int maxPick = widget.preference.maxPick;
     final int maxItemQuantity = widget.preference.maxItemQuantity;
-    setState(() {
-      if (maxPick == 1 && maxItemQuantity == 1) {
-        item.isSelected = !item.isSelected;
 
-        widget.preference.preferenceItems.forEach((item) {
-          if (item.uid != uid) {
-            item.isSelected = false;
-          }
-        });
-      } else if (maxPick == 1 && maxItemQuantity > 1) {
-        item.isSelected = true;
-      } else {
-        // maxPick = items.length, maxItemQuantity = 1
-        item.isSelected = !item.isSelected;
-      }
-    });
+    if (maxPick == 1 && maxItemQuantity == 1) {
+      item.isSelected = !item.isSelected;
+
+      widget.preference.preferenceItems.forEach((item) {
+        if (item.uid != uid) {
+          item.isSelected = false;
+        }
+      });
+    } else if (maxPick == 1 && maxItemQuantity > 1) {
+      item.isSelected = true;
+    } else {
+      // maxPick = items.length, maxItemQuantity = 1
+      item.isSelected = !item.isSelected;
+    }
+
+    widget.updatePage();
   }
 
   void itemDidChangeQuantity(String uid, bool increased) {
-    print('item did change q');
     PreferenceItem item = widget.preference.preferenceItems
         .firstWhere((element) => element.uid == uid);
-    setState(() {
-      switch (increased) {
-        case true:
-          {
-            item.quantity++;
+
+    switch (increased) {
+      case true:
+        {
+          item.quantity++;
+        }
+        break;
+      case false:
+        {
+          if (item.quantity == 1) {
+            item.isSelected = false;
+          } else if (item.quantity > 1) {
+            item.quantity--;
           }
-          break;
-        case false:
-          {
-            if (item.quantity == 1) {
-              item.isSelected = false;
-            } else if (item.quantity > 1) {
-              item.quantity--;
-            }
-          }
-          break;
-      }
-    });
+        }
+        break;
+    }
+    widget.updatePage();
   }
 
   @override
@@ -102,7 +99,9 @@ class _PreferenceTileState extends State<PreferenceTile>
         backgroundColor: Colors.grey[200],
         initiallyExpanded: true,
         title: Text(
-          widget.preference.name,
+          widget.preference.isRequired
+              ? widget.preference.name + ' (Required)'
+              : widget.preference.name,
           style: TextStyle(color: Colors.black),
         ),
         trailing: Transform.rotate(

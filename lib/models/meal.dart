@@ -32,4 +32,79 @@ class Meal {
     newMeal.quantity = meal.quantity;
     return newMeal;
   }
+
+  Decimal get addonPrice {
+    if (preferences == null) {
+      return Decimal.parse('0');
+    }
+    Decimal total = Decimal.parse('0');
+    preferences.forEach((preference) {
+      preference.preferenceItems.forEach((item) {
+        if (item.isSelected && item.price != null) {
+          total = total + item.price * Decimal.parse(item.quantity.toString());
+        }
+      });
+    });
+    return total;
+  }
+
+  Decimal get totalPrice {
+    return (addonPrice + price) * Decimal.parse(quantity.toString());
+  }
+
+  String get addOnInfo {
+    String addOnDetails = '';
+    if (preferences == null) {
+      return addOnDetails;
+    } else {
+      preferences.forEach((preference) {
+        preference.preferenceItems.forEach((item) {
+          if (item.isSelected) {
+            addOnDetails = item.quantity == 1
+                ? "${addOnDetails}${item.name}"
+                : "${addOnDetails}${item.quantity} ${item.name}";
+
+            addOnDetails = item.price == null
+                ? "${addOnDetails}\n"
+                : "${addOnDetails} (\$${item.price * Decimal.parse(item.quantity.toString())}\n";
+          }
+        });
+      });
+    }
+  }
+
+  String get addOnDescription {
+    String addOnDetails = "";
+
+    if (preferences == null) {
+      return addOnDetails;
+    } else {
+      preferences.forEach((preference) {
+        preference.preferenceItems.forEach((item) {
+          if (item.isSelected) {
+            addOnDetails = item.quantity == 1
+                ? "${addOnDetails}${item.itemDescription}"
+                : "${addOnDetails}${item.quantity} ${item.itemDescription}";
+
+            addOnDetails = item.price == null
+                ? "${addOnDetails}\n"
+                : "${addOnDetails} (\$${item.price * Decimal.parse(item.quantity.toString())})\n";
+          }
+        });
+      });
+
+      return addOnDetails.trimRight();
+    }
+  }
 }
+
+/*
+
+    
+    
+    var addOnDescription: String {
+
+    }
+
+
+*/
