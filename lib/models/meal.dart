@@ -30,6 +30,7 @@ class Meal {
         isBogo: meal.isBogo,
         preferences: meal.preferences.map((e) => e.copy(e)).toList());
     newMeal.quantity = meal.quantity;
+    newMeal.instruction = meal.instruction;
     return newMeal;
   }
 
@@ -66,10 +67,11 @@ class Meal {
 
             addOnDetails = item.price == null
                 ? "${addOnDetails}\n"
-                : "${addOnDetails} (\$${item.price * Decimal.parse(item.quantity.toString())}\n";
+                : "${addOnDetails} (\$${item.price * Decimal.parse(item.quantity.toString())})\n";
           }
         });
       });
+      return addOnDetails;
     }
   }
 

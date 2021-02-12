@@ -13,11 +13,13 @@ class MealTile extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         print(meal.name);
-        Navigator.push(context,
-            CupertinoPageRoute(builder: (context) => MealDetailPage(meal)));
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (context) => MealDetailPage(meal, true)));
       },
       child: Card(
-          margin: EdgeInsets.fromLTRB(10, 6, 20, 0),
+          margin: EdgeInsets.fromLTRB(8, 8, 8, 0),
           child: Row(
             children: [
               Expanded(
@@ -35,7 +37,7 @@ class MealTile extends StatelessWidget {
                       Text(meal.details ?? '', style: TextStyle(fontSize: 16)),
                       SizedBox(height: 8),
                       if (meal.price.toString() != '0')
-                        Text('\$${meal.price.toString() ?? ''}',
+                        Text('\$${meal.price.toStringAsFixed(2) ?? ''}',
                             style: TextStyle(fontSize: 16)),
                       if (meal.price.toString() == '0') SizedBox(height: 8),
                     ],
@@ -44,6 +46,7 @@ class MealTile extends StatelessWidget {
               ),
               if (meal.imageURL != null)
                 Container(
+                  margin: EdgeInsets.only(right: 8),
                   height: 80,
                   width: 80,
                   decoration: BoxDecoration(

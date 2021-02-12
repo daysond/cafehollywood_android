@@ -1,5 +1,6 @@
 import 'package:cafe_hollywood/models/meal.dart';
 import 'package:cafe_hollywood/models/menu.dart';
+import 'package:cafe_hollywood/screens/cart/cart_page.dart';
 import 'package:cafe_hollywood/screens/menu/meal_tile.dart';
 import 'package:cafe_hollywood/screens/shared/black_button.dart';
 import 'package:cafe_hollywood/services/fs_service.dart';
@@ -50,6 +51,26 @@ class _MealListPageState extends State<MealListPage> {
 
   void viewCartButtonHandler() {
     // setState(() {});
+
+    Navigator.of(context).push(
+      CupertinoPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => CartPage(),
+      ),
+    );
+    // showModalBottomSheet(
+    //     isScrollControlled: true,
+    //     shape: RoundedRectangleBorder(
+    //       borderRadius: BorderRadius.circular(8),
+    //     ),
+    //     context: context,
+    //     builder: (context) {
+    //       return SafeArea(
+    //           child: Padding(
+    //         padding: const EdgeInsets.only(top: 32.0),
+    //         child: CartPage(),
+    //       ));
+    //     });
     print('view cart ${Cart().meals.length} ${Cart().cartTotal}');
   }
 
@@ -150,7 +171,7 @@ class _MealListPageState extends State<MealListPage> {
                 height: 50,
                 child: Consumer<Cart>(builder: (context, cart, child) {
                   return BlackButton('View Cart', viewCartButtonHandler, true,
-                      subtitle: '\$${cart.cartTotal.toString()}');
+                      subtitle: '\$${cart.cartSubtotal.toStringAsFixed(2)}');
                 }),
               ),
             ),

@@ -8,6 +8,7 @@ class Cart extends ChangeNotifier {
   Cart._internal() {
     _instance = this;
   }
+
   factory Cart() => _instance ?? Cart._internal();
 
   List<Meal> meals = [];
@@ -17,18 +18,22 @@ class Cart extends ChangeNotifier {
     return Decimal.parse('0');
   }
 
+  Decimal get promotionAmount {
+    return Decimal.parse('0');
+  }
+
   Decimal get cartSubtotal {
-    return Decimal.parse('0');
-  }
-
-  Decimal get cartTaxes {
-    return Decimal.parse('0');
-  }
-
-  Decimal get cartTotal {
     return meals.length == 0
         ? Decimal.parse('0')
         : meals.map((e) => e.totalPrice).toList().reduce((a, b) => a + b);
+  }
+
+  Decimal get cartTaxes {
+    return cartSubtotal * Decimal.parse(0.13.toString());
+  }
+
+  Decimal get cartTotal {
+    return cartSubtotal + cartTaxes;
   }
 
   String get orderTimestamp {
@@ -51,6 +56,16 @@ class Cart extends ChangeNotifier {
     meals.add(meal);
     notifyListeners();
     print('meal added!');
+  }
+
+  void removeMeal(Meal meal) {
+    meals.remove(meal);
+    notifyListeners();
+    print('removdddd');
+  }
+
+  void didUpdateCart() {
+    notifyListeners();
   }
 
   void resetCart() {

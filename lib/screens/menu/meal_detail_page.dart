@@ -11,7 +11,9 @@ import 'package:cafe_hollywood/screens/shared/black_button.dart';
 
 class MealDetailPage extends StatefulWidget {
   final Meal meal;
-  MealDetailPage(this.meal);
+  final bool isNewMeal;
+
+  MealDetailPage(this.meal, this.isNewMeal);
 
   @override
   _MealDetailPageState createState() => _MealDetailPageState();
@@ -51,10 +53,14 @@ class _MealDetailPageState extends State<MealDetailPage> {
   }
 
   void cartButtonTapped() {
-    print('adding to cart');
-    Meal newMeal = widget.meal.copy(widget.meal);
-    Cart().addMealToCart(newMeal);
-    resetMeal();
+    if (widget.isNewMeal) {
+      Meal newMeal = widget.meal.copy(widget.meal);
+      Cart().addMealToCart(newMeal);
+      resetMeal();
+    } else {
+      Cart().didUpdateCart();
+    }
+
     Navigator.pop(context);
   }
 
@@ -102,18 +108,11 @@ class _MealDetailPageState extends State<MealDetailPage> {
       }
       ;
     }
-    /*
-        
-   
-        
-        for preference in preferences {
-            
+    print(widget.meal.instruction);
 
-        }
-        
-        addToCartButton.backgroundColor = shouldEnableButton ? .black : .lightGray
-        
-*/
+    if (!widget.isNewMeal && widget.meal.instruction != null) {
+      instructionTextController.text = widget.meal.instruction;
+    }
 
     return CupertinoPageScaffold(
       child: Stack(children: [
@@ -198,8 +197,6 @@ class _MealDetailPageState extends State<MealDetailPage> {
                       widget.meal.preferences[index], didUpdatePreference),
                   childCount: widget.meal.preferences.length,
                 ),
-                //  SliverChildListDelegate(
-                //     mealList.map((meal) => MealTile(meal)).toList()),
               ),
             SliverFixedExtentList(
                 delegate: SliverChildBuilderDelegate(
@@ -220,10 +217,10 @@ class _MealDetailPageState extends State<MealDetailPage> {
                 width: MediaQuery.of(context).size.width,
                 height: 50,
                 child: new BlackButton(
-                  'Add To Cart',
+                  widget.isNewMeal ? 'Add To Cart' : 'Update Cart',
                   cartButtonTapped,
                   shouldEnableCartButton,
-                  subtitle: '${widget.meal.totalPrice}',
+                  subtitle: '\$${widget.meal.totalPrice.toStringAsFixed(2)}',
                 ),
               ),
             ),
@@ -244,7 +241,6 @@ class _MealDetailPageState extends State<MealDetailPage> {
             placeholder: 'Any Special Instructions?',
             controller: instructionTextController,
             onTap: () {
-              print('did tappp ta3pp tapp ');
               setState(() {
                 shouldHideBlackButton = true;
               });
@@ -258,7 +254,6 @@ class _MealDetailPageState extends State<MealDetailPage> {
                 }
                 shouldHideBlackButton = false;
                 if (instructionTextController.text != '') {
-                  print('hey');
                   widget.meal.instruction = instructionTextController.text;
                 }
               });
@@ -279,7 +274,7 @@ class _MealDetailPageState extends State<MealDetailPage> {
             height: 16,
           ),
           Padding(
-            padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+            padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -305,7 +300,22 @@ class _MealDetailPageState extends State<MealDetailPage> {
                     child: Icon(Icons.remove)),
               ],
             ),
-          )
+          ),
+          if (!widget.isNewMeal)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: FlatButton(
+                  onPressed: () {
+                    Cart().removeMeal(widget.meal);
+                    Navigator.pop(context);
+                    print('removing');
+                  },
+                  child: Text(
+                    'Remove Item',
+                    style: TextStyle(color: Colors.red),
+                  )),
+            ),
+          SizedBox(height: 16),
         ],
       ),
     );

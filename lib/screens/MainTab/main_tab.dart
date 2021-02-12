@@ -65,7 +65,7 @@ class _MainTabHomeState extends State<MainTabHome> {
                   case 1: //Menu
                     return MenuPage();
                   case 3: //Cart
-                    return PickerPage();
+                    return CartPage();
                   case 4: //Order History
                     return OrderHistoryPage();
 
