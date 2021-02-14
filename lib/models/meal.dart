@@ -1,4 +1,7 @@
+import 'package:cafe_hollywood/models/enums/combo_type.dart';
+import 'package:cafe_hollywood/models/meal_info.dart';
 import 'package:cafe_hollywood/models/preference.dart';
+import 'package:cafe_hollywood/models/preference_item.dart';
 import 'package:decimal/decimal.dart';
 
 class Meal {
@@ -11,11 +14,9 @@ class Meal {
   int comboMealTag;
   bool isBogo = false;
   String instruction;
-
+  ComboType comboType;
   List<Preference> preferences;
-  //combo type
-  //is favourite
-  //combo tag ?
+
   bool isSelected = false;
   int quantity = 1;
 
@@ -32,6 +33,27 @@ class Meal {
     newMeal.quantity = meal.quantity;
     newMeal.instruction = meal.instruction;
     return newMeal;
+  }
+
+  int get comboTag {
+    if (comboMealTag != null) {
+      return comboMealTag;
+    } else {
+      if (preferences == null) {
+        return null;
+      } else {
+        preferences.forEach((preference) {
+          if (preference.isRequired) {
+            for (PreferenceItem item in preference.preferenceItems) {
+              if (item.isSelected && item.comboTag != null) {
+                return item.comboTag;
+              }
+            }
+          }
+        });
+      }
+      return null;
+    }
   }
 
   Decimal get addonPrice {
@@ -98,10 +120,48 @@ class Meal {
       return addOnDetails.trimRight();
     }
   }
+
+  Map<String, dynamic> get representation {
+    return {
+      "uid": uid,
+      "name": name,
+      "instruction": instruction ?? "",
+      "quantity": quantity,
+      "totalPrice": totalPrice.toDouble(),
+      "addOnInfo": addOnInfo,
+      "description": mealDescription,
+      "addOnDescription": addOnDescription,
+      if (comboTag != null) 'comboTag': comboTag,
+      if (comboType != null) 'comboType': comboType.rawValue,
+    };
+  }
 }
 
 /*
-
+      var representation: [String : Any] {
+        
+        var rep: [String: Any] = [
+            "uid": uid,
+            "name": name,
+            "instruction" : instruction ?? "",
+            "quantity" : quantity,
+            "totalPrice" : totalPrice.amount,
+            "addOnInfo" : addOnInfo,
+            "description": mealDescription,
+            "addOnDescription": addOnDescription,
+            
+        ]
+        
+        if comboTag != nil {
+            rep["comboTag"] = comboTag
+        }
+        
+        if comboType != nil {
+            rep["comboType"] = comboType?.rawValue
+        }
+        
+        return rep
+    }
     
     
     var addOnDescription: String {

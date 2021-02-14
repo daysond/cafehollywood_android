@@ -1,5 +1,6 @@
 import 'package:cafe_hollywood/models/custom_option.dart';
 import 'package:cafe_hollywood/screens/cart/checkout_option_tile.dart';
+import 'package:cafe_hollywood/services/fs_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cafe_hollywood/screens/shared/black_button.dart';
@@ -13,18 +14,100 @@ class CheckoutPage extends StatefulWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
-  void handlePlaceOrder() {}
+  final instructionTextController = TextEditingController();
+  void handlePlaceOrder() async {
+    await FSService().placeOrder();
+
+    // Navigator.pop(context);
+    Navigator.popUntil(context, (Route<dynamic> route) => route.isFirst);
+    Cart().resetCart();
+  }
+
+  void handleNotesTapped(CustomOption option) {
+    if (option.subTitle != '(Any food alergy?)') {
+      print(option.subTitle);
+      instructionTextController.text = option.subTitle;
+    }
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+              // color: Colors.red,
+              child: Padding(
+            padding: const EdgeInsets.only(left: 16.0, right: 16, top: 16),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Flexible(
+                child: CupertinoTextField(
+                  controller: instructionTextController,
+                  autofocus: true,
+                  maxLines: 8,
+                  placeholder: 'Special Instructions',
+                ),
+              ),
+              SizedBox(height: 8),
+              Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    FlatButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('Cancel')),
+                    FlatButton(
+                        onPressed: () {
+                          if (instructionTextController.text != '') {
+                            setState(() {
+                              Cart().orderNote = instructionTextController.text;
+                              option.subTitle = Cart().orderNote;
+                            });
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: Text('Done'))
+                  ])
+            ]),
+          ));
+        });
+  }
 
   void handleOptionTap(CustomOption option) {
-    print(option.mainImageName);
+    setState(() {
+      switch (option.optionType) {
+        case OptionType.utensil:
+          Cart().needsUtensil = !Cart().needsUtensil;
+          option.subTitle =
+              !Cart().needsUtensil ? 'No. Thanks!' : 'Yes please!';
+          break;
+        case OptionType.scheduler:
+          print('schedule tapped');
+          break;
+        case OptionType.note:
+          print('note tapped');
+          handleNotesTapped(option);
+
+          // opens a modal sheet for note input
+          break;
+        default:
+          break;
+      }
+    });
   }
 
   CustomOption cutlery = CustomOption(
-      'UTENSILS, STRAWS, ETC', 'cutlery', 'Yes please!', OptionType.utensil);
+      'UTENSILS, STRAWS, ETC',
+      'cutlery',
+      Cart().needsUtensil == true ? 'Yes please!' : 'No. Thanks!',
+      OptionType.utensil);
   CustomOption pickupTime =
       CustomOption('PICK UP TIME', 'clock', 'Now', OptionType.scheduler);
-  CustomOption note =
-      CustomOption('NOTE', 'notes', '(Any food alergy?)', OptionType.note);
+  CustomOption note = CustomOption(
+      'NOTE',
+      'notes',
+      Cart().orderNote == null || Cart().orderNote == ''
+          ? '(Any food alergy?)'
+          : Cart().orderNote,
+      OptionType.note);
 
   @override
   Widget build(BuildContext context) {

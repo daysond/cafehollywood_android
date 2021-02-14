@@ -10,7 +10,6 @@ class CartItemTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        print(meal.name);
         Navigator.push(
             context,
             CupertinoPageRoute(

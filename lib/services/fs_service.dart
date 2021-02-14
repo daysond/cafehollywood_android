@@ -1,11 +1,25 @@
+import 'package:cafe_hollywood/models/cart.dart';
 import 'package:cafe_hollywood/models/menu.dart';
+import 'package:cafe_hollywood/services/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cafe_hollywood/models/preference.dart';
 import 'package:cafe_hollywood/models/preference_item.dart';
 import 'package:decimal/decimal.dart';
 import 'package:cafe_hollywood/models/meal.dart';
+import 'dart:math';
 
 class FSService {
+  String randomString(int strlen) {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    Random rnd = new Random(new DateTime.now().millisecondsSinceEpoch);
+    String result = "";
+    for (var i = 0; i < strlen; i++) {
+      result += chars[rnd.nextInt(chars.length)];
+    }
+    return result;
+  }
+
   Stream<List<Menu>> get drinkMenuSnapshots {
     print('getting drink menu');
     return FirebaseFirestore.instance
@@ -58,7 +72,7 @@ class FSService {
     return doc.get().then((value) async {
       if (value.data() != null) {
         final data = value.data();
-        print('tag: ${data['detail']}');
+
         var meal = Meal(
             value.id,
             data['name'],
@@ -135,4 +149,78 @@ class FSService {
       }
     });
   }
+
+  Future placeOrder() async {
+    final String orderID = randomString(6);
+    final customerID = AuthService().currentUserID ?? 'newUser';
+    print('placing order ${orderID}');
+    var orderRef =
+        FirebaseFirestore.instance.collection('onlineOrders').doc(orderID);
+    return orderRef.set(Cart().representation);
+  }
 }
+
+/*
+    func placeOrder(completion: @escaping (Error?) -> Void) {
+        //DATA
+        let orderID = String.randomString(length: 6)
+        let customerID = Cart.shared.representation["customerID"] as! String
+        let group = DispatchGroup()
+        var err: Error?
+        
+        // send order
+        let ordersRef = onlineOrdersRef.document(orderID)
+        
+        let activeOrderRef = databaseRef.collection("activeOrders").document(orderID)
+        
+        let customerActiveOrderRef = databaseRef.collection("customers").document(customerID).collection("activeOrders").document(orderID)
+        
+        group.enter()
+        
+        //        databaseRef.collection("orders").order(by: "timestamp").limit(to: 5)
+        
+        
+        
+        ordersRef.setData(Cart.shared.representation) { (error) in
+            guard error == nil else {
+                ordersRef.delete()
+                err = error
+                group.leave()
+                return
+            }
+            group.leave()
+        }
+        //TODO: NEED TO FIX THIS ...
+        guard err == nil else { completion(err); return } // if err, exti the function ,if no error continue to notify res and cus
+        
+        group.enter()
+        
+        customerActiveOrderRef.setData(["status": OrderStatus.unconfirmed.rawValue, "timestamp": Cart.shared.orderTimestamp]) { (error) in
+            err = error
+            group.leave()
+        }
+        
+        group.enter()
+        
+        activeOrderRef.setData([:]) { (error) in
+            err = error
+            group.leave()
+        }
+        
+        
+        group.notify(queue: .main) {
+            
+            guard err == nil else {
+                ordersRef.delete()
+                customerActiveOrderRef.delete()
+                activeOrderRef.delete()
+                completion(err)
+                return
+            }
+            
+            completion(err)
+        }
+        
+    }
+
+ */

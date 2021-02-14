@@ -5,9 +5,7 @@ import 'package:cafe_hollywood/models/meal.dart';
 
 class MealTile extends StatelessWidget {
   final Meal meal;
-  MealTile(this.meal) {
-    debugPrint('init: ${meal.name} image ${meal.imageURL}');
-  }
+  MealTile(this.meal);
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

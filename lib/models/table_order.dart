@@ -1,13 +1,5 @@
-enum OrderStatus {
-  cancelled,
-  unconfirmed,
-  confirmed,
-  ready,
-  completed,
-//    case sent = 5
-  scheduled,
-  scheduledConfirmed,
-}
+
+import 'package:cafe_hollywood/models/enums/order_status.dart';
 
 class TableOrder {
   String orderID;

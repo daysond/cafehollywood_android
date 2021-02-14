@@ -1,6 +1,9 @@
 import 'package:cafe_hollywood/models/meal.dart';
+import 'package:cafe_hollywood/models/table_order.dart';
+import 'package:cafe_hollywood/services/app_setting.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/foundation.dart';
+import 'package:cafe_hollywood/models/enums/order_status.dart';
 
 class Cart extends ChangeNotifier {
   static Cart _instance;
@@ -14,6 +17,7 @@ class Cart extends ChangeNotifier {
   List<Meal> meals = [];
   Map<String, String> giftOptionContent = {};
   Meal selectedGiftOption;
+
   Decimal get discountAmount {
     return Decimal.parse('0');
   }
@@ -37,16 +41,16 @@ class Cart extends ChangeNotifier {
   }
 
   String get orderTimestamp {
-    return 'Date.timestamp';
+    return DateTime.now().millisecondsSinceEpoch.toString();
   }
 
-  String orderNote = '';
+  String orderNote;
 
-  String pickupTime = '';
+  String pickupTime;
 
-  String pickupDate = '';
+  String pickupDate;
 
-  bool needUtensil = true;
+  bool needsUtensil = true;
 
   bool get isEmpty {
     return meals.isEmpty;
@@ -69,13 +73,15 @@ class Cart extends ChangeNotifier {
   }
 
   void resetCart() {
-    //   Cart.shared.meals.removeAll()
-    // Cart.shared.orderNote = ""
-    // Cart.shared.pickupTime = nil
-    // Cart.shared.selectedGiftOption = nil
-    // Cart.shared.giftOptionContent = nil
-    // Cart.shared.promotion = nil
-    // Cart.shared.needsUtensil = true
+    meals = [];
+    pickupDate = null;
+    pickupTime = null;
+    needsUtensil = true;
+    giftOptionContent = {};
+    selectedGiftOption = null;
+    orderNote = null;
+
+    notifyListeners();
   }
 
   void removeGiftOption() {
@@ -88,24 +94,28 @@ class Cart extends ChangeNotifier {
   }
 
   Map get representation {
-    Map rep = {};
-    //     var rep: [String: Any] = [
+    List mealsInfo = meals.map((e) => e.representation).toList();
 
-    //     "customerID": APPSetting.customerUID,
-    //     "customerName": APPSetting.customerName,
-    //     "customerPhoneNumber": APPSetting.customerPhoneNumber,
-    //     "subtotal": cartSubtotal.amount,
-    //     "total": cartTotal.amount,
-    //     "taxes": cartTaxes.amount,
-    //     "discount": discountAmount?.amount ?? 0,
-    //     "promotion": promotion?.amount ?? 0,
-    //     "orderNote": orderNote,
-    //     "orderTimestamp": orderTimestamp,
-    //     "status": pickupTime == nil ? OrderStatus.unconfirmed.rawValue : OrderStatus.scheduled.rawValue,
-    //     "mealsInfo": mealsInfo,
-    //     "needsUtensil": needsUtensil,
+    meals.forEach((meal) {});
+    Map<String, dynamic> rep = {
+      "customerID": APPSetting().customerUID,
+      "customerName": APPSetting().customerName,
+      "customerPhoneNumber": APPSetting().customerPhoneNumber,
+      "subtotal": cartSubtotal.toDouble(),
+      "total": cartTotal.toDouble(),
+      "taxes": cartTaxes.toDouble(),
+      "discount": discountAmount.toDouble(),
+      "promotion": promotionAmount.toDouble(),
+      "orderNote": orderNote,
+      "orderTimestamp": orderTimestamp,
+      "status": pickupTime == null
+          ? OrderStatus.unconfirmed.rawValue
+          : OrderStatus.scheduled.rawValue,
+      "mealsInfo": mealsInfo,
+      "needsUtensil": needsUtensil,
+    };
 
-    // ]
+    return rep;
 
     // if self.pickupTime != nil {
     //     rep["pickupTime"] = pickupTime!
@@ -118,7 +128,6 @@ class Cart extends ChangeNotifier {
     // if self.giftOptionContent != nil {
     //     rep["giftOptionContent"] = giftOptionContent!
     // }
-    return rep;
   }
 }
 

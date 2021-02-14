@@ -1,3 +1,4 @@
+import 'package:cafe_hollywood/models/enums/order_status.dart';
 import 'package:cafe_hollywood/models/table_order.dart';
 
 class Table {

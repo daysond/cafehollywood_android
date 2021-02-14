@@ -58,20 +58,6 @@ class _MealListPageState extends State<MealListPage> {
         builder: (context) => CartPage(),
       ),
     );
-    // showModalBottomSheet(
-    //     isScrollControlled: true,
-    //     shape: RoundedRectangleBorder(
-    //       borderRadius: BorderRadius.circular(8),
-    //     ),
-    //     context: context,
-    //     builder: (context) {
-    //       return SafeArea(
-    //           child: Padding(
-    //         padding: const EdgeInsets.only(top: 32.0),
-    //         child: CartPage(),
-    //       ));
-    //     });
-    print('view cart ${Cart().meals.length} ${Cart().cartTotal}');
   }
 
   @override

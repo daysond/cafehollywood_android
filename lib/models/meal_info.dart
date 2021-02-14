@@ -1,9 +1,7 @@
+import 'package:cafe_hollywood/models/enums/combo_type.dart';
 import 'package:decimal/decimal.dart';
 
-enum ComboType {
-  drink,
-  wing,
-}
+
 
 class MealInfo {
   final String mealInfoID;

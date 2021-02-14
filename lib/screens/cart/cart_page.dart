@@ -18,11 +18,27 @@ class _CartPageState extends State<CartPage> {
         context, CupertinoPageRoute(builder: (context) => CheckoutPage()));
   }
 
+  void updatePage() {
+    print('cart page being called');
+    if (!mounted) return;
+    // if (Cart().meals.isEmpty) {
+    //   Navigator.pop(context);
+    //   return;
+    // }
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    print('cart disposed');
+    Cart().removeListener(updatePage);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    Cart().addListener(() {
-      setState(() {});
-    });
+    Cart().addListener(updatePage);
     // return CupertinoPageScaffold(child: CustomScrollView());
     return CupertinoPageScaffold(
         child: SafeArea(
