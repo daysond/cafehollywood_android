@@ -1,13 +1,17 @@
 import 'dart:math';
+import 'package:cafe_hollywood/screens/OrderHistory/order_history_wrapper.dart';
+import 'package:cafe_hollywood/services/fs_service.dart';
 import 'package:cafe_hollywood/test.dart';
 import 'package:cafe_hollywood/screens/OrderHistory/order_page.dart';
 import 'package:cafe_hollywood/screens/cart/cart_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cafe_hollywood/screens/home/home.dart';
 import 'package:cafe_hollywood/screens/menu/menuPage.dart';
+import 'package:provider/provider.dart';
 
 class MainTabBar extends StatelessWidget {
   @override
@@ -29,7 +33,10 @@ class MainTabHome extends StatefulWidget {
 class _MainTabHomeState extends State<MainTabHome> {
   bool isButtonsCollapsed = true;
   bool isButtonHidden = true;
-
+  HomePage home = HomePage();
+  MenuPage menuPage = MenuPage();
+  CartPage cartPage = CartPage();
+  OrderHistoryPage orderHistoryPage = OrderHistoryPage();
   @override
   Widget build(BuildContext context) {
     double radius = MediaQuery.of(context).size.shortestSide * 0.5;
@@ -58,16 +65,20 @@ class _MainTabHomeState extends State<MainTabHome> {
               ],
             ),
             tabBuilder: (context, index) {
+              print('building*********************************************');
               return CupertinoTabView(builder: (context) {
                 switch (index) {
                   case 0: //Home
-                    return HomePage();
+                    return home;
                   case 1: //Menu
-                    return MenuPage();
+                    return menuPage;
                   case 3: //Cart
-                    return CartPage();
+                    return cartPage;
                   case 4: //Order History
-                    return OrderHistoryPage();
+                    return orderHistoryPage;
+                  // return StreamProvider<QuerySnapshot>.value(
+                  //     value: FSService().activeOrderSnapshots,
+                  //     child: OrderHistoryPage());
 
                   // default:
                   //   return CupertinoPageScaffold(

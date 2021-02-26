@@ -17,6 +17,30 @@ enum OrderStatus {
 //     case scheduledConfirmed = 7
 
 extension OrderStatusExt on OrderStatus {
+  static OrderStatus statusFromRawValue(int rawValue) {
+    switch (rawValue) {
+      case 1:
+        return OrderStatus.unconfirmed;
+      case 2:
+        return OrderStatus.confirmed;
+      case 3:
+        return OrderStatus.ready;
+      case 4:
+        return OrderStatus.completed;
+      case 0:
+        return OrderStatus.cancelled;
+//        case .sent:
+//            return "Sent"
+      case 6:
+        return OrderStatus.scheduled;
+
+      case 7:
+        return OrderStatus.scheduledConfirmed;
+      default:
+        return null;
+    }
+  }
+
   int get rawValue {
     switch (this) {
       case OrderStatus.unconfirmed:

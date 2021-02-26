@@ -6,6 +6,17 @@ enum ComboType {
 }
 
 extension ComboTypeExt on ComboType {
+  static ComboType comboTypeFromRawValue(int rawValue) {
+    switch (rawValue) {
+      case 1:
+        return ComboType.wing;
+      case 0:
+        return ComboType.drink;
+      default:
+        return null;
+    }
+  }
+
   int get rawValue {
     switch (this) {
       case ComboType.drink:

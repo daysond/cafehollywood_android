@@ -138,7 +138,6 @@ class _MealListPageState extends State<MealListPage> {
                             childCount: snapshot.data.length,
                           ),
                         ),
-                        // ),
                       ],
                     ),
                   );
