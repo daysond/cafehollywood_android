@@ -1,6 +1,8 @@
+import 'package:cafe_hollywood/models/enums/order_status.dart';
 import 'package:cafe_hollywood/models/meal_info.dart';
 import 'package:cafe_hollywood/models/receipt.dart';
 import 'package:cafe_hollywood/screens/shared/black_button.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -14,7 +16,10 @@ class ReceiptTile extends StatefulWidget {
 
 class _ReceiptTileState extends State<ReceiptTile> {
   void showReceiptDetail() {}
+
   Widget _buildHeader() {
+    var date = DateTime.fromMicrosecondsSinceEpoch(
+        int.parse(widget.receipt.orderTimestamp) * 1000);
     return Container(
       color: Colors.black,
       child: Padding(
@@ -23,11 +28,14 @@ class _ReceiptTileState extends State<ReceiptTile> {
           children: [
             Text(
               'Cafe Hollywood',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500),
             ),
             SizedBox(height: 8),
             Text(
-              '${widget.receipt.orderTimestamp} Order# ${widget.receipt.orderID}',
+              '${date.year}-${date.month}-${date.day} ${date.hour}:${date.minute}  Order# ${widget.receipt.orderID}',
               style: TextStyle(color: Colors.white),
             ),
             SizedBox(height: 8),
@@ -36,12 +44,12 @@ class _ReceiptTileState extends State<ReceiptTile> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'image',
+                    '${widget.receipt.status.image}',
                     style: TextStyle(color: Colors.white),
                   ),
                   SizedBox(width: 8),
                   Text(
-                    'status',
+                    '${widget.receipt.status.status}',
                     style: TextStyle(color: Colors.white),
                   ),
                 ],

@@ -46,22 +46,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   }
 
   @override
-  void initState() {
-    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-    // TODO: implement initState
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    print('mama\'s here');
-    // TODO: implement dispose
-    super.dispose();
-  }
-
-  @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
     final changeSnapshot = Provider.of<QuerySnapshot>(context);
     futureOrders = fetchOrder(changeSnapshot);
 
@@ -99,19 +84,21 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
             },
             body: new TabBarView(children: [
               // child: UpcomingOrderPage(widget.orders)
-              FutureBuilder<List<Receipt>>(
-                future: futureOrders,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    print('TAG X ${snapshot.hasData}');
-                    return UpcomingOrderPage(snapshot.data);
-                  } else {
-                    print('TAG Y ${snapshot.hasData}');
-                    return Center(
-                      child: Text('loading'),
-                    );
-                  }
-                },
+              SafeArea(
+                child: FutureBuilder<List<Receipt>>(
+                  future: futureOrders,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      print('TAG X ${snapshot.hasData}');
+                      return UpcomingOrderPage(snapshot.data);
+                    } else {
+                      print('TAG Y ${snapshot.hasData}');
+                      return Center(
+                        child: Text('loading'),
+                      );
+                    }
+                  },
+                ),
               ),
               Container(
                 color: Colors.orange,

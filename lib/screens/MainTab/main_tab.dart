@@ -37,6 +37,7 @@ class _MainTabHomeState extends State<MainTabHome> {
   MenuPage menuPage = MenuPage();
   CartPage cartPage = CartPage();
   OrderHistoryPage orderHistoryPage = OrderHistoryPage();
+  OrderHistoryWrapper historywrapper = OrderHistoryWrapper();
   @override
   Widget build(BuildContext context) {
     double radius = MediaQuery.of(context).size.shortestSide * 0.5;
@@ -65,7 +66,6 @@ class _MainTabHomeState extends State<MainTabHome> {
               ],
             ),
             tabBuilder: (context, index) {
-              print('building*********************************************');
               return CupertinoTabView(builder: (context) {
                 switch (index) {
                   case 0: //Home
@@ -74,8 +74,8 @@ class _MainTabHomeState extends State<MainTabHome> {
                     return menuPage;
                   case 3: //Cart
                     return cartPage;
-                  case 4: //Order History
-                    return orderHistoryPage;
+                  case 4: //Order historywrapper
+                    return historywrapper;
                   // return StreamProvider<QuerySnapshot>.value(
                   //     value: FSService().activeOrderSnapshots,
                   //     child: OrderHistoryPage());

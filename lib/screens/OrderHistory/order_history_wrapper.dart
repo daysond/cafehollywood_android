@@ -12,27 +12,12 @@ class OrderHistoryWrapper extends StatefulWidget {
 class _OrderHistoryWrapperState extends State<OrderHistoryWrapper>
     with AutomaticKeepAliveClientMixin<OrderHistoryWrapper> {
   @override
-  bool get wantKeepAlive => true; 
-  @override
-  void initState() {
-    print('~~~~~~~~~~~~~~~~~~~~~~~~');
-    // TODO: implement initState
-    super.initState();
-  }
+  bool get wantKeepAlive => true;
+  FSService fsService = FSService();
 
   @override
   Widget build(BuildContext context) {
-    print('???????????????????');
     return StreamProvider<QuerySnapshot>.value(
-        value: FSService().activeOrderSnapshots, child: OrderHistoryPage());
+        value: fsService.activeOrderSnapshots, child: OrderHistoryPage());
   }
 }
-
-// class OrderHistoryWrapper extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     print('being build %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%');
-//     return StreamProvider<QuerySnapshot>.value(
-//         value: FSService().activeOrderSnapshots, child: OrderHistoryPage());
-//   }
-// }
