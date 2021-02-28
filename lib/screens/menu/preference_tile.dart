@@ -62,7 +62,18 @@ class _PreferenceTileState extends State<PreferenceTile>
       item.isSelected = true;
     } else {
       // maxPick = items.length, maxItemQuantity = 1
-      item.isSelected = !item.isSelected;
+      var countOfSelectedItems =
+          widget.preference.preferenceItems.fold(0, (int i, j) {
+        return j.isSelected ? i + 1 : i + 0;
+      });
+
+      if (countOfSelectedItems < maxPick) {
+        item.isSelected = !item.isSelected;
+      } else {
+        if (item.isSelected) {
+          item.isSelected = false;
+        }
+      }
     }
 
     widget.updatePage();

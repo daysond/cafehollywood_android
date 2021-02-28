@@ -1,3 +1,4 @@
+import 'package:cafe_hollywood/models/enums/order_status.dart';
 import 'package:cafe_hollywood/models/receipt.dart';
 import 'package:cafe_hollywood/screens/OrderHistory/upcoming_order_page.dart';
 import 'package:cafe_hollywood/services/fs_service.dart';
@@ -15,34 +16,68 @@ class OrderHistoryPage extends StatefulWidget {
 
 class _OrderHistoryPageState extends State<OrderHistoryPage> {
   String dateStr = '';
-  List<Receipt> orders = [];
-
+  List<Receipt> activeReceipts = [];
+  List<Receipt> closedReceipts = [];
   Future<List<Receipt>> futureOrders;
+  /*
+      private func closeOrder(_ id: String, for status: OrderStatus) {
+
+
+        activeReceipts.removeAll { (r) -> Bool in
+            if r.status == status {
+                let timestamp = r.orderTimestamp
+                closedReceipts.append(r)
+                closedReceipts.sort { $0.orderTimestamp > $1.orderTimestamp }
+                NetworkManager.shared.closeOrder(id, status: status, timestamp: timestamp)
+            }
+            return r.status == status
+        }
+        receiptsModel.accept(activeReceipts)
+        
+    }
+  
+  */
 
   Future<List<Receipt>> fetchOrder(QuerySnapshot changeSnapshot) async {
     var futures = List<Future<Receipt>>();
     changeSnapshot.docChanges.forEach((change) async {
       if (change.type == DocumentChangeType.added) {
-        print('TAG 1. doc id ${change.doc.id}');
+        print('TAG 1 added. doc id ${change.doc.id}');
         futures.add(FSService().getReceipt(change.doc.id));
-        print('TAG 4 done');
+
         // setState(() {});
       }
       if (change.type == DocumentChangeType.modified) {
-        //MODIFY ORDERS LIST HERE
+        final data = change.doc.data();
+        OrderStatus newStatus =
+            OrderStatusExt.statusFromRawValue(data['status'] as int);
+        if (newStatus != null) {
+          switch (newStatus) {
+            case OrderStatus.cancelled:
+            //close order
+            case OrderStatus.completed:
+            // close order
+            default:
+              activeReceipts.forEach((r) {
+                if (r.orderID == change.doc.id) {
+                  r.status = newStatus;
+                }
+              });
+          }
+        }
       }
       if (change.type == DocumentChangeType.removed) {
         //DEL ORDER FROM THE LIST HERE
-
+        activeReceipts.removeWhere((r) => r.orderID == change.doc.id);
       }
     });
-    print('TAG 2.about to get order');
+
     await Future.wait(futures).then((receipts) {
-      orders = orders..addAll(receipts);
-      print('TAG 3.did add order, COUNT ${orders.length}');
+      activeReceipts = activeReceipts..addAll(receipts);
+      print('TAG 3.did add order, COUNT ${activeReceipts.length}');
     });
-    print('DONE DONE DONE');
-    return orders;
+
+    return activeReceipts;
   }
 
   @override
@@ -89,10 +124,8 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                   future: futureOrders,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      print('TAG X ${snapshot.hasData}');
                       return UpcomingOrderPage(snapshot.data);
                     } else {
-                      print('TAG Y ${snapshot.hasData}');
                       return Center(
                         child: Text('loading'),
                       );

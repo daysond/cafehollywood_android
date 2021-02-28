@@ -43,9 +43,10 @@ class _ReceiptTileState extends State<ReceiptTile> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    '${widget.receipt.status.image}',
-                    style: TextStyle(color: Colors.white),
+                  Image.asset(
+                    'assets/${widget.receipt.status.image}.png',
+                    width: 18,
+                    height: 18,
                   ),
                   SizedBox(width: 8),
                   Text(
@@ -96,7 +97,7 @@ class _ReceiptTileState extends State<ReceiptTile> {
           _buildItemList(),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text('Total: \$${widget.receipt.total}'),
+            child: Text('Total: \$${widget.receipt.total.toStringAsFixed(2)}'),
           ),
           BlackButton('View Receipt Detail', showReceiptDetail, true),
         ],
