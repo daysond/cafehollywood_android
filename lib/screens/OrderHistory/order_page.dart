@@ -1,5 +1,6 @@
 import 'package:cafe_hollywood/models/enums/order_status.dart';
 import 'package:cafe_hollywood/models/receipt.dart';
+import 'package:cafe_hollywood/screens/OrderHistory/past_order_page.dart';
 import 'package:cafe_hollywood/screens/OrderHistory/upcoming_order_page.dart';
 import 'package:cafe_hollywood/services/fs_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,27 +17,12 @@ class OrderHistoryPage extends StatefulWidget {
 
 class _OrderHistoryPageState extends State<OrderHistoryPage> {
   String dateStr = '';
+  FSService fsService = FSService();
   List<Receipt> activeReceipts = [];
   List<Receipt> closedReceipts = [];
   Future<List<Receipt>> futureOrders;
-  /*
-      private func closeOrder(_ id: String, for status: OrderStatus) {
 
-
-        activeReceipts.removeAll { (r) -> Bool in
-            if r.status == status {
-                let timestamp = r.orderTimestamp
-                closedReceipts.append(r)
-                closedReceipts.sort { $0.orderTimestamp > $1.orderTimestamp }
-                NetworkManager.shared.closeOrder(id, status: status, timestamp: timestamp)
-            }
-            return r.status == status
-        }
-        receiptsModel.accept(activeReceipts)
-        
-    }
-  
-  */
+  PastOrderPage pastOrderPage;
 
   Future<List<Receipt>> fetchOrder(QuerySnapshot changeSnapshot) async {
     var futures = List<Future<Receipt>>();
@@ -68,7 +54,15 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
       }
       if (change.type == DocumentChangeType.removed) {
         //DEL ORDER FROM THE LIST HERE
-        activeReceipts.removeWhere((r) => r.orderID == change.doc.id);
+        activeReceipts.asMap().forEach((index, r) {
+          if (r.orderID == change.doc.id) {
+            closedReceipts.add(activeReceipts.removeAt(index));
+          }
+        });
+        if (pastOrderPage != null) {
+          pastOrderPage.orders = closedReceipts;
+          pastOrderPage.update();
+        }
       }
     });
 
@@ -133,27 +127,43 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                   },
                 ),
               ),
-              Container(
-                color: Colors.orange,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(dateStr),
-                    IconButton(
-                        icon: Icon(Icons.settings),
-                        onPressed: () {
-                          setState(() {
-                            final now = DateTime.now();
-                            final tomorrow =
-                                DateTime(now.year, now.month, now.day + 50);
-                            dateStr =
-                                DateFormat('E, MMM dd y').format(tomorrow);
-                            dateStr = dateStr.substring(0, dateStr.length - 5);
-                          });
-                        })
-                  ],
+              SafeArea(
+                child: FutureBuilder<List<Receipt>>(
+                  future: fsService.getPastReceipts(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      closedReceipts = snapshot.data;
+                      pastOrderPage = PastOrderPage(snapshot.data);
+                      return pastOrderPage;
+                    } else {
+                      return Center(
+                        child: Text('loading'),
+                      );
+                    }
+                  },
                 ),
               ),
+              // Container(
+              //   color: Colors.orange,
+              //   child: Column(
+              //     mainAxisAlignment: MainAxisAlignment.center,
+              //     children: [
+              //       Text(dateStr),
+              //       IconButton(
+              //           icon: Icon(Icons.settings),
+              //           onPressed: () {
+              //             setState(() {
+              //               final now = DateTime.now();
+              //               final tomorrow =
+              //                   DateTime(now.year, now.month, now.day + 50);
+              //               dateStr =
+              //                   DateFormat('E, MMM dd y').format(tomorrow);
+              //               dateStr = dateStr.substring(0, dateStr.length - 5);
+              //             });
+              //           })
+              //     ],
+              //   ),
+              // ),
             ])),
       ),
     );

@@ -192,6 +192,44 @@ class FSService {
         .snapshots();
   }
 
+  Stream<QuerySnapshot> get pastReceiptID() {
+    return  databaseRef
+        .collection('customers')
+        .doc(APPSetting().customerUID)
+        .collection('orders')
+        .orderBy('timestamp', descending: true)
+        .limitToLast(10).snapshots();
+  }
+
+  Future<List<Receipt>> getPastReceipts() async {
+    var customerOrdersRef = databaseRef
+        .collection('customers')
+        .doc(APPSetting().customerUID)
+        .collection('orders')
+        .orderBy('timestamp', descending: true)
+        .limitToLast(10);
+
+    var futures = List<Future<Receipt>>();
+
+    var receipts = List<Receipt>();
+
+    return customerOrdersRef.get().then((value) async {
+      if (value.docs != null) {
+        final docs = value.docs;
+
+        docs.forEach((doc) {
+          futures.add(getReceipt(doc.id));
+        });
+
+        await Future.wait(futures).then((result) {
+          receipts = result;
+        });
+
+        return receipts;
+      }
+    });
+  }
+
   Future<Receipt> getReceipt(String id) async {
     var doc = databaseRef.collection('onlineOrders').doc(id);
     return doc.get().then((value) {
