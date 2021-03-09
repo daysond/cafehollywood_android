@@ -192,14 +192,15 @@ class FSService {
         .snapshots();
   }
 
-  Stream<QuerySnapshot> get pastReceiptID() {
-    return  databaseRef
-        .collection('customers')
-        .doc(APPSetting().customerUID)
-        .collection('orders')
-        .orderBy('timestamp', descending: true)
-        .limitToLast(10).snapshots();
-  }
+  // Stream<QuerySnapshot> get pastReceiptID {
+  //   return databaseRef
+  //       .collection('customers')
+  //       .doc(APPSetting().customerUID)
+  //       .collection('orders')
+  //       .orderBy('timestamp', descending: true)
+  //       .limitToLast(10)
+  //       .snapshots();
+  // }
 
   Future<List<Receipt>> getPastReceipts() async {
     var customerOrdersRef = databaseRef

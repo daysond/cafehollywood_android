@@ -10,17 +10,13 @@ class PastOrderPage extends StatefulWidget {
 
   PastOrderPage(this.orders);
 
-  Void update() {
-    print('update');
-  }
-
   @override
   _PastOrderPageState createState() => _PastOrderPageState();
 }
 
 class _PastOrderPageState extends State<PastOrderPage> {
-  @override
   void handleReceiptTapped(Receipt receipt) {}
+  @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       child: Container(

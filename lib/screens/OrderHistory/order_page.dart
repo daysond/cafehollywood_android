@@ -2,6 +2,7 @@ import 'package:cafe_hollywood/models/enums/order_status.dart';
 import 'package:cafe_hollywood/models/receipt.dart';
 import 'package:cafe_hollywood/screens/OrderHistory/past_order_page.dart';
 import 'package:cafe_hollywood/screens/OrderHistory/upcoming_order_page.dart';
+import 'package:cafe_hollywood/services/app_setting.dart';
 import 'package:cafe_hollywood/services/fs_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -57,12 +58,9 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
         activeReceipts.asMap().forEach((index, r) {
           if (r.orderID == change.doc.id) {
             closedReceipts.add(activeReceipts.removeAt(index));
+            getPastReceipts(true);
           }
         });
-        if (pastOrderPage != null) {
-          pastOrderPage.orders = closedReceipts;
-          pastOrderPage.update();
-        }
       }
     });
 
@@ -72,6 +70,39 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
     });
 
     return activeReceipts;
+  }
+
+  Future<List<Receipt>> getPastReceipts(bool mockFuture) async {
+    if (mockFuture) {
+      return closedReceipts;
+    }
+
+    var customerOrdersRef = fsService.databaseRef
+        .collection('customers')
+        .doc(APPSetting().customerUID)
+        .collection('orders')
+        .orderBy('timestamp', descending: true)
+        .limitToLast(10);
+
+    var futures = List<Future<Receipt>>();
+
+    var receipts = List<Receipt>();
+
+    return customerOrdersRef.get().then((value) async {
+      if (value.docs != null) {
+        final docs = value.docs;
+
+        docs.forEach((doc) {
+          futures.add(fsService.getReceipt(doc.id));
+        });
+
+        await Future.wait(futures).then((result) {
+          receipts = result;
+        });
+
+        return receipts;
+      }
+    });
   }
 
   @override
@@ -129,7 +160,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
               ),
               SafeArea(
                 child: FutureBuilder<List<Receipt>>(
-                  future: fsService.getPastReceipts(),
+                  future: getPastReceipts(false),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       closedReceipts = snapshot.data;
@@ -143,27 +174,6 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                   },
                 ),
               ),
-              // Container(
-              //   color: Colors.orange,
-              //   child: Column(
-              //     mainAxisAlignment: MainAxisAlignment.center,
-              //     children: [
-              //       Text(dateStr),
-              //       IconButton(
-              //           icon: Icon(Icons.settings),
-              //           onPressed: () {
-              //             setState(() {
-              //               final now = DateTime.now();
-              //               final tomorrow =
-              //                   DateTime(now.year, now.month, now.day + 50);
-              //               dateStr =
-              //                   DateFormat('E, MMM dd y').format(tomorrow);
-              //               dateStr = dateStr.substring(0, dateStr.length - 5);
-              //             });
-              //           })
-              //     ],
-              //   ),
-              // ),
             ])),
       ),
     );
