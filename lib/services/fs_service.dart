@@ -3,7 +3,9 @@ import 'package:cafe_hollywood/models/enums/combo_type.dart';
 import 'package:cafe_hollywood/models/enums/order_status.dart';
 import 'package:cafe_hollywood/models/meal_info.dart';
 import 'package:cafe_hollywood/models/menu.dart';
+import 'package:cafe_hollywood/models/order_manager.dart';
 import 'package:cafe_hollywood/models/receipt.dart';
+import 'package:cafe_hollywood/models/table.dart';
 import 'package:cafe_hollywood/services/app_setting.dart';
 import 'package:cafe_hollywood/services/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,6 +16,13 @@ import 'package:cafe_hollywood/models/meal.dart';
 import 'dart:math';
 
 class FSService {
+  static FSService _instance;
+  FSService._internal() {
+    _instance = this;
+  }
+
+  factory FSService() => _instance ?? FSService._internal();
+
   final databaseRef = FirebaseFirestore.instance;
   String randomString(int strlen) {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -192,16 +201,6 @@ class FSService {
         .snapshots();
   }
 
-  // Stream<QuerySnapshot> get pastReceiptID {
-  //   return databaseRef
-  //       .collection('customers')
-  //       .doc(APPSetting().customerUID)
-  //       .collection('orders')
-  //       .orderBy('timestamp', descending: true)
-  //       .limitToLast(10)
-  //       .snapshots();
-  // }
-
   Future<List<Receipt>> getPastReceipts() async {
     var customerOrdersRef = databaseRef
         .collection('customers')
@@ -225,7 +224,8 @@ class FSService {
         await Future.wait(futures).then((result) {
           receipts = result;
         });
-
+        print('did get receipts');
+        OrderManager().addRecepits(receipts);
         return receipts;
       }
     });
@@ -303,6 +303,22 @@ class FSService {
             ? null
             : ComboTypeExt.comboTypeFromRawValue(comboTypeInt),
         comboTag);
+  }
+
+  //TABLE
+  Future<bool> checkIfTableDoesExist() {
+    if (DineInTable().tableNumber == null) {
+      return null;
+    }
+
+    String table = DineInTable().tableNumber;
+
+    var activeTableRef = databaseRef.collection("activeTables").doc(table);
+
+    return activeTableRef.get().then((value) {
+      print('${value.data() == null}');
+      return value.data() != null;
+    });
   }
 }
 

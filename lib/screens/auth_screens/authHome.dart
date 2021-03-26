@@ -1,6 +1,8 @@
+import 'package:cafe_hollywood/screens/auth_screens/sign_up_page.dart';
 import 'package:cafe_hollywood/services/auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 class AuthHomePage extends StatelessWidget {
   @override
@@ -53,10 +55,8 @@ class AuthHomePage extends StatelessWidget {
                 width: MediaQuery.of(context).size.width,
                 color: Colors.black,
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    SizedBox(
-                      height: 32,
-                    ),
                     ButtonTheme(
                       minWidth: MediaQuery.of(context).size.width * 0.6,
                       height: 48,
@@ -80,13 +80,17 @@ class AuthHomePage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16.0),
                     ButtonTheme(
                       minWidth: MediaQuery.of(context).size.width * 0.6,
                       height: 48,
                       buttonColor: Colors.white,
                       child: RaisedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                  builder: (context) => SignUpPage()));
+                        },
                         child: Text(
                           'SIGN UP',
                           style: TextStyle(

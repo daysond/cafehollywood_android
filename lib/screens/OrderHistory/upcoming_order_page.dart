@@ -1,4 +1,6 @@
 import 'package:cafe_hollywood/models/receipt.dart';
+import 'package:cafe_hollywood/screens/OrderHistory/receipt_detail_page.dart';
+import 'package:cafe_hollywood/screens/OrderHistory/receipt_item_tile.dart';
 import 'package:cafe_hollywood/screens/OrderHistory/receipt_tile.dart';
 import 'package:cafe_hollywood/services/fs_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,7 +18,15 @@ class UpcomingOrderPage extends StatefulWidget {
 class _UpcomingOrderPageState extends State<UpcomingOrderPage> {
   // ScrollController _scrollController = ScrollController();
 
-  void handleReceiptTapped(Receipt receipt) {}
+  void handleReceiptTapped(Receipt receipt) {
+    Navigator.of(context).push(
+      CupertinoPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => ReceiptDetailPage(receipt),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(

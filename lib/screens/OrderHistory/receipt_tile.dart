@@ -15,7 +15,10 @@ class ReceiptTile extends StatefulWidget {
 }
 
 class _ReceiptTileState extends State<ReceiptTile> {
-  void showReceiptDetail() {}
+  void showReceiptDetail() {
+    print("show details");
+    widget.handleReceiptTapped(widget.receipt);
+  }
 
   Widget _buildHeader() {
     var date = DateTime.fromMicrosecondsSinceEpoch(

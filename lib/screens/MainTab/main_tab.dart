@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:cafe_hollywood/models/table.dart';
 import 'package:cafe_hollywood/screens/OrderHistory/order_history_wrapper.dart';
 import 'package:cafe_hollywood/services/fs_service.dart';
 import 'package:cafe_hollywood/test.dart';
@@ -11,6 +12,8 @@ import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cafe_hollywood/screens/home/home.dart';
 import 'package:cafe_hollywood/screens/menu/menuPage.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:provider/provider.dart';
 
 class MainTabBar extends StatelessWidget {
@@ -38,6 +41,68 @@ class _MainTabHomeState extends State<MainTabHome> {
   CartPage cartPage = CartPage();
   OrderHistoryPage orderHistoryPage = OrderHistoryPage();
   OrderHistoryWrapper historywrapper = OrderHistoryWrapper();
+
+  Future<void> scanQRCode() async {
+    try {
+      final qrCode = await FlutterBarcodeScanner.scanBarcode(
+        '#ff6666',
+        'Cancel',
+        false,
+        ScanMode.QR,
+      );
+
+      if (!mounted) return;
+
+      handleQRCodeData(qrCode);
+    } on PlatformException {
+      String msg = 'Failed to get platform version.';
+      displayErrorMessage(msg);
+    }
+  }
+
+  void handleQRCodeData(String data) {
+    String defaultURL =
+        'http://www.enjoy2eat.ca/hollywood2/index.php?route=common/home&table=';
+    String url = data.substring(0, data.length - 2);
+    String num = data.substring(data.length - 2, data.length);
+
+    if (defaultURL != url || num.length != 2) {
+      displayErrorMessage('Invalid QR Code.');
+      return;
+    }
+
+    DineInTable().tableNumber = num;
+    FSService().checkIfTableDoesExist();
+    // NetworkManager.shared.checkIfTableDoesExist(completion: { (error, tableExists) in
+
+    //     guard error == nil else {
+    //         print(error!.localizedDescription)
+    //         self.delegate?.failedReadingQRCode()
+    //         return
+    //     }
+
+    //     if let tableExists = tableExists {
+
+    //         switch tableExists {
+    //         case true:
+
+    //             NetworkManager.shared.addTableListener()
+
+    //             self.delegate?.found()
+
+    //         default:
+
+    //             self.delegate?.found()
+
+    //         }
+
+    //     }
+
+    // })
+  }
+
+  void displayErrorMessage(String msg) {}
+
   @override
   Widget build(BuildContext context) {
     double radius = MediaQuery.of(context).size.shortestSide * 0.5;
@@ -108,6 +173,7 @@ class _MainTabHomeState extends State<MainTabHome> {
             child: Column(
               children: [
                 FloatingActionButton(
+                  heroTag: 'action1',
                   child: Icon(
                     Icons.add,
                   ),
@@ -134,6 +200,7 @@ class _MainTabHomeState extends State<MainTabHome> {
             child: Column(
               children: [
                 FloatingActionButton(
+                  heroTag: 'action2',
                   child: Icon(
                     Icons.account_box,
                   ),
@@ -160,6 +227,7 @@ class _MainTabHomeState extends State<MainTabHome> {
             child: Column(
               children: [
                 FloatingActionButton(
+                  heroTag: 'action3',
                   child: Icon(
                     Icons.add,
                   ),
@@ -186,6 +254,7 @@ class _MainTabHomeState extends State<MainTabHome> {
             child: Column(
               children: [
                 FloatingActionButton(
+                  heroTag: 'action4',
                   child: Icon(
                     Icons.add,
                   ),
@@ -218,6 +287,7 @@ class _MainTabHomeState extends State<MainTabHome> {
             child: Column(
               children: [
                 FloatingActionButton(
+                  heroTag: 'action5',
                   child: Icon(
                     Icons.add,
                   ),
@@ -239,6 +309,7 @@ class _MainTabHomeState extends State<MainTabHome> {
               width: MediaQuery.of(context).size.width / 5.0,
               height: kToolbarHeight + 4,
               child: FloatingActionButton(
+                heroTag: 'midButton',
                 backgroundColor: Colors.black,
                 child: Icon(
                   Icons.add,
@@ -246,13 +317,16 @@ class _MainTabHomeState extends State<MainTabHome> {
                 elevation: 0,
                 onPressed: () {
                   //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
-                  print('pressedddddddd');
-                  setState(() {
-                    if (isButtonsCollapsed) {
-                      isButtonHidden = false;
-                    }
-                    isButtonsCollapsed = !isButtonsCollapsed;
-                  });
+                  scanQRCode();
+                  // Navigator.push(context,
+                  //     MaterialPageRoute(builder: (context) => QRScanPage()));
+
+                  // setState(() {
+                  //   if (isButtonsCollapsed) {
+                  //     isButtonHidden = false;
+                  //   }
+                  //   isButtonsCollapsed = !isButtonsCollapsed;
+                  // });
                 },
               ),
             )),

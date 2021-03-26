@@ -1,12 +1,13 @@
 import 'dart:ffi';
 
+import 'package:cafe_hollywood/screens/OrderHistory/receipt_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cafe_hollywood/models/receipt.dart';
 import 'package:cafe_hollywood/screens/OrderHistory/receipt_tile.dart';
 
 class PastOrderPage extends StatefulWidget {
-  List<Receipt> orders = [];
+  List<Receipt> orders;
 
   PastOrderPage(this.orders);
 
@@ -15,7 +16,15 @@ class PastOrderPage extends StatefulWidget {
 }
 
 class _PastOrderPageState extends State<PastOrderPage> {
-  void handleReceiptTapped(Receipt receipt) {}
+  void handleReceiptTapped(Receipt receipt) {
+    Navigator.of(context).push(
+      CupertinoPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => ReceiptDetailPage(receipt),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(

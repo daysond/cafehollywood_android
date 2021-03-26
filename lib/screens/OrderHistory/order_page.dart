@@ -1,4 +1,5 @@
 import 'package:cafe_hollywood/models/enums/order_status.dart';
+import 'package:cafe_hollywood/models/order_manager.dart';
 import 'package:cafe_hollywood/models/receipt.dart';
 import 'package:cafe_hollywood/screens/OrderHistory/past_order_page.dart';
 import 'package:cafe_hollywood/screens/OrderHistory/upcoming_order_page.dart';
@@ -18,9 +19,8 @@ class OrderHistoryPage extends StatefulWidget {
 
 class _OrderHistoryPageState extends State<OrderHistoryPage> {
   String dateStr = '';
-  FSService fsService = FSService();
   List<Receipt> activeReceipts = [];
-  List<Receipt> closedReceipts = [];
+
   Future<List<Receipt>> futureOrders;
 
   PastOrderPage pastOrderPage;
@@ -57,8 +57,8 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
         //DEL ORDER FROM THE LIST HERE
         activeReceipts.asMap().forEach((index, r) {
           if (r.orderID == change.doc.id) {
-            closedReceipts.add(activeReceipts.removeAt(index));
-            getPastReceipts(true);
+            OrderManager().addReceipt(activeReceipts.removeAt(index));
+            // DO SOMETHING HERE
           }
         });
       }
@@ -72,37 +72,11 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
     return activeReceipts;
   }
 
-  Future<List<Receipt>> getPastReceipts(bool mockFuture) async {
-    if (mockFuture) {
-      return closedReceipts;
-    }
-
-    var customerOrdersRef = fsService.databaseRef
-        .collection('customers')
-        .doc(APPSetting().customerUID)
-        .collection('orders')
-        .orderBy('timestamp', descending: true)
-        .limitToLast(10);
-
-    var futures = List<Future<Receipt>>();
-
-    var receipts = List<Receipt>();
-
-    return customerOrdersRef.get().then((value) async {
-      if (value.docs != null) {
-        final docs = value.docs;
-
-        docs.forEach((doc) {
-          futures.add(fsService.getReceipt(doc.id));
-        });
-
-        await Future.wait(futures).then((result) {
-          receipts = result;
-        });
-
-        return receipts;
-      }
-    });
+  @override
+  void initState() {
+    FSService().getPastReceipts();
+    // TODO: implement initState
+    super.initState();
   }
 
   @override
@@ -159,21 +133,14 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                 ),
               ),
               SafeArea(
-                child: FutureBuilder<List<Receipt>>(
-                  future: getPastReceipts(false),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      closedReceipts = snapshot.data;
-                      pastOrderPage = PastOrderPage(snapshot.data);
-                      return pastOrderPage;
-                    } else {
-                      return Center(
-                        child: Text('loading'),
-                      );
-                    }
-                  },
+                child: ChangeNotifierProvider.value(
+                  value: OrderManager(),
+                  child: Consumer<OrderManager>(
+                    builder: (context, orderManager, child) =>
+                        PastOrderPage(orderManager.pastOrders),
+                  ),
                 ),
-              ),
+              )
             ])),
       ),
     );

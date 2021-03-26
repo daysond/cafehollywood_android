@@ -1,5 +1,6 @@
 import 'package:cafe_hollywood/screens/home/account_setting.dart';
 import 'package:cafe_hollywood/screens/home/booking_panel.dart';
+import 'package:cafe_hollywood/services/auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'quick_order_list_view.dart';
@@ -78,7 +79,10 @@ class _HomePageState extends State<HomePage> {
                       minWidth: 145,
                       buttonColor: Colors.white,
                       child: RaisedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          var name = AuthService().displayName;
+                          print(name);
+                        },
                         child: Text('Online Order Now'),
                       ),
                     ),

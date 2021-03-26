@@ -50,8 +50,6 @@ class _MealListPageState extends State<MealListPage> {
   }
 
   void viewCartButtonHandler() {
-    // setState(() {});
-
     Navigator.of(context).push(
       CupertinoPageRoute(
         fullscreenDialog: true,

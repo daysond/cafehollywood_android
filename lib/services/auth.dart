@@ -1,10 +1,17 @@
+import 'package:cafe_hollywood/screens/MainTab/main_tab.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   String get customerID {
     return _auth.currentUser.uid ?? 'flutterAPPUID';
+  }
+
+  String get displayName {
+    return _auth.currentUser.displayName ?? '';
   }
 
   String _currentUID(User user) {
@@ -25,5 +32,67 @@ class AuthService {
       // print(error.toString());
       return null;
     }
+  }
+
+  Future createUserWithPhone(
+      String phone, String displayName, BuildContext context) async {
+    _auth.verifyPhoneNumber(
+        phoneNumber: phone,
+        timeout: Duration(seconds: 0),
+        verificationCompleted: (AuthCredential authCredential) {
+          _auth
+              .signInWithCredential(authCredential)
+              .then((UserCredential result) {
+            Navigator.of(context).pop(); // to pop the dialog box
+            Navigator.of(context).pushReplacementNamed('/home');
+          }).catchError((e) {
+            return "error";
+          });
+        },
+        verificationFailed: (FirebaseAuthException exception) {
+          return "error";
+        },
+        codeSent: (String verificationId, [int forceResendingToken]) {
+          final _codeController = TextEditingController();
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => AlertDialog(
+              title: Text("Enter Verification Code From Text Message"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[TextField(controller: _codeController)],
+              ),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text("submit"),
+                  textColor: Colors.white,
+                  color: Colors.green,
+                  onPressed: () {
+                    var _credential = PhoneAuthProvider.credential(
+                        verificationId: verificationId,
+                        smsCode: _codeController.text.trim());
+                    _auth
+                        .signInWithCredential(_credential)
+                        .then((UserCredential result) {
+                      _auth.currentUser.updateProfile(displayName: displayName);
+                      Navigator.of(context).pop(); // to pop the dialog box
+                      Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (context) => MainTabBar()));
+                      // Navigator.of(context).pushReplacementNamed('/home');
+                    }).catchError((e) {
+                      return "error";
+                    });
+                  },
+                )
+              ],
+            ),
+          );
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          verificationId = verificationId;
+        });
   }
 }

@@ -1,12 +1,12 @@
 import 'package:cafe_hollywood/models/enums/order_status.dart';
 import 'package:cafe_hollywood/models/table_order.dart';
 
-class Table {
-  static Table _instance;
-  Table._internal() {
+class DineInTable {
+  static DineInTable _instance;
+  DineInTable._internal() {
     _instance = this;
   }
-  factory Table() => _instance ?? Table._internal();
+  factory DineInTable() => _instance ?? DineInTable._internal();
 
   String tableNumber;
   List<TableOrder> tableOrders = [];
