@@ -1,3 +1,4 @@
+import 'package:cafe_hollywood/models/enums/combo_type.dart';
 import 'package:cafe_hollywood/models/meal.dart';
 import 'package:cafe_hollywood/models/table_order.dart';
 import 'package:cafe_hollywood/services/app_setting.dart';
@@ -19,7 +20,53 @@ class Cart extends ChangeNotifier {
   Meal selectedGiftOption;
 
   Decimal get discountAmount {
-    return Decimal.parse('0');
+    var discountAmount = Decimal.parse('0');
+
+    List<ComboType> drinkCombos = [];
+    List<ComboType> wingCombos = [];
+
+    List<int> drinkTags = [];
+    List<int> wingTags = [];
+
+    meals.forEach((meal) {
+      print(
+          '${meal.name} combo tag ${meal.comboTag} combo Type ${meal.comboType}');
+      for (int i = 1; i <= meal.quantity; i++) {
+        if (meal.comboType != null) {
+          switch (meal.comboType) {
+            case ComboType.drink:
+              {
+                drinkCombos.add(ComboType.drink);
+              }
+              break;
+            case ComboType.wing:
+              {
+                wingCombos.add(ComboType.wing);
+              }
+              break;
+          }
+        }
+        if (meal.comboTag != null) {
+          meal.comboTag == 0
+              ? drinkTags.add(meal.comboTag)
+              : wingTags.add(meal.comboTag);
+        }
+      }
+    });
+
+    discountAmount += drinkCombos.length < drinkTags.length
+        ? ComboType.drink.deductionAmount *
+            Decimal.parse(drinkCombos.length.toString())
+        : ComboType.drink.deductionAmount *
+            Decimal.parse(drinkTags.length.toString());
+
+    discountAmount += wingCombos.length < wingTags.length
+        ? ComboType.wing.deductionAmount *
+            Decimal.parse(wingCombos.length.toString())
+        : ComboType.wing.deductionAmount *
+            Decimal.parse(wingTags.length.toString());
+
+    return discountAmount;
   }
 
   Decimal get promotionAmount {
@@ -27,9 +74,12 @@ class Cart extends ChangeNotifier {
   }
 
   Decimal get cartSubtotal {
-    return meals.length == 0
-        ? Decimal.parse('0')
-        : meals.map((e) => e.totalPrice).toList().reduce((a, b) => a + b);
+    if (meals.length == 0) {
+      return Decimal.parse('0');
+    }
+    var sub = meals.map((e) => e.totalPrice).toList().reduce((a, b) => a + b);
+
+    return sub - promotionAmount - discountAmount;
   }
 
   Decimal get cartTaxes {

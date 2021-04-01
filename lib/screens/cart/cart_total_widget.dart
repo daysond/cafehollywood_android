@@ -40,15 +40,15 @@ class CartTotalPanel extends StatelessWidget {
           makeRow(
               'Promotion',
               receipt == null
-                  ? Cart().promotionAmount.toStringAsFixed(2)
-                  : receipt.promotion.toStringAsFixed(2),
+                  ? '-${Cart().promotionAmount.toStringAsFixed(2)}'
+                  : '-${receipt.promotion.toStringAsFixed(2)}',
               false),
           SizedBox(height: 8),
           makeRow(
               'Drinks Credit',
               receipt == null
-                  ? Cart().discountAmount.toStringAsFixed(2)
-                  : receipt.discount.toStringAsFixed(2),
+                  ? '-${Cart().discountAmount.toStringAsFixed(2)}'
+                  : '-${receipt.discount.toStringAsFixed(2)}',
               false),
           SizedBox(height: 8),
           makeRow(

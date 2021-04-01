@@ -62,13 +62,17 @@ class AuthHomePage extends StatelessWidget {
                       height: 48,
                       buttonColor: Colors.white,
                       child: RaisedButton(
-                        onPressed: () async {
-                          dynamic result = AuthService().signInAnon();
-                          if (result == null) {
-                            print('can not sign in');
-                          } else {
-                            print(result.toString());
-                          }
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                  builder: (context) => SignUpPage(false)));
+                          // dynamic result = AuthService().signInAnon();
+                          // if (result == null) {
+                          //   print('can not sign in');
+                          // } else {
+                          //   print(result.toString());
+                          // }
                         },
                         child: Text(
                           'LOG IN',
@@ -89,7 +93,7 @@ class AuthHomePage extends StatelessWidget {
                           Navigator.push(
                               context,
                               CupertinoPageRoute(
-                                  builder: (context) => SignUpPage()));
+                                  builder: (context) => SignUpPage(true)));
                         },
                         child: Text(
                           'SIGN UP',

@@ -32,6 +32,7 @@ class Meal {
         preferences: meal.preferences.map((e) => e.copy(e)).toList());
     newMeal.quantity = meal.quantity;
     newMeal.instruction = meal.instruction;
+    newMeal.comboType = meal.comboType;
     return newMeal;
   }
 

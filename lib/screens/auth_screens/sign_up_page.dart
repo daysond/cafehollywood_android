@@ -6,6 +6,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 
 class SignUpPage extends StatefulWidget {
+  final bool isSignUp;
+  SignUpPage(this.isSignUp);
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
@@ -44,7 +46,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 title: Padding(
                   padding: const EdgeInsets.only(left: 8),
                   child: Text(
-                    'Sign Up',
+                    widget.isSignUp ? 'Sign Up' : 'Log In',
                     style: TextStyle(fontSize: 28, color: Colors.black),
                   ),
                 ),
@@ -74,7 +76,12 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                 ),
-                BlackButton('Sign Up', handleSignUp, true),
+                Container(
+                  width: _width / 3,
+                  height: 40,
+                  child: BlackButton(widget.isSignUp ? 'Sign Up' : 'Log In',
+                      handleSignUp, true),
+                ),
               ],
             ),
           ),
@@ -144,15 +151,17 @@ class _SignUpPageState extends State<SignUpPage> {
     List<Widget> textFields = [];
 
     // if were in the sign up state add name
-    textFields.add(
-      TextFormField(
-        validator: NameValidator.validate,
-        style: TextStyle(fontSize: 20.0),
-        decoration: buildSignUpInputDecoration("Enter Your Name"),
-        onSaved: (value) => _name = value,
-      ),
-    );
-    textFields.add(SizedBox(height: 20));
+    if (widget.isSignUp) {
+      textFields.add(
+        TextFormField(
+          validator: NameValidator.validate,
+          style: TextStyle(fontSize: 20.0),
+          decoration: buildSignUpInputDecoration("Enter Your Name"),
+          onSaved: (value) => _name = value,
+        ),
+      );
+      textFields.add(SizedBox(height: 20));
+    }
 
     textFields.add(IntlPhoneField(
       onSaved: (phone) => _phone = phone.completeNumber,

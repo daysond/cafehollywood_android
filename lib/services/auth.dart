@@ -2,6 +2,7 @@ import 'package:cafe_hollywood/screens/MainTab/main_tab.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl_phone_field/phone_number.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -12,6 +13,10 @@ class AuthService {
 
   String get displayName {
     return _auth.currentUser.displayName ?? '';
+  }
+
+  String get phoneNumber {
+    return _auth.currentUser.phoneNumber ?? '';
   }
 
   String _currentUID(User user) {
@@ -33,6 +38,8 @@ class AuthService {
       return null;
     }
   }
+
+  Future signInWithPhone() async {}
 
   Future createUserWithPhone(
       String phone, String displayName, BuildContext context) async {
@@ -67,7 +74,7 @@ class AuthService {
                 FlatButton(
                   child: Text("submit"),
                   textColor: Colors.white,
-                  color: Colors.green,
+                  color: Colors.black,
                   onPressed: () {
                     var _credential = PhoneAuthProvider.credential(
                         verificationId: verificationId,
@@ -75,7 +82,11 @@ class AuthService {
                     _auth
                         .signInWithCredential(_credential)
                         .then((UserCredential result) {
-                      _auth.currentUser.updateProfile(displayName: displayName);
+                      if (displayName != null) {
+                        _auth.currentUser
+                            .updateProfile(displayName: displayName);
+                      }
+
                       Navigator.of(context).pop(); // to pop the dialog box
                       Navigator.push(
                           context,

@@ -1,4 +1,5 @@
-import 'package:cafe_hollywood/screens/home/account_setting.dart';
+import 'package:cafe_hollywood/screens/auth_screens/setting_page.dart';
+
 import 'package:cafe_hollywood/screens/home/booking_panel.dart';
 import 'package:cafe_hollywood/services/auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -98,7 +99,7 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                         context,
                         CupertinoPageRoute(
-                            builder: (context) => AccountSettingPage()));
+                            builder: (context) => SettingPage()));
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(top: 0, right: 16),

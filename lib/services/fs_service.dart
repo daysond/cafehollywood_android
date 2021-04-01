@@ -104,6 +104,10 @@ class FSService {
         if (data['isBOGO'] != null) {
           meal.isBogo = data['isBOGO'];
         }
+        if (data['comboType'] != null) {
+          int comboTypeInt = data['comboType'];
+          meal.comboType = ComboTypeExt.comboTypeFromRawValue(comboTypeInt);
+        }
 
         if (data['preferences'] != null) {
           var futures = List<Future<Preference>>();

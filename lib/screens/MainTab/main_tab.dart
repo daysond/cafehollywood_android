@@ -111,7 +111,7 @@ class _MainTabHomeState extends State<MainTabHome> {
     double sin120 = sin(120 * pi / 180);
     double cos120 = cos(120 * pi / 180);
 
-    const double buttonWidth = 50.0;
+    const double buttonWidth = 36.0;
     return Stack(
       children: [
         CupertinoTabScaffold(
@@ -121,13 +121,19 @@ class _MainTabHomeState extends State<MainTabHome> {
                 BottomNavigationBarItem(
                     icon: Icon(CupertinoIcons.home), label: 'HOME'),
                 BottomNavigationBarItem(
-                    icon: Icon(CupertinoIcons.list_bullet), label: 'MENU'),
+                    icon: ImageIcon(AssetImage('assets/menu.png')),
+                    label: 'MENU'),
                 BottomNavigationBarItem(
-                    icon: Icon(CupertinoIcons.list_bullet), label: ''),
+                    icon: Icon(
+                      CupertinoIcons.circle,
+                      color: Colors.transparent,
+                    ),
+                    label: ''),
                 BottomNavigationBarItem(
                     icon: Icon(CupertinoIcons.cart), label: 'CART'),
                 BottomNavigationBarItem(
-                    icon: Icon(CupertinoIcons.money_dollar), label: 'ORDERS'),
+                    icon: ImageIcon(AssetImage('assets/invoice.png')),
+                    label: 'ORDERS'),
               ],
             ),
             tabBuilder: (context, index) {
@@ -163,7 +169,7 @@ class _MainTabHomeState extends State<MainTabHome> {
             }),
         AnimatedPositioned(
           bottom: isButtonsCollapsed ? -26 : (radius - padding),
-          left: radius - 25,
+          left: radius - 18,
           // height: buttonWidth,
           // width: buttonWidth,
           duration: Duration(milliseconds: 250),
@@ -171,19 +177,24 @@ class _MainTabHomeState extends State<MainTabHome> {
           child: Opacity(
             opacity: isButtonHidden ? 0.0 : 1.0,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                FloatingActionButton(
-                  heroTag: 'action1',
-                  child: Icon(
-                    Icons.add,
+                GestureDetector(
+                  onTap: () {},
+                  child: ImageIcon(
+                    AssetImage('assets/order.png'),
+                    color: Colors.orange,
+                    size: 36,
                   ),
-                  elevation: 0,
-                  onPressed: () {
-                    //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
-                    print('pressed');
-                  },
                 ),
-                Text(isButtonsCollapsed ? '' : 'this'),
+                SizedBox(height: 4),
+                Text(
+                  isButtonsCollapsed ? '' : 'Orders',
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white,
+                      backgroundColor: Colors.black),
+                ),
               ],
             ),
           ),
@@ -199,18 +210,22 @@ class _MainTabHomeState extends State<MainTabHome> {
             opacity: isButtonHidden ? 0.0 : 1.0,
             child: Column(
               children: [
-                FloatingActionButton(
-                  heroTag: 'action2',
-                  child: Icon(
-                    Icons.account_box,
+                GestureDetector(
+                  onTap: () {},
+                  child: ImageIcon(
+                    AssetImage('assets/waiter.png'),
+                    color: Colors.orange,
+                    size: 36,
                   ),
-                  elevation: 0,
-                  onPressed: () {
-                    //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
-                    print('pressed');
-                  },
                 ),
-                Text(isButtonsCollapsed ? '' : 'this'),
+                SizedBox(height: 4),
+                Text(
+                  isButtonsCollapsed ? '' : 'Waiter',
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white,
+                      backgroundColor: Colors.black),
+                ),
               ],
             ),
           ),
@@ -226,18 +241,22 @@ class _MainTabHomeState extends State<MainTabHome> {
             opacity: isButtonHidden ? 0.0 : 1.0,
             child: Column(
               children: [
-                FloatingActionButton(
-                  heroTag: 'action3',
-                  child: Icon(
-                    Icons.add,
+                GestureDetector(
+                  onTap: () {},
+                  child: ImageIcon(
+                    AssetImage('assets/receipt.png'),
+                    color: Colors.orange,
+                    size: 36,
                   ),
-                  elevation: 0,
-                  onPressed: () {
-                    //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
-                    print('pressed');
-                  },
                 ),
-                Text(isButtonsCollapsed ? '' : 'this'),
+                SizedBox(height: 4),
+                Text(
+                  isButtonsCollapsed ? '' : 'Check',
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white,
+                      backgroundColor: Colors.black),
+                ),
               ],
             ),
           ),
@@ -253,18 +272,22 @@ class _MainTabHomeState extends State<MainTabHome> {
             opacity: isButtonHidden ? 0.0 : 1.0,
             child: Column(
               children: [
-                FloatingActionButton(
-                  heroTag: 'action4',
-                  child: Icon(
-                    Icons.add,
+                GestureDetector(
+                  onTap: () {},
+                  child: ImageIcon(
+                    AssetImage('assets/note.png'),
+                    color: Colors.orange,
+                    size: 36,
                   ),
-                  elevation: 0,
-                  onPressed: () {
-                    //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
-                    print('pressed');
-                  },
                 ),
-                Text(isButtonsCollapsed ? '' : 'this'),
+                SizedBox(height: 4),
+                Text(
+                  isButtonsCollapsed ? '' : 'Others',
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white,
+                      backgroundColor: Colors.black),
+                ),
               ],
             ),
           ),
@@ -286,18 +309,20 @@ class _MainTabHomeState extends State<MainTabHome> {
             opacity: isButtonHidden ? 0.0 : 1.0,
             child: Column(
               children: [
-                FloatingActionButton(
-                  heroTag: 'action5',
-                  child: Icon(
-                    Icons.add,
+                GestureDetector(
+                  onTap: () {},
+                  child: ImageIcon(
+                    AssetImage('assets/water.png'),
+                    color: Colors.orange,
+                    size: 36,
                   ),
-                  elevation: 0,
-                  onPressed: () {
-                    //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
-                    print('pressssssssssssssssssed');
-                  },
                 ),
-                Text(isButtonsCollapsed ? '' : 'this'),
+                SizedBox(height: 4),
+                Text(isButtonsCollapsed ? '' : 'Water',
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.white,
+                        backgroundColor: Colors.black)),
               ],
             ),
           ),
@@ -308,27 +333,44 @@ class _MainTabHomeState extends State<MainTabHome> {
               // color: Colors.red,
               width: MediaQuery.of(context).size.width / 5.0,
               height: kToolbarHeight + 4,
-              child: FloatingActionButton(
-                heroTag: 'midButton',
-                backgroundColor: Colors.black,
-                child: Icon(
-                  Icons.add,
-                ),
-                elevation: 0,
-                onPressed: () {
-                  //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
-                  scanQRCode();
+              child: GestureDetector(
+                onTap: () {
+                  // scanQRCode();
                   // Navigator.push(context,
                   //     MaterialPageRoute(builder: (context) => QRScanPage()));
 
-                  // setState(() {
-                  //   if (isButtonsCollapsed) {
-                  //     isButtonHidden = false;
-                  //   }
-                  //   isButtonsCollapsed = !isButtonsCollapsed;
-                  // });
+                  setState(() {
+                    if (isButtonsCollapsed) {
+                      isButtonHidden = false;
+                    }
+                    isButtonsCollapsed = !isButtonsCollapsed;
+                  });
                 },
+                child: ImageIcon(AssetImage('assets/mainButton.png'),
+                    color: Colors.black),
               ),
+
+              //  FloatingActionButton(
+              //   heroTag: 'midButton',
+              //   backgroundColor: Colors.black,
+              //   child: Icon(
+              //     Icons.add,
+              //   ),
+              //   elevation: 0,
+              //   onPressed: () {
+              //     //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
+              //     scanQRCode();
+              //     // Navigator.push(context,
+              //     //     MaterialPageRoute(builder: (context) => QRScanPage()));
+
+              //     // setState(() {
+              //     //   if (isButtonsCollapsed) {
+              //     //     isButtonHidden = false;
+              //     //   }
+              //     //   isButtonsCollapsed = !isButtonsCollapsed;
+              //     // });
+              //   },
+              // ),
             )),
       ],
     );

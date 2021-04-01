@@ -15,10 +15,10 @@ class APPSetting {
   }
 
   String get customerName {
-    return 'flutterAppUserName';
+    return AuthService().displayName;
   }
 
   String get customerPhoneNumber {
-    return '1-888-000-0000';
+    return AuthService().phoneNumber;
   }
 }
