@@ -180,7 +180,13 @@ class _MainTabHomeState extends State<MainTabHome> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    print(DineInTable().tableOrders.length);
+                    DineInTable().tableOrders.forEach((element) {
+                      print(element.meals);
+                      print(element.orderID);
+                    });
+                  },
                   child: ImageIcon(
                     AssetImage('assets/order.png'),
                     color: Colors.orange,

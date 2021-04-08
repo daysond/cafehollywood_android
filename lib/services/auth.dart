@@ -7,8 +7,12 @@ import 'package:intl_phone_field/phone_number.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  bool get isAuth {
+    return _auth.currentUser != null;
+  }
+
   String get customerID {
-    return _auth.currentUser.uid ?? 'flutterAPPUID';
+    return _auth.currentUser == null ? null : _auth.currentUser.uid;
   }
 
   String get displayName {
@@ -40,6 +44,10 @@ class AuthService {
   }
 
   Future signInWithPhone() async {}
+
+  Future signOut() async {
+    _auth.signOut();
+  }
 
   Future createUserWithPhone(
       String phone, String displayName, BuildContext context) async {

@@ -1,8 +1,12 @@
 import 'package:cafe_hollywood/models/cart.dart';
+import 'package:cafe_hollywood/models/table.dart';
+import 'package:cafe_hollywood/screens/auth_screens/authHome.dart';
 import 'package:cafe_hollywood/screens/cart/cart_item_tile.dart';
 import 'package:cafe_hollywood/screens/cart/cart_total_widget.dart';
 import 'package:cafe_hollywood/screens/cart/checkout_page.dart';
 import 'package:cafe_hollywood/screens/shared/black_button.dart';
+import 'package:cafe_hollywood/services/auth.dart';
+import 'package:cafe_hollywood/services/fs_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
@@ -13,13 +17,22 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  void checkout() {
-    Navigator.push(
-        context, CupertinoPageRoute(builder: (context) => CheckoutPage()));
+  void checkout() async {
+    if (!AuthService().isAuth) {
+      Navigator.push(
+          context, CupertinoPageRoute(builder: (context) => AuthHomePage()));
+    } else {
+      if (DineInTable().tableNumber == null) {
+        Navigator.push(
+            context, CupertinoPageRoute(builder: (context) => CheckoutPage()));
+      } else {
+        // send order
+        FSService().sendOrder(context);
+      }
+    }
   }
 
   void updatePage() {
-    print('cart page being called');
     if (!mounted) return;
     // if (Cart().meals.isEmpty) {
     //   Navigator.pop(context);
@@ -110,7 +123,12 @@ class _CartPageState extends State<CartPage> {
                 margin: EdgeInsets.only(bottom: 8),
                 width: MediaQuery.of(context).size.width,
                 height: 40,
-                child: BlackButton('Check Out', checkout, true)),
+                child: BlackButton(
+                    DineInTable().tableNumber == null
+                        ? 'Check Out'
+                        : 'Send Order',
+                    checkout,
+                    true)),
         ],
       ),
     ));

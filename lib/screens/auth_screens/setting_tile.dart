@@ -1,5 +1,6 @@
 import 'package:cafe_hollywood/models/enums/setting_field.dart';
 import 'package:cafe_hollywood/services/app_setting.dart';
+import 'package:cafe_hollywood/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -11,7 +12,15 @@ class SettingTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        print('tapped');
+        switch (field) {
+          case SettingField.logOut:
+            AuthService().signOut();
+            Navigator.pop(context);
+            break;
+          default:
+            return;
+        }
+        print('tapped ${field.text}');
       },
       child: Card(
           color: field == SettingField.filler ? Colors.grey[100] : Colors.white,

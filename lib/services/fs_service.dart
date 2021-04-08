@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cafe_hollywood/models/cart.dart';
 import 'package:cafe_hollywood/models/enums/combo_type.dart';
 import 'package:cafe_hollywood/models/enums/order_status.dart';
@@ -6,6 +8,7 @@ import 'package:cafe_hollywood/models/menu.dart';
 import 'package:cafe_hollywood/models/order_manager.dart';
 import 'package:cafe_hollywood/models/receipt.dart';
 import 'package:cafe_hollywood/models/table.dart';
+import 'package:cafe_hollywood/models/table_order.dart';
 import 'package:cafe_hollywood/services/app_setting.dart';
 import 'package:cafe_hollywood/services/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,6 +18,8 @@ import 'package:decimal/decimal.dart';
 import 'package:cafe_hollywood/models/meal.dart';
 import 'dart:math';
 
+import 'package:flutter/material.dart';
+
 class FSService {
   static FSService _instance;
   FSService._internal() {
@@ -22,6 +27,8 @@ class FSService {
   }
 
   factory FSService() => _instance ?? FSService._internal();
+
+  StreamSubscription<DocumentSnapshot> activeTableListener;
 
   final databaseRef = FirebaseFirestore.instance;
   String randomString(int strlen) {
@@ -324,69 +331,151 @@ class FSService {
       return value.data() != null;
     });
   }
-}
 
-/*
-    func placeOrder(completion: @escaping (Error?) -> Void) {
-        //DATA
-        let orderID = String.randomString(length: 6)
-        let customerID = Cart.shared.representation["customerID"] as! String
-        let group = DispatchGroup()
-        var err: Error?
-        
-        // send order
-        let ordersRef = onlineOrdersRef.document(orderID)
-        
-        let activeOrderRef = databaseRef.collection("activeOrders").document(orderID)
-        
-        let customerActiveOrderRef = databaseRef.collection("customers").document(customerID).collection("activeOrders").document(orderID)
-        
-        group.enter()
-        
-        //        databaseRef.collection("orders").order(by: "timestamp").limit(to: 5)
-        
-        
-        
-        ordersRef.setData(Cart.shared.representation) { (error) in
-            guard error == nil else {
-                ordersRef.delete()
-                err = error
-                group.leave()
-                return
-            }
-            group.leave()
-        }
-        //TODO: NEED TO FIX THIS ...
-        guard err == nil else { completion(err); return } // if err, exti the function ,if no error continue to notify res and cus
-        
-        group.enter()
-        
-        customerActiveOrderRef.setData(["status": OrderStatus.unconfirmed.rawValue, "timestamp": Cart.shared.orderTimestamp]) { (error) in
-            err = error
-            group.leave()
-        }
-        
-        group.enter()
-        
-        activeOrderRef.setData([:]) { (error) in
-            err = error
-            group.leave()
-        }
-        
-        
-        group.notify(queue: .main) {
-            
-            guard err == nil else {
-                ordersRef.delete()
-                customerActiveOrderRef.delete()
-                activeOrderRef.delete()
-                completion(err)
-                return
-            }
-            
-            completion(err)
-        }
-        
+  Future sendOrder(BuildContext context) async {
+    if (DineInTable().tableNumber == null || AuthService().customerID == null) {
+      return null;
+    }
+    print('sending order for user ${AuthService().customerID}');
+    addTableListener();
+
+    final String orderID = randomString(6);
+
+    var activeTableRef =
+        databaseRef.collection("activeTables").doc(DineInTable().tableNumber);
+
+    var ordersRef = databaseRef.collection("dineInOrders").doc(orderID);
+
+    var customerActiveTableRef = databaseRef
+        .collection("customers")
+        .doc(AuthService().customerID)
+        .collection("activeTables")
+        .doc(DineInTable().tableNumber);
+
+    ordersRef.set(Cart().dineInRepresentation).then((value) {
+      activeTableRef.set(
+          {orderID: OrderStatus.unconfirmed.rawValue}, SetOptions(merge: true));
+
+      customerActiveTableRef.set({});
+
+      Cart().resetCart();
+      Navigator.pop(context);
+    }).catchError((error) {
+      print(error.toString());
+    });
+  }
+
+  void addTableListener() {
+    if (DineInTable().tableNumber == null) {
+      return;
     }
 
- */
+    if (activeTableListener != null) {
+      print('returned');
+      return;
+    }
+
+    var activeTableRef =
+        databaseRef.collection("activeTables").doc(DineInTable().tableNumber);
+
+    activeTableListener = activeTableRef.snapshots().listen((snapshot) {
+      var data = snapshot.data();
+      print(data.toString());
+      if (data.length == 0) {
+        return;
+      }
+      data.forEach((key, value) {
+        if (key == "isTableActive") {
+          if (value as int == 0) {
+            closeTable();
+          }
+        } else {
+          if (!DineInTable().orderIDs.contains(key)) {
+            fetchTableOrder(key);
+          } else {
+            // if order exists, check status
+            OrderStatus status =
+                OrderStatusExt.statusFromRawValue(value as int);
+            if (status != null) {
+              // if status changed, update status
+              TableOrder order = DineInTable().tableOrders.firstWhere(
+                  (order) => order.orderID == key && order.status != status);
+              if (order != null) {
+                order.status = status;
+              }
+
+              // NotificationCenter.default.post(name: .didUpdateDineInOrderStatus, object: nil)
+              // in swift means TableOrderView. receiptTableView.reloadDate()
+              // In flutter equals to update recepit widget
+            }
+          }
+        }
+
+        // check if order exists, if nil, then it's a new order, then we fetch it
+      });
+    });
+
+    activeTableListener.onError((error) {
+      print(error.toString());
+    });
+  }
+
+  void closeTable() {
+    if (DineInTable().tableNumber == null || AuthService().customerID == null) {
+      return;
+    }
+
+    var customerActiveTableRef = databaseRef
+        .collection("customers")
+        .doc(AuthService().customerID)
+        .collection("activeTables")
+        .doc(DineInTable().tableNumber);
+
+    customerActiveTableRef.delete();
+    if (activeTableListener != null) {
+      activeTableListener.cancel();
+      activeTableListener = null;
+    }
+    DineInTable().reset();
+  }
+
+  Future fetchTableOrder(String orderID) {
+    databaseRef.collection("dineInOrders").doc(orderID).get().then((snapshot) {
+      if (snapshot.data() != null) {
+        final data = snapshot.data();
+        String customerID = data["customerID"];
+        String customerName = data["customerName"];
+        String customerPhoneNumber = data["customerPhoneNumber"];
+        String orderTimestamp = data["orderTimestamp"];
+
+        int orderStatusInt = data["status"];
+        String table = data["table"];
+        OrderStatus orderStatus =
+            OrderStatusExt.statusFromRawValue(orderStatusInt);
+
+        List<Map> mealsInfoMap = (data['mealsInfo'] as List)
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+        List<MealInfo> mealInfoList = [];
+
+        mealsInfoMap.asMap().forEach((index, info) {
+          if (info['uid'] != null) {
+            MealInfo mealInfo =
+                _mealsInfoFromData('${index}-${info['uid']}', info);
+            mealInfoList.add(mealInfo);
+          }
+        });
+        TableOrder order = TableOrder(
+            orderID,
+            customerID,
+            customerName,
+            customerPhoneNumber,
+            orderTimestamp,
+            mealInfoList,
+            table,
+            orderStatus);
+        DineInTable().addOrder(order);
+      }
+    });
+  }
+}

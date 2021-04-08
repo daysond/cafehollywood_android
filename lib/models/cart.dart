@@ -1,5 +1,6 @@
 import 'package:cafe_hollywood/models/enums/combo_type.dart';
 import 'package:cafe_hollywood/models/meal.dart';
+import 'package:cafe_hollywood/models/table.dart';
 import 'package:cafe_hollywood/models/table_order.dart';
 import 'package:cafe_hollywood/services/app_setting.dart';
 import 'package:decimal/decimal.dart';
@@ -145,8 +146,6 @@ class Cart extends ChangeNotifier {
 
   Map get representation {
     List mealsInfo = meals.map((e) => e.representation).toList();
-
-    meals.forEach((meal) {});
     Map<String, dynamic> rep = {
       "customerID": APPSetting().customerUID,
       "customerName": APPSetting().customerName,
@@ -179,29 +178,22 @@ class Cart extends ChangeNotifier {
     //     rep["giftOptionContent"] = giftOptionContent!
     // }
   }
+
+  Map get dineInRepresentation {
+    List mealsInfo = meals.map((e) => e.representation).toList();
+
+    Map<String, dynamic> rep = {
+      "customerID": APPSetting().customerUID,
+      "customerName": APPSetting().customerName,
+      "customerPhoneNumber": APPSetting().customerPhoneNumber,
+      "orderTimestamp": orderTimestamp,
+      "status": pickupTime == null
+          ? OrderStatus.unconfirmed.rawValue
+          : OrderStatus.scheduled.rawValue,
+      "mealsInfo": mealsInfo,
+      "table": DineInTable().tableNumber ?? "Error",
+    };
+
+    return rep;
+  }
 }
-
-/*    var dineInRepresentation: [String : Any] {
-        
-        
-        var mealsInfo: [[String: Any]] = []
-        
-        meals.forEach { (meal) in
-            mealsInfo.append(meal.representation)
-        }
-        
-        let rep: [String: Any] = [
-            "customerID": APPSetting.customerUID,
-            "customerName": APPSetting.customerName,
-            "customerPhoneNumber": APPSetting.customerPhoneNumber,
-            "orderTimestamp": orderTimestamp,
-            "status": OrderStatus.unconfirmed.rawValue,
-            "mealsInfo": mealsInfo,
-            "table": Table.shared.tableNumber ?? "Error Table"
-        ]
-        
-
-            
-
-        return rep
-    } */

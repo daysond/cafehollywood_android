@@ -7,7 +7,7 @@ class Wrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final uid = Provider.of<String>(context);
-    return uid != null ? MainTabBar() : AuthHomePage();
-    return AuthHomePage();
+    // return uid != null ? MainTabBar() : AuthHomePage();
+    return MainTabBar();
   }
 }

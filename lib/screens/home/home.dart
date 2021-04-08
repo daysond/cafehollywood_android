@@ -1,3 +1,4 @@
+import 'package:cafe_hollywood/screens/auth_screens/authHome.dart';
 import 'package:cafe_hollywood/screens/auth_screens/setting_page.dart';
 
 import 'package:cafe_hollywood/screens/home/booking_panel.dart';
@@ -20,6 +21,19 @@ class _HomePageState extends State<HomePage> {
         context: context,
         builder: (context) {
           return SafeArea(child: panel);
+        });
+  }
+
+  void _showAuthHome() {
+    showModalBottomSheet(
+        isScrollControlled: true,
+        barrierColor: Colors.grey,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        context: context,
+        builder: (context) {
+          return SafeArea(child: AuthHomePage());
         });
   }
   // void _showQuickOrderPanel() {
@@ -95,11 +109,12 @@ class _HomePageState extends State<HomePage> {
               alignment: Alignment.topRight,
               child: GestureDetector(
                   onTap: () {
-                    print('open menu');
-                    Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (context) => SettingPage()));
+                    AuthService().isAuth
+                        ? Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                                builder: (context) => SettingPage()))
+                        : _showAuthHome();
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(top: 0, right: 16),
