@@ -37,7 +37,7 @@ class _ItemTileState extends State<ItemTile> {
                 Text(widget.item.name),
                 new Spacer(),
                 if (widget.item.price != null)
-                  Text('\$${widget.item.price.toStringAsFixed(2)}'),
+                  Text('\$${widget.item.price!.toStringAsFixed(2)}'),
                 SizedBox(width: 8),
               ],
             ),

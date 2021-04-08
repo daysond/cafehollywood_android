@@ -13,14 +13,14 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  String _warning;
-  String _name;
-  String _phone;
+  String? _warning;
+  String? _name;
+  String? _phone;
   final formKey = GlobalKey<FormState>();
 
   bool validate() {
     final form = formKey.currentState;
-    form.save();
+    form!.save();
     if (form.validate()) {
       form.save();
       return true;
@@ -95,7 +95,7 @@ class _SignUpPageState extends State<SignUpPage> {
       try {
         final auth = AuthService();
 
-        var result = await auth.createUserWithPhone(_phone, _name, context);
+        var result = await auth.createUserWithPhone(_phone!, _name!, context);
         if (_phone == "" || result == "error") {
           setState(() {
             _warning = "Your phone number could not be validated";
@@ -103,7 +103,7 @@ class _SignUpPageState extends State<SignUpPage> {
         }
       } catch (e) {
         setState(() {
-          _warning = e.message;
+          _warning = e.toString();
         });
       }
     }
@@ -154,7 +154,18 @@ class _SignUpPageState extends State<SignUpPage> {
     if (widget.isSignUp) {
       textFields.add(
         TextFormField(
-          validator: NameValidator.validate,
+          validator: (String? value) {
+            if (value == null) null;
+
+            if (value!.isEmpty) "Name can't be empty";
+
+            if (value.length < 2) "Name must be at least 2 characters long";
+
+            if (value.length > 50) "Name must be less than 50 characters long";
+
+            if (RegExp(r'[!@#<>?":_`~;[\]\\|=+)(*&^%0-9-]').hasMatch(value))
+              null;
+          },
           style: TextStyle(fontSize: 20.0),
           decoration: buildSignUpInputDecoration("Enter Your Name"),
           onSaved: (value) => _name = value,
@@ -206,7 +217,7 @@ class _SignUpPageState extends State<SignUpPage> {
 }
 
 class NameValidator {
-  static String validate(String value) {
+  static String? validate(String value) {
     if (value.isEmpty) {
       return "Name can't be empty";
     }
@@ -221,7 +232,7 @@ class NameValidator {
 }
 
 class EmailValidator {
-  static String validate(String value) {
+  static String? validate(String value) {
     if (value.isEmpty) {
       return "Email can't be empty";
     }
@@ -230,7 +241,7 @@ class EmailValidator {
 }
 
 class PasswordValidator {
-  static String validate(String value) {
+  static String? validate(String value) {
     if (value.isEmpty) {
       return "Password can't be empty";
     }
@@ -239,7 +250,7 @@ class PasswordValidator {
 }
 
 class PhoneValidator {
-  static String validate(String value) {
+  static String? validate(String value) {
     String pattern = r'(^(?:[+0]9)?[0-9]{10,12}$)';
     RegExp regExp = new RegExp(pattern);
     if (value.length == 0) {

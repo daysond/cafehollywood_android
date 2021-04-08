@@ -59,7 +59,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           if (instructionTextController.text != '') {
                             setState(() {
                               Cart().orderNote = instructionTextController.text;
-                              option.subTitle = Cart().orderNote;
+                              option.subTitle = Cart().orderNote!;
                             });
                             Navigator.pop(context);
                           }
@@ -106,7 +106,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       'notes',
       Cart().orderNote == null || Cart().orderNote == ''
           ? '(Any food alergy?)'
-          : Cart().orderNote,
+          : Cart().orderNote!,
       OptionType.note);
 
   @override

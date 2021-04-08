@@ -19,13 +19,13 @@ class MealListPage extends StatefulWidget {
 }
 
 class _MealListPageState extends State<MealListPage> {
-  ScrollController _scrollController;
+  ScrollController? _scrollController;
 
   bool lastStatus = true;
   double appBarHeight = 0;
   bool get isShrink {
-    return _scrollController.hasClients &&
-        _scrollController.offset > (appBarHeight - kToolbarHeight);
+    return _scrollController!.hasClients &&
+        _scrollController!.offset > (appBarHeight - kToolbarHeight);
   }
 
   _scrollListener() {
@@ -39,13 +39,13 @@ class _MealListPageState extends State<MealListPage> {
   @override
   void initState() {
     _scrollController = ScrollController();
-    _scrollController.addListener(_scrollListener);
+    _scrollController!.addListener(_scrollListener);
     super.initState();
   }
 
   @override
   void dispose() {
-    _scrollController.removeListener(_scrollListener);
+    _scrollController!.removeListener(_scrollListener);
     super.dispose();
   }
 
@@ -132,8 +132,8 @@ class _MealListPageState extends State<MealListPage> {
                         ),
                         SliverList(
                           delegate: SliverChildBuilderDelegate(
-                            (context, index) => MealTile(snapshot.data[index]),
-                            childCount: snapshot.data.length,
+                            (context, index) => MealTile(snapshot.data![index]),
+                            childCount: snapshot.data!.length,
                           ),
                         ),
                       ],

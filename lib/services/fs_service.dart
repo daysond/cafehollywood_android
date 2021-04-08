@@ -21,14 +21,14 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class FSService {
-  static FSService _instance;
+  static FSService? _instance;
   FSService._internal() {
     _instance = this;
   }
 
   factory FSService() => _instance ?? FSService._internal();
 
-  StreamSubscription<DocumentSnapshot> activeTableListener;
+  StreamSubscription<DocumentSnapshot>? activeTableListener;
 
   final databaseRef = FirebaseFirestore.instance;
   String randomString(int strlen) {
@@ -78,19 +78,19 @@ class FSService {
 
   Future<List<Meal>> getMeals(List<String> uids) async {
     List<Meal> meals = [];
-    var futures = List<Future<Meal>>();
+    List<Future<Meal?>> futures = [];
 
     uids.forEach((uid) {
       futures.add(getMeal(uid));
     });
 
     await Future.wait(futures).then((result) {
-      meals = result;
+      if (result.isNotEmpty) meals = result as List<Meal>;
     });
     return meals;
   }
 
-  Future<Meal> getMeal(String uid) async {
+  Future<Meal?> getMeal(String uid) async {
     var doc = FirebaseFirestore.instance.collection('meals').doc(uid);
     return doc.get().then((value) async {
       if (value.data() != null) {
@@ -117,7 +117,7 @@ class FSService {
         }
 
         if (data['preferences'] != null) {
-          var futures = List<Future<Preference>>();
+          List<Future<Preference?>> futures = [];
           List<String> uids =
               (data['preferences'] as List).map((e) => e as String).toList();
           uids.forEach((uid) {
@@ -125,7 +125,8 @@ class FSService {
           });
 
           await Future.wait(futures).then((preferences) {
-            meal.preferences = preferences;
+            if (preferences.isNotEmpty)
+              meal.preferences = preferences as List<Preference>;
           });
         }
 
@@ -134,10 +135,10 @@ class FSService {
     });
   }
 
-  Future<Preference> getPreference(String uid) async {
-    var futures = List<Future<PreferenceItem>>();
+  Future<Preference?> getPreference(String uid) async {
+    List<Future<PreferenceItem?>> futures = [];
     var doc = FirebaseFirestore.instance.collection('preferences').doc(uid);
-    var items = List<PreferenceItem>();
+    List<PreferenceItem> items = [];
     return doc.get().then((value) async {
       if (value.data() != null) {
         final data = value.data();
@@ -148,7 +149,7 @@ class FSService {
         });
 
         await Future.wait(futures).then((result) {
-          items = result;
+          if (result.isNotEmpty) items = result as List<PreferenceItem>;
         });
 
         Preference preference = Preference(value.id, data['isRequired'],
@@ -159,7 +160,7 @@ class FSService {
     });
   }
 
-  Future<PreferenceItem> getPreferenceItem(String uid) async {
+  Future<PreferenceItem?> getPreferenceItem(String uid) async {
     var doc = FirebaseFirestore.instance.collection('preferenceItems').doc(uid);
     return doc.get().then((value) {
       if (value.data() != null) {
@@ -212,7 +213,7 @@ class FSService {
         .snapshots();
   }
 
-  Future<List<Receipt>> getPastReceipts() async {
+  Future<List<Receipt>?> getPastReceipts() async {
     var customerOrdersRef = databaseRef
         .collection('customers')
         .doc(APPSetting().customerUID)
@@ -220,9 +221,9 @@ class FSService {
         .orderBy('timestamp', descending: true)
         .limitToLast(10);
 
-    var futures = List<Future<Receipt>>();
+    List<Future<Receipt?>> futures = [];
 
-    var receipts = List<Receipt>();
+    List<Receipt> receipts = [];
 
     return customerOrdersRef.get().then((value) async {
       if (value.docs != null) {
@@ -233,7 +234,7 @@ class FSService {
         });
 
         await Future.wait(futures).then((result) {
-          receipts = result;
+          if (result.isNotEmpty) receipts = result as List<Receipt>;
         });
         print('did get receipts');
         OrderManager().addRecepits(receipts);
@@ -242,7 +243,7 @@ class FSService {
     });
   }
 
-  Future<Receipt> getReceipt(String id) async {
+  Future<Receipt?> getReceipt(String id) async {
     var doc = databaseRef.collection('onlineOrders').doc(id);
     return doc.get().then((value) {
       if (value.data() != null) {
@@ -260,7 +261,7 @@ class FSService {
         Decimal total = Decimal.parse('${data['total']}' ?? '0');
         int orderStatusInt = data['status'];
         String customerName = data['customerName'];
-        OrderStatus orderStatus =
+        OrderStatus? orderStatus =
             OrderStatusExt.statusFromRawValue(orderStatusInt);
         List<Map> mealsInfoMap = (data['mealsInfo'] as List)
             .map((e) => e as Map<String, dynamic>)
@@ -269,8 +270,8 @@ class FSService {
 
         mealsInfoMap.asMap().forEach((index, info) {
           if (info['uid'] != null) {
-            MealInfo mealInfo =
-                _mealsInfoFromData('${index}-${info['uid']}', info);
+            MealInfo mealInfo = _mealsInfoFromData(
+                '${index}-${info['uid']}', info as Map<String, dynamic>);
             mealInfoList.add(mealInfo);
           }
         });
@@ -286,7 +287,7 @@ class FSService {
             taxes,
             total,
             mealInfoList,
-            orderStatus,
+            orderStatus!,
             customerName);
         return receipt;
       }
@@ -300,8 +301,8 @@ class FSService {
     String addOnInfo = data['addOnInfo'];
     String instruction = data['instruction'];
 
-    int comboTag = data['comboTag'];
-    int comboTypeInt = data['comboType'];
+    int? comboTag = data['comboTag'];
+    int? comboTypeInt = data['comboType'];
 
     return MealInfo(
         id,
@@ -317,13 +318,7 @@ class FSService {
   }
 
   //TABLE
-  Future<bool> checkIfTableDoesExist() {
-    if (DineInTable().tableNumber == null) {
-      return null;
-    }
-
-    String table = DineInTable().tableNumber;
-
+  Future<bool> checkIfTableDoesExist(String table) {
     var activeTableRef = databaseRef.collection("activeTables").doc(table);
 
     return activeTableRef.get().then((value) {
@@ -394,11 +389,11 @@ class FSService {
             fetchTableOrder(key);
           } else {
             // if order exists, check status
-            OrderStatus status =
+            OrderStatus? status =
                 OrderStatusExt.statusFromRawValue(value as int);
             if (status != null) {
               // if status changed, update status
-              TableOrder order = DineInTable().tableOrders.firstWhere(
+              TableOrder? order = DineInTable().tableOrders.firstWhere(
                   (order) => order.orderID == key && order.status != status);
               if (order != null) {
                 order.status = status;
@@ -415,7 +410,7 @@ class FSService {
       });
     });
 
-    activeTableListener.onError((error) {
+    activeTableListener?.onError((error) {
       print(error.toString());
     });
   }
@@ -433,13 +428,13 @@ class FSService {
 
     customerActiveTableRef.delete();
     if (activeTableListener != null) {
-      activeTableListener.cancel();
+      activeTableListener!.cancel();
       activeTableListener = null;
     }
     DineInTable().reset();
   }
 
-  Future fetchTableOrder(String orderID) {
+  Future? fetchTableOrder(String orderID) {
     databaseRef.collection("dineInOrders").doc(orderID).get().then((snapshot) {
       if (snapshot.data() != null) {
         final data = snapshot.data();
@@ -450,7 +445,7 @@ class FSService {
 
         int orderStatusInt = data["status"];
         String table = data["table"];
-        OrderStatus orderStatus =
+        OrderStatus? orderStatus =
             OrderStatusExt.statusFromRawValue(orderStatusInt);
 
         List<Map> mealsInfoMap = (data['mealsInfo'] as List)
@@ -460,8 +455,8 @@ class FSService {
 
         mealsInfoMap.asMap().forEach((index, info) {
           if (info['uid'] != null) {
-            MealInfo mealInfo =
-                _mealsInfoFromData('${index}-${info['uid']}', info);
+            MealInfo mealInfo = _mealsInfoFromData(
+                '${index}-${info['uid']}', info as Map<String, dynamic>);
             mealInfoList.add(mealInfo);
           }
         });
@@ -473,7 +468,7 @@ class FSService {
             orderTimestamp,
             mealInfoList,
             table,
-            orderStatus);
+            orderStatus!);
         DineInTable().addOrder(order);
       }
     });

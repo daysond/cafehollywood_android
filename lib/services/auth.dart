@@ -23,7 +23,7 @@ class AuthService {
     return _auth.currentUser.phoneNumber ?? '';
   }
 
-  String _currentUID(User user) {
+  String _currentUID(User? user) {
     return user != null ? user.uid : null;
   }
 
@@ -50,7 +50,7 @@ class AuthService {
   }
 
   Future createUserWithPhone(
-      String phone, String displayName, BuildContext context) async {
+      String phone, String? displayName, BuildContext context) async {
     _auth.verifyPhoneNumber(
         phoneNumber: phone,
         timeout: Duration(seconds: 0),
@@ -61,13 +61,14 @@ class AuthService {
             Navigator.of(context).pop(); // to pop the dialog box
             Navigator.of(context).pushReplacementNamed('/home');
           }).catchError((e) {
-            return "error";
+            // return e.toString();
+            print(e.toString());
           });
         },
         verificationFailed: (FirebaseAuthException exception) {
-          return "error";
+          print(exception.toString());
         },
-        codeSent: (String verificationId, [int forceResendingToken]) {
+        codeSent: (String verificationId, int forceResendingToken) {
           final _codeController = TextEditingController();
           showDialog(
             context: context,

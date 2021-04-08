@@ -2,7 +2,7 @@ import 'package:cafe_hollywood/models/meal.dart';
 import 'package:cafe_hollywood/services/auth.dart';
 
 class APPSetting {
-  static APPSetting _instance;
+  static APPSetting? _instance;
 
   APPSetting._internal() {
     _instance = this;

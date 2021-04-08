@@ -21,12 +21,12 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   String dateStr = '';
   List<Receipt> activeReceipts = [];
 
-  Future<List<Receipt>> futureOrders;
+  Future<List<Receipt>>? futureOrders;
 
-  PastOrderPage pastOrderPage;
+  PastOrderPage? pastOrderPage;
 
   Future<List<Receipt>> fetchOrder(QuerySnapshot changeSnapshot) async {
-    var futures = List<Future<Receipt>>();
+    List<Future<Receipt?>> futures = [];
     changeSnapshot.docChanges.forEach((change) async {
       if (change.type == DocumentChangeType.added) {
         print('TAG 1 added. doc id ${change.doc.id}');
@@ -36,7 +36,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
       }
       if (change.type == DocumentChangeType.modified) {
         final data = change.doc.data();
-        OrderStatus newStatus =
+        OrderStatus? newStatus =
             OrderStatusExt.statusFromRawValue(data['status'] as int);
         if (newStatus != null) {
           switch (newStatus) {
@@ -65,7 +65,8 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
     });
 
     await Future.wait(futures).then((receipts) {
-      activeReceipts = activeReceipts..addAll(receipts);
+      if (receipts.isNotEmpty)
+        activeReceipts = activeReceipts..addAll(receipts as List<Receipt>);
       print('TAG 3.did add order, COUNT ${activeReceipts.length}');
     });
 
@@ -123,7 +124,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                   future: futureOrders,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      return UpcomingOrderPage(snapshot.data);
+                      return UpcomingOrderPage(snapshot.data!);
                     } else {
                       return Center(
                         child: Text('loading'),

@@ -1,3 +1,4 @@
+import 'package:cafe_hollywood/screens/MainTab/main_tab.dart';
 import 'package:cafe_hollywood/screens/auth_screens/authHome.dart';
 
 import 'package:cafe_hollywood/screens/wrapper.dart';
@@ -18,31 +19,32 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StreamProvider<String>.value(
-        value: AuthService().currentUserID,
-        child: CupertinoApp(
-          localizationsDelegates: [
-            DefaultMaterialLocalizations.delegate,
-            DefaultCupertinoLocalizations.delegate,
-            DefaultWidgetsLocalizations.delegate,
-          ],
-          home: Wrapper(),
-          title: "Cafe Hollywood",
-          theme: CupertinoThemeData(
-            primaryColor: Colors.black,
-            textTheme: CupertinoTextThemeData(
-              navLargeTitleTextStyle: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 60,
-                color: CupertinoColors.white,
-              ),
-            ),
-          ),
-        )
-        // MaterialApp(
-        //   home: Wrapper(),
-        //   theme: ThemeData(primarySwatch: Colors.green),
-        // ),
-        );
+    return MainTabBar();
+    // return StreamProvider<String>.value(
+    //     value: AuthService().currentUserID,
+    //     child: CupertinoApp(
+    //       localizationsDelegates: [
+    //         DefaultMaterialLocalizations.delegate,
+    //         DefaultCupertinoLocalizations.delegate,
+    //         DefaultWidgetsLocalizations.delegate,
+    //       ],
+    //       home: Wrapper(),
+    //       title: "Cafe Hollywood",
+    //       theme: CupertinoThemeData(
+    //         primaryColor: Colors.black,
+    //         textTheme: CupertinoTextThemeData(
+    //           navLargeTitleTextStyle: TextStyle(
+    //             fontWeight: FontWeight.bold,
+    //             fontSize: 60,
+    //             color: CupertinoColors.white,
+    //           ),
+    //         ),
+    //       ),
+    //     )
+    //     // MaterialApp(
+    //     //   home: Wrapper(),
+    //     //   theme: ThemeData(primarySwatch: Colors.green),
+    //     // ),
+    //     );
   }
 }

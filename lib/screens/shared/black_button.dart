@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class BlackButton extends StatefulWidget {
   final String title;
   final void Function() handler;
-  String subtitle;
+  String? subtitle;
   bool isButtonEnabled;
   BlackButton(this.title, this.handler, this.isButtonEnabled, {this.subtitle});
 

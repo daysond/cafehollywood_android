@@ -3,14 +3,14 @@ import 'package:cafe_hollywood/models/table_order.dart';
 import 'package:flutter/material.dart';
 
 class DineInTable extends ChangeNotifier {
-  static DineInTable _instance;
+  static DineInTable? _instance;
   DineInTable._internal() {
     _instance = this;
   }
   factory DineInTable() => _instance ?? DineInTable._internal();
 
-  String tableNumber = '12';
-  String timestamp;
+  String? tableNumber = '12';
+  String? timestamp = '';
   List<TableOrder> tableOrders = [];
   List<String> get orderIDs {
     return tableOrders.map((e) => e.orderID).toList();

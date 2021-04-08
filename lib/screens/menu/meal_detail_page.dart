@@ -20,15 +20,15 @@ class MealDetailPage extends StatefulWidget {
 }
 
 class _MealDetailPageState extends State<MealDetailPage> {
-  ScrollController _scrollController;
+  ScrollController? _scrollController;
   final instructionTextController = TextEditingController();
   bool lastStatus = true;
   double appBarHeight = 0;
   bool shouldHideBlackButton = false;
   bool shouldEnableCartButton = false;
   bool get isShrink {
-    return _scrollController.hasClients &&
-        _scrollController.offset > (appBarHeight - kToolbarHeight);
+    return _scrollController!.hasClients &&
+        _scrollController!.offset > (appBarHeight - kToolbarHeight);
   }
 
   _scrollListener() {
@@ -42,13 +42,13 @@ class _MealDetailPageState extends State<MealDetailPage> {
   @override
   void initState() {
     _scrollController = ScrollController();
-    _scrollController.addListener(_scrollListener);
+    _scrollController!.addListener(_scrollListener);
     super.initState();
   }
 
   @override
   void dispose() {
-    _scrollController.removeListener(_scrollListener);
+    _scrollController!.removeListener(_scrollListener);
     super.dispose();
   }
 
@@ -66,7 +66,7 @@ class _MealDetailPageState extends State<MealDetailPage> {
 
   void resetMeal() {
     widget.meal.quantity = 1;
-    widget.meal.preferences.forEach((preference) {
+    widget.meal.preferences?.forEach((preference) {
       preference.isSectionCollapsed = false;
       preference.preferenceItems.forEach((item) {
         item.quantity = 1;
@@ -87,7 +87,7 @@ class _MealDetailPageState extends State<MealDetailPage> {
     if (widget.meal.preferences == null) {
       shouldEnableCartButton = true;
     } else {
-      for (Preference preference in widget.meal.preferences) {
+      for (Preference preference in widget.meal.preferences!) {
         if (preference.isRequired) {
           for (PreferenceItem preferenceItem in preference.preferenceItems) {
             // if item is selected, stop searching and move onto next
@@ -111,7 +111,7 @@ class _MealDetailPageState extends State<MealDetailPage> {
     print(widget.meal.instruction);
 
     if (!widget.isNewMeal && widget.meal.instruction != null) {
-      instructionTextController.text = widget.meal.instruction;
+      instructionTextController.text = widget.meal.instruction!;
     }
 
     return CupertinoPageScaffold(
@@ -138,15 +138,15 @@ class _MealDetailPageState extends State<MealDetailPage> {
                 centerTitle: false,
                 // title: Text('This is my menu'),
                 background: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: widget.meal.imageURL == null
-                          ? NetworkImage(
-                              "https://images.pexels.com/photos/396547/pexels-photo-396547.jpeg?auto=compress&cs=tinysrgb&h=350")
-                          : AssetImage('assets/${widget.meal.imageURL}'),
-                    ),
-                  ),
+                  decoration: widget.meal.imageURL != null
+                      ? BoxDecoration(
+                          image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image:
+                                AssetImage('assets/${widget.meal.imageURL!}'),
+                          ),
+                        )
+                      : null,
                   child: Stack(children: [
                     Container(
                       decoration: BoxDecoration(
@@ -213,8 +213,8 @@ class _MealDetailPageState extends State<MealDetailPage> {
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) => PreferenceTile(
-                      widget.meal.preferences[index], didUpdatePreference),
-                  childCount: widget.meal.preferences.length,
+                      widget.meal.preferences![index], didUpdatePreference),
+                  childCount: widget.meal.preferences!.length,
                 ),
               ),
             SliverFixedExtentList(

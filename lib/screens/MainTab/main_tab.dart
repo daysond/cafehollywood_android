@@ -8,7 +8,7 @@ import 'package:cafe_hollywood/screens/cart/cart_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:cafe_hollywood/screens/home/home.dart';
 import 'package:cafe_hollywood/screens/menu/menuPage.dart';
@@ -19,12 +19,16 @@ import 'package:provider/provider.dart';
 class MainTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
-    SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(statusBarIconBrightness: Brightness.dark),
+    // FlutterStatusbarcolor.setStatusBarColor(Colors.transparent);
+    // SystemChrome.setSystemUIOverlayStyle(
+    //   SystemUiOverlayStyle(statusBarIconBrightness: Brightness.dark),
+    // );
+    return Scaffold(
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.dark,
+        child: MainTabHome(),
+      ),
     );
-
-    return MainTabHome();
   }
 }
 
@@ -40,7 +44,7 @@ class _MainTabHomeState extends State<MainTabHome> {
   CartPage cartPage = CartPage();
   OrderHistoryPage orderHistoryPage = OrderHistoryPage();
   OrderHistoryWrapper historywrapper = OrderHistoryWrapper();
-  CupertinoTabController _controller;
+  CupertinoTabController? _controller;
 
   @override
   void initState() {
@@ -50,7 +54,7 @@ class _MainTabHomeState extends State<MainTabHome> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller!.dispose();
     super.dispose();
   }
 
@@ -84,7 +88,7 @@ class _MainTabHomeState extends State<MainTabHome> {
     }
 
     DineInTable().tableNumber = num;
-    FSService().checkIfTableDoesExist();
+    FSService().checkIfTableDoesExist(num);
     // NetworkManager.shared.checkIfTableDoesExist(completion: { (error, tableExists) in
 
     //     guard error == nil else {
@@ -117,7 +121,7 @@ class _MainTabHomeState extends State<MainTabHome> {
 
   void onlineOrderTapped() {
     print('setting state');
-    _controller.index = 1;
+    _controller!.index = 1;
   }
 
   @override
@@ -166,6 +170,8 @@ class _MainTabHomeState extends State<MainTabHome> {
                     return cartPage;
                   case 4: //Order historywrapper
                     return historywrapper;
+                  default:
+                    return HomePage(onlineOrderTapped);
                   // return StreamProvider<QuerySnapshot>.value(
                   //     value: FSService().activeOrderSnapshots,
                   //     child: OrderHistoryPage());

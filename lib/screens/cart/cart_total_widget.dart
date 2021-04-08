@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class CartTotalPanel extends StatelessWidget {
-  Receipt receipt;
+  Receipt? receipt;
   CartTotalPanel({this.receipt});
   Widget makeRow(String heading, String price, bool bold) {
     return Row(
@@ -34,35 +34,35 @@ class CartTotalPanel extends StatelessWidget {
               'Subtotal',
               receipt == null
                   ? Cart().cartSubtotal.toStringAsFixed(2)
-                  : receipt.subtotal.toStringAsFixed(2),
+                  : receipt!.subtotal.toStringAsFixed(2),
               false),
           SizedBox(height: 8),
           makeRow(
               'Promotion',
               receipt == null
                   ? '-${Cart().promotionAmount.toStringAsFixed(2)}'
-                  : '-${receipt.promotion.toStringAsFixed(2)}',
+                  : '-${receipt!.promotion.toStringAsFixed(2)}',
               false),
           SizedBox(height: 8),
           makeRow(
               'Drinks Credit',
               receipt == null
                   ? '-${Cart().discountAmount.toStringAsFixed(2)}'
-                  : '-${receipt.discount.toStringAsFixed(2)}',
+                  : '-${receipt!.discount.toStringAsFixed(2)}',
               false),
           SizedBox(height: 8),
           makeRow(
               'Taxes',
               receipt == null
                   ? Cart().cartTaxes.toStringAsFixed(2)
-                  : receipt.taxes.toStringAsFixed(2),
+                  : receipt!.taxes.toStringAsFixed(2),
               false),
           SizedBox(height: 8),
           makeRow(
               'Total',
               receipt == null
                   ? Cart().cartTotal.toStringAsFixed(2)
-                  : receipt.total.toStringAsFixed(2),
+                  : receipt!.total.toStringAsFixed(2),
               true),
         ],
       ),

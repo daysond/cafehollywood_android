@@ -2,7 +2,7 @@ import 'package:cafe_hollywood/models/receipt.dart';
 import 'package:flutter/material.dart';
 
 class OrderManager extends ChangeNotifier {
-  static OrderManager _instance;
+  static OrderManager? _instance;
 
   OrderManager._internal() {
     _instance = this;

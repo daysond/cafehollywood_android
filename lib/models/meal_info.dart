@@ -8,8 +8,8 @@ class MealInfo {
   final Decimal totalPrice;
   final String addOnInfo;
   final String instruction;
-  final ComboType comboType;
-  final int comboTag;
+  final ComboType? comboType;
+  final int? comboTag;
 
   MealInfo(this.mealInfoID, this.name, this.quantity, this.totalPrice,
       this.addOnInfo, this.instruction, this.comboType, this.comboTag);

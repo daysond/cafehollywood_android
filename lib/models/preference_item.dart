@@ -5,9 +5,9 @@ class PreferenceItem {
   final String uid;
   final String itemDescription;
   final String name;
-  Decimal price;
+  Decimal? price;
   int quantity = 1;
-  int comboTag;
+  int? comboTag;
   bool isSelected = false;
 
   PreferenceItem(this.uid, this.name, this.itemDescription, {this.price});

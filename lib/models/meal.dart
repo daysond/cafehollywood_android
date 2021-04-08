@@ -10,13 +10,13 @@ class Meal {
   final String name;
   final Decimal price;
   final String details;
-  String imageURL;
+  String? imageURL;
   final String mealDescription;
-  int comboMealTag;
-  bool isBogo = false;
-  String instruction;
-  ComboType comboType;
-  List<Preference> preferences;
+  int? comboMealTag;
+  bool? isBogo = false;
+  String? instruction;
+  ComboType? comboType;
+  List<Preference>? preferences;
 
   bool isSelected = false;
   int quantity = 1;
@@ -33,33 +33,37 @@ class Meal {
         meal.uid, meal.name, meal.price, meal.mealDescription, meal.details,
         imageURL: meal.imageURL,
         comboMealTag: meal.comboMealTag,
-        isBogo: meal.isBogo,
-        preferences: meal.preferences.map((e) => e.copy(e)).toList());
+        isBogo: meal.isBogo);
     newMeal.quantity = meal.quantity;
     newMeal.instruction = meal.instruction;
     newMeal.comboType = meal.comboType;
+    if (meal.preferences != null) {
+      newMeal.preferences = meal.preferences!.map((e) => e.copy(e)).toList();
+    }
     return newMeal;
   }
 
-  int get comboTag {
+  int? get comboTag {
+    int? tag;
     if (comboMealTag != null) {
-      return comboMealTag;
+      tag = comboMealTag!;
     } else {
       if (preferences == null) {
         return null;
       } else {
-        preferences.forEach((preference) {
+        preferences!.forEach((preference) {
           if (preference.isRequired) {
             for (PreferenceItem item in preference.preferenceItems) {
               if (item.isSelected && item.comboTag != null) {
-                return item.comboTag;
+                tag = item.comboTag!;
               }
             }
           }
         });
       }
-      return null;
+      // return null;
     }
+    return tag;
   }
 
   Decimal get addonPrice {
@@ -67,10 +71,10 @@ class Meal {
       return Decimal.parse('0');
     }
     Decimal total = Decimal.parse('0');
-    preferences.forEach((preference) {
+    preferences!.forEach((preference) {
       preference.preferenceItems.forEach((item) {
         if (item.isSelected && item.price != null) {
-          total = total + item.price * Decimal.parse(item.quantity.toString());
+          total = total + item.price! * Decimal.parse(item.quantity.toString());
         }
       });
     });
@@ -86,7 +90,7 @@ class Meal {
     if (preferences == null) {
       return addOnDetails;
     } else {
-      preferences.forEach((preference) {
+      preferences!.forEach((preference) {
         preference.preferenceItems.forEach((item) {
           if (item.isSelected) {
             addOnDetails = item.quantity == 1
@@ -95,7 +99,7 @@ class Meal {
 
             addOnDetails = item.price == null
                 ? "${addOnDetails}\n"
-                : "${addOnDetails} (\$${item.price * Decimal.parse(item.quantity.toString())})\n";
+                : "${addOnDetails} (\$${item.price! * Decimal.parse(item.quantity.toString())})\n";
           }
         });
       });
@@ -109,7 +113,7 @@ class Meal {
     if (preferences == null) {
       return addOnDetails;
     } else {
-      preferences.forEach((preference) {
+      preferences!.forEach((preference) {
         preference.preferenceItems.forEach((item) {
           if (item.isSelected) {
             addOnDetails = item.quantity == 1
@@ -118,7 +122,7 @@ class Meal {
 
             addOnDetails = item.price == null
                 ? "${addOnDetails}\n"
-                : "${addOnDetails} (\$${item.price * Decimal.parse(item.quantity.toString())})\n";
+                : "${addOnDetails} (\$${item.price! * Decimal.parse(item.quantity.toString())})\n";
           }
         });
       });
@@ -138,7 +142,7 @@ class Meal {
       "description": mealDescription,
       "addOnDescription": addOnDescription,
       if (comboTag != null) 'comboTag': comboTag,
-      if (comboType != null) 'comboType': comboType.rawValue,
+      if (comboType != null) 'comboType': comboType!.rawValue,
     };
   }
 }

@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:cafe_hollywood/models/enums/order_status.dart';
 
 class Cart extends ChangeNotifier {
-  static Cart _instance;
+  static Cart? _instance;
 
   Cart._internal() {
     _instance = this;
@@ -18,7 +18,7 @@ class Cart extends ChangeNotifier {
 
   List<Meal> meals = [];
   Map<String, String> giftOptionContent = {};
-  Meal selectedGiftOption;
+  Meal? selectedGiftOption;
 
   Decimal get discountAmount {
     var discountAmount = Decimal.parse('0');
@@ -49,8 +49,8 @@ class Cart extends ChangeNotifier {
         }
         if (meal.comboTag != null) {
           meal.comboTag == 0
-              ? drinkTags.add(meal.comboTag)
-              : wingTags.add(meal.comboTag);
+              ? drinkTags.add(meal.comboTag!)
+              : wingTags.add(meal.comboTag!);
         }
       }
     });
@@ -95,11 +95,11 @@ class Cart extends ChangeNotifier {
     return DateTime.now().millisecondsSinceEpoch.toString();
   }
 
-  String orderNote;
+  String? orderNote;
 
-  String pickupTime;
+  String? pickupTime;
 
-  String pickupDate;
+  String? pickupDate;
 
   bool needsUtensil = true;
 
@@ -144,7 +144,7 @@ class Cart extends ChangeNotifier {
     // Cart.shared.meals.removeAll { $0.uid == option.uid }
   }
 
-  Map get representation {
+  Map<String, dynamic> get representation {
     List mealsInfo = meals.map((e) => e.representation).toList();
     Map<String, dynamic> rep = {
       "customerID": APPSetting().customerUID,
@@ -179,7 +179,7 @@ class Cart extends ChangeNotifier {
     // }
   }
 
-  Map get dineInRepresentation {
+  Map<String, dynamic> get dineInRepresentation {
     List mealsInfo = meals.map((e) => e.representation).toList();
 
     Map<String, dynamic> rep = {

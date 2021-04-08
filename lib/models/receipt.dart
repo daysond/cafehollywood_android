@@ -15,9 +15,9 @@ class Receipt {
   final List<MealInfo> mealsInfo;
   final String customerName;
   OrderStatus status;
-  String pickupTime;
-  String pickupDate;
-  Map<String, String> giftOptionContent;
+  String? pickupTime;
+  String? pickupDate;
+  Map<String, String>? giftOptionContent;
 
   Receipt(
       this.orderID,

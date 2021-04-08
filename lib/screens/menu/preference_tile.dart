@@ -14,8 +14,8 @@ class PreferenceTile extends StatefulWidget {
 
 class _PreferenceTileState extends State<PreferenceTile>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  Animation<double> _animation;
+  AnimationController? _controller;
+  Animation<double>? _animation;
   // bool isExpanded = true;
 
   @override
@@ -25,7 +25,7 @@ class _PreferenceTileState extends State<PreferenceTile>
 
     final _curve = CurvedAnimation(
         curve: Curves.easeIn,
-        parent: _controller,
+        parent: _controller!,
         reverseCurve: Curves.easeOut);
 
     _animation = Tween<double>(begin: pi / 4, end: 0).animate(_curve)
@@ -33,13 +33,13 @@ class _PreferenceTileState extends State<PreferenceTile>
         setState(() {});
       });
 
-    _controller.reverse();
+    _controller!.reverse();
     super.initState();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller!.dispose();
     super.dispose();
   }
 
@@ -116,7 +116,7 @@ class _PreferenceTileState extends State<PreferenceTile>
           style: TextStyle(color: Colors.black),
         ),
         trailing: Transform.rotate(
-          angle: _animation.value,
+          angle: _animation!.value,
           child: Icon(
             Icons.add,
             size: 25,
@@ -126,7 +126,7 @@ class _PreferenceTileState extends State<PreferenceTile>
         onExpansionChanged: (status) {
           // print(status);
           setState(() {
-            status ? _controller.reverse() : _controller.forward();
+            status ? _controller!.reverse() : _controller!.forward();
           });
         },
         children: _buildItemTiles(widget.preference),
