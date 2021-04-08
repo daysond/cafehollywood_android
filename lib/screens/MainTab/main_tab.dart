@@ -36,11 +36,23 @@ class MainTabHome extends StatefulWidget {
 class _MainTabHomeState extends State<MainTabHome> {
   bool isButtonsCollapsed = true;
   bool isButtonHidden = true;
-  HomePage home = HomePage();
   MenuPage menuPage = MenuPage();
   CartPage cartPage = CartPage();
   OrderHistoryPage orderHistoryPage = OrderHistoryPage();
   OrderHistoryWrapper historywrapper = OrderHistoryWrapper();
+  CupertinoTabController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = new CupertinoTabController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   Future<void> scanQRCode() async {
     try {
@@ -103,6 +115,11 @@ class _MainTabHomeState extends State<MainTabHome> {
 
   void displayErrorMessage(String msg) {}
 
+  void onlineOrderTapped() {
+    print('setting state');
+    _controller.index = 1;
+  }
+
   @override
   Widget build(BuildContext context) {
     double radius = MediaQuery.of(context).size.shortestSide * 0.5;
@@ -115,6 +132,7 @@ class _MainTabHomeState extends State<MainTabHome> {
     return Stack(
       children: [
         CupertinoTabScaffold(
+            controller: _controller,
             tabBar: CupertinoTabBar(
               // iconSize: 30,
               items: [
@@ -137,10 +155,11 @@ class _MainTabHomeState extends State<MainTabHome> {
               ],
             ),
             tabBuilder: (context, index) {
+              // index = _currentIndex;
               return CupertinoTabView(builder: (context) {
                 switch (index) {
                   case 0: //Home
-                    return home;
+                    return HomePage(onlineOrderTapped);
                   case 1: //Menu
                     return menuPage;
                   case 3: //Cart

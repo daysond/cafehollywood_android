@@ -2,6 +2,7 @@ import 'package:cafe_hollywood/models/enums/combo_type.dart';
 import 'package:cafe_hollywood/models/meal_info.dart';
 import 'package:cafe_hollywood/models/preference.dart';
 import 'package:cafe_hollywood/models/preference_item.dart';
+import 'package:cafe_hollywood/services/app_setting.dart';
 import 'package:decimal/decimal.dart';
 
 class Meal {
@@ -19,6 +20,10 @@ class Meal {
 
   bool isSelected = false;
   int quantity = 1;
+
+  bool get isFavourite {
+    return APPSetting().favouriteMealList.contains(uid);
+  }
 
   Meal(this.uid, this.name, this.price, this.mealDescription, this.details,
       {this.imageURL, this.comboMealTag, this.preferences, this.isBogo});

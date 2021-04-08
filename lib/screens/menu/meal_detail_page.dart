@@ -165,25 +165,44 @@ class _MealDetailPageState extends State<MealDetailPage> {
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 32, 32, 16),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.meal.name,
-                              style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    widget.meal.name,
+                                    style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
+                                  ),
+                                  Text(
+                                    widget.meal.details ?? '',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w300,
+                                        color: Colors.white),
+                                  ),
+                                ]),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: GestureDetector(
+                              onTap: () {},
+                              child: ImageIcon(
+                                AssetImage('assets/heartEmpty.png'),
+                                color: widget.meal.isFavourite
+                                    ? Colors.red
+                                    : Colors.white,
+                              ),
                             ),
-                            Text(
-                              widget.meal.details ?? '',
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.white),
-                            ),
-                          ]),
+                          ),
+                        ],
+                      ),
                     ),
                   ]),
                 ),
