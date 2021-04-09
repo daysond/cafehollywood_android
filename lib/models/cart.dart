@@ -34,7 +34,7 @@ class Cart extends ChangeNotifier {
           '${meal.name} combo tag ${meal.comboTag} combo Type ${meal.comboType}');
       for (int i = 1; i <= meal.quantity; i++) {
         if (meal.comboType != null) {
-          switch (meal.comboType) {
+          switch (meal.comboType!) {
             case ComboType.drink:
               {
                 drinkCombos.add(ComboType.drink);

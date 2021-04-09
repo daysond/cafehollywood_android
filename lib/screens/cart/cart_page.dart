@@ -22,7 +22,7 @@ class _CartPageState extends State<CartPage> {
       Navigator.push(
           context, CupertinoPageRoute(builder: (context) => AuthHomePage()));
     } else {
-      if (DineInTable().tableNumber == null) {
+      if (DineInTable().tableNumber != null) {
         Navigator.push(
             context, CupertinoPageRoute(builder: (context) => CheckoutPage()));
       } else {

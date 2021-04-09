@@ -6,7 +6,7 @@ class Receipt {
   final String orderID;
   final String customerID;
   final String orderTimestamp;
-  final String orderNote;
+  final String? orderNote;
   final Decimal discount;
   final Decimal promotion;
   final Decimal subtotal;

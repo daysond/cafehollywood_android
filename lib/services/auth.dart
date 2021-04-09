@@ -12,30 +12,30 @@ class AuthService {
   }
 
   String get customerID {
-    return _auth.currentUser == null ? null : _auth.currentUser.uid;
+    return _auth.currentUser?.uid ?? "";
   }
 
   String get displayName {
-    return _auth.currentUser.displayName ?? '';
+    return _auth.currentUser?.displayName ?? '';
   }
 
   String get phoneNumber {
-    return _auth.currentUser.phoneNumber ?? '';
+    return _auth.currentUser?.phoneNumber ?? '';
   }
 
-  String _currentUID(User? user) {
+  String? _currentUID(User? user) {
     return user != null ? user.uid : null;
   }
 
-  Stream<String> get currentUserID {
+  Stream<String?> get currentUserID {
     return _auth.authStateChanges().map(_currentUID);
   }
 
   Future signInAnon() async {
     try {
       UserCredential result = await _auth.signInAnonymously();
-      User user = result.user;
-      return user.uid;
+      User? user = result.user;
+      return user?.uid;
     } catch (error) {
       print('error signing in ${error.toString()}');
       // print(error.toString());
@@ -68,7 +68,7 @@ class AuthService {
         verificationFailed: (FirebaseAuthException exception) {
           print(exception.toString());
         },
-        codeSent: (String verificationId, int forceResendingToken) {
+        codeSent: (String verificationId, int? forceResendingToken) {
           final _codeController = TextEditingController();
           showDialog(
             context: context,
@@ -91,8 +91,8 @@ class AuthService {
                     _auth
                         .signInWithCredential(_credential)
                         .then((UserCredential result) {
-                      if (displayName != null) {
-                        _auth.currentUser
+                      if (displayName != null && _auth.currentUser != null) {
+                        _auth.currentUser!
                             .updateProfile(displayName: displayName);
                       }
 

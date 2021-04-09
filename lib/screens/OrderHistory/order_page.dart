@@ -19,11 +19,24 @@ class OrderHistoryPage extends StatefulWidget {
 
 class _OrderHistoryPageState extends State<OrderHistoryPage> {
   String dateStr = '';
+  FSService fsService = FSService();
   List<Receipt> activeReceipts = [];
-
+  //upcoming receipts
   Future<List<Receipt>>? futureOrders;
 
   PastOrderPage? pastOrderPage;
+
+  void addUpcomingOrderListener() {
+    fsService.databaseRef
+        .collection("customers")
+        .doc(APPSetting().customerUID)
+        .collection("activeOrders")
+        .snapshots()
+        .listen((changeSnapshot) {
+      print(changeSnapshot.docs.length);
+      futureOrders = fetchOrder(changeSnapshot);
+    });
+  }
 
   Future<List<Receipt>> fetchOrder(QuerySnapshot changeSnapshot) async {
     List<Future<Receipt?>> futures = [];
@@ -37,7 +50,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
       if (change.type == DocumentChangeType.modified) {
         final data = change.doc.data();
         OrderStatus? newStatus =
-            OrderStatusExt.statusFromRawValue(data['status'] as int);
+            OrderStatusExt.statusFromRawValue(data?['status'] as int);
         if (newStatus != null) {
           switch (newStatus) {
             case OrderStatus.cancelled:
@@ -65,9 +78,15 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
     });
 
     await Future.wait(futures).then((receipts) {
-      if (receipts.isNotEmpty)
-        activeReceipts = activeReceipts..addAll(receipts as List<Receipt>);
+      if (receipts.isNotEmpty) {
+        receipts.forEach((element) {
+          if (element != null) activeReceipts.add(element);
+        });
+      }
+      // activeReceipts = activeReceipts..addAll(receipts);
       print('TAG 3.did add order, COUNT ${activeReceipts.length}');
+      // print('TAG 3.did add order, COUNT ${futureOrders?.toString() ?? 0}');
+      setState(() {});
     });
 
     return activeReceipts;
@@ -76,14 +95,15 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   @override
   void initState() {
     FSService().getPastReceipts();
+    addUpcomingOrderListener();
     // TODO: implement initState
     super.initState();
   }
 
   @override
   void didChangeDependencies() {
-    final changeSnapshot = Provider.of<QuerySnapshot>(context);
-    futureOrders = fetchOrder(changeSnapshot);
+    // final changeSnapshot = Provider.of<QuerySnapshot>(context);
+    // futureOrders = fetchOrder(changeSnapshot);
 
     super.didChangeDependencies();
   }

@@ -18,7 +18,7 @@ import 'package:cafe_hollywood/screens/OrderHistory/order_page.dart';
 //   @override
 //   Widget build(BuildContext context) {
 //     return StreamProvider<QuerySnapshot>.value(
-//       initialData: null,
+//       initialData: QuerySnapshot(),
 //         value: fsService.activeOrderSnapshots, child: OrderHistoryPage());
 //   }
 // }

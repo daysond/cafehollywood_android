@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 
 import 'package:cafe_hollywood/models/cart.dart';
 import 'package:cafe_hollywood/models/enums/combo_type.dart';
@@ -85,7 +86,10 @@ class FSService {
     });
 
     await Future.wait(futures).then((result) {
-      if (result.isNotEmpty) meals = result as List<Meal>;
+      if (result.isNotEmpty)
+        result.forEach((element) {
+          if (element != null) meals.add(element);
+        });
     });
     return meals;
   }
@@ -94,7 +98,7 @@ class FSService {
     var doc = FirebaseFirestore.instance.collection('meals').doc(uid);
     return doc.get().then((value) async {
       if (value.data() != null) {
-        final data = value.data();
+        final data = value.data()!;
 
         var meal = Meal(
             value.id,
@@ -117,6 +121,7 @@ class FSService {
         }
 
         if (data['preferences'] != null) {
+          List<Preference> tempPreference = [];
           List<Future<Preference?>> futures = [];
           List<String> uids =
               (data['preferences'] as List).map((e) => e as String).toList();
@@ -126,7 +131,10 @@ class FSService {
 
           await Future.wait(futures).then((preferences) {
             if (preferences.isNotEmpty)
-              meal.preferences = preferences as List<Preference>;
+              preferences.forEach((element) {
+                if (element != null) tempPreference.add(element);
+              });
+            meal.preferences = tempPreference;
           });
         }
 
@@ -141,7 +149,7 @@ class FSService {
     List<PreferenceItem> items = [];
     return doc.get().then((value) async {
       if (value.data() != null) {
-        final data = value.data();
+        final data = value.data()!;
         List<String> itemUIDs =
             (data['items'] as List).map((e) => e as String).toList();
         itemUIDs.forEach((uid) {
@@ -149,7 +157,10 @@ class FSService {
         });
 
         await Future.wait(futures).then((result) {
-          if (result.isNotEmpty) items = result as List<PreferenceItem>;
+          if (result.isNotEmpty)
+            result.forEach((element) {
+              if (element != null) items.add(element);
+            });
         });
 
         Preference preference = Preference(value.id, data['isRequired'],
@@ -164,7 +175,7 @@ class FSService {
     var doc = FirebaseFirestore.instance.collection('preferenceItems').doc(uid);
     return doc.get().then((value) {
       if (value.data() != null) {
-        final data = value.data();
+        final data = value.data()!;
         PreferenceItem item =
             PreferenceItem(value.id, data['name'], data['description']);
         if (data['price'] != null) {
@@ -181,7 +192,7 @@ class FSService {
 //ONLINE ORDER
   Future placeOrder() async {
     final String orderID = randomString(6);
-    final customerID = AuthService().customerID ?? 'newUser';
+    final customerID = AuthService().customerID;
     // print('placing order ${orderID}');
     var orderRef = databaseRef.collection('onlineOrders').doc(orderID);
     var activeOrderRef = databaseRef.collection("activeOrders").doc(orderID);
@@ -247,18 +258,18 @@ class FSService {
     var doc = databaseRef.collection('onlineOrders').doc(id);
     return doc.get().then((value) {
       if (value.data() != null) {
-        final data = value.data();
+        final data = value.data()!;
         // Receipt receipt = Receipt
 
         String customerID = data['customerID'];
 
         String orderTimestamp = data['orderTimestamp'];
-        String orderNote = data['orderNote'];
-        Decimal discount = Decimal.parse('${data['discount']}' ?? '0');
-        Decimal promotion = Decimal.parse('${data['promotion']}' ?? '0');
-        Decimal taxes = Decimal.parse('${data['taxes']}' ?? '0');
-        Decimal subtotal = Decimal.parse('${data['subtotal']}' ?? '0');
-        Decimal total = Decimal.parse('${data['total']}' ?? '0');
+        String? orderNote = data['orderNote'];
+        Decimal discount = Decimal.parse('${data['discount']}');
+        Decimal promotion = Decimal.parse('${data['promotion']}');
+        Decimal taxes = Decimal.parse('${data['taxes']}');
+        Decimal subtotal = Decimal.parse('${data['subtotal']}');
+        Decimal total = Decimal.parse('${data['total']}');
         int orderStatusInt = data['status'];
         String customerName = data['customerName'];
         OrderStatus? orderStatus =
@@ -297,7 +308,7 @@ class FSService {
   MealInfo _mealsInfoFromData(String id, Map<String, dynamic> data) {
     String name = data['name'];
     int quantity = data['quantity'];
-    Decimal totalPrice = Decimal.parse('${data['totalPrice']}' ?? '0');
+    Decimal totalPrice = Decimal.parse('${data['totalPrice']}');
     String addOnInfo = data['addOnInfo'];
     String instruction = data['instruction'];
 
@@ -375,7 +386,7 @@ class FSService {
 
     activeTableListener = activeTableRef.snapshots().listen((snapshot) {
       var data = snapshot.data();
-      print(data.toString());
+      if (data == null) return;
       if (data.length == 0) {
         return;
       }
@@ -393,11 +404,10 @@ class FSService {
                 OrderStatusExt.statusFromRawValue(value as int);
             if (status != null) {
               // if status changed, update status
-              TableOrder? order = DineInTable().tableOrders.firstWhere(
+              TableOrder order = DineInTable().tableOrders.firstWhere(
                   (order) => order.orderID == key && order.status != status);
-              if (order != null) {
-                order.status = status;
-              }
+
+              order.status = status;
 
               // NotificationCenter.default.post(name: .didUpdateDineInOrderStatus, object: nil)
               // in swift means TableOrderView. receiptTableView.reloadDate()
@@ -437,7 +447,7 @@ class FSService {
   Future? fetchTableOrder(String orderID) {
     databaseRef.collection("dineInOrders").doc(orderID).get().then((snapshot) {
       if (snapshot.data() != null) {
-        final data = snapshot.data();
+        final data = snapshot.data()!;
         String customerID = data["customerID"];
         String customerName = data["customerName"];
         String customerPhoneNumber = data["customerPhoneNumber"];

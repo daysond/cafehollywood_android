@@ -32,10 +32,10 @@ class MealTile extends StatelessWidget {
                             fontSize: 16, fontWeight: FontWeight.w600),
                       ),
                       SizedBox(height: 8),
-                      Text(meal.details ?? '', style: TextStyle(fontSize: 16)),
+                      Text(meal.details, style: TextStyle(fontSize: 16)),
                       SizedBox(height: 8),
                       if (meal.price.toString() != '0')
-                        Text('\$${meal.price.toStringAsFixed(2) ?? ''}',
+                        Text('\$${meal.price.toStringAsFixed(2)}',
                             style: TextStyle(fontSize: 16)),
                       if (meal.price.toString() == '0') SizedBox(height: 8),
                     ],

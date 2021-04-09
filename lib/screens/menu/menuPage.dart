@@ -47,9 +47,13 @@ class _MenuPageState extends State<MenuPage> {
           },
           body: new TabBarView(children: [
             StreamProvider<List<Menu>>.value(
-                value: FSService().foodMenuSnapshots, child: MenuGridView()),
+                initialData: [],
+                value: FSService().foodMenuSnapshots,
+                child: MenuGridView()),
             StreamProvider<List<Menu>>.value(
-                value: FSService().drinkMenuSnapshots, child: MenuGridView()),
+                initialData: [],
+                value: FSService().drinkMenuSnapshots,
+                child: MenuGridView()),
             // MenuGridView(l1),
           ] // <--- the array item is a ListView
               ),

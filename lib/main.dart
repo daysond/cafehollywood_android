@@ -19,32 +19,25 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MainTabBar();
-    // return StreamProvider<String>.value(
-    //     value: AuthService().currentUserID,
-    //     child: CupertinoApp(
-    //       localizationsDelegates: [
-    //         DefaultMaterialLocalizations.delegate,
-    //         DefaultCupertinoLocalizations.delegate,
-    //         DefaultWidgetsLocalizations.delegate,
-    //       ],
-    //       home: Wrapper(),
-    //       title: "Cafe Hollywood",
-    //       theme: CupertinoThemeData(
-    //         primaryColor: Colors.black,
-    //         textTheme: CupertinoTextThemeData(
-    //           navLargeTitleTextStyle: TextStyle(
-    //             fontWeight: FontWeight.bold,
-    //             fontSize: 60,
-    //             color: CupertinoColors.white,
-    //           ),
-    //         ),
-    //       ),
-    //     )
-    //     // MaterialApp(
-    //     //   home: Wrapper(),
-    //     //   theme: ThemeData(primarySwatch: Colors.green),
-    //     // ),
-    //     );
+    // return MainTabBar();
+    return CupertinoApp(
+      localizationsDelegates: [
+        DefaultMaterialLocalizations.delegate,
+        DefaultCupertinoLocalizations.delegate,
+        DefaultWidgetsLocalizations.delegate,
+      ],
+      home: MainTabBar(),
+      title: "Cafe Hollywood",
+      theme: CupertinoThemeData(
+        primaryColor: Colors.black,
+        textTheme: CupertinoTextThemeData(
+          navLargeTitleTextStyle: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 60,
+            color: CupertinoColors.white,
+          ),
+        ),
+      ),
+    );
   }
 }

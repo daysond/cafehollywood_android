@@ -19,12 +19,11 @@ class ReceiptItemTile extends StatelessWidget {
                   Container(
                       width: 18,
                       color: Colors.grey[350],
-                      child:
-                          Center(child: Text(meal.quantity.toString() ?? ''))),
+                      child: Center(child: Text(meal.quantity.toString()))),
                   SizedBox(width: 8),
                   Expanded(
                       child: Text(
-                    meal.name ?? '',
+                    meal.name,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   )),
                   Text(meal.totalPrice.toString()),
@@ -34,8 +33,8 @@ class ReceiptItemTile extends StatelessWidget {
             Padding(
               padding: EdgeInsets.fromLTRB(24, 0, 8, 8),
               child: meal.instruction != null
-                  ? Text('${meal.addOnInfo}${meal.instruction}' ?? '')
-                  : Text(meal.addOnInfo ?? ''),
+                  ? Text('${meal.addOnInfo}${meal.instruction}')
+                  : Text(meal.addOnInfo),
             )
           ],
         ));

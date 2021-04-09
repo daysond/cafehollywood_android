@@ -123,7 +123,7 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
             Expanded(
               child: AutoSizeText(
-                _warning,
+                _warning!,
                 maxLines: 3,
               ),
             ),
@@ -175,8 +175,17 @@ class _SignUpPageState extends State<SignUpPage> {
     }
 
     textFields.add(IntlPhoneField(
-      onSaved: (phone) => _phone = phone.completeNumber,
-      validator: PhoneValidator.validate,
+      onSaved: (phone) => _phone = phone?.completeNumber,
+      validator: (String? value) {
+        String pattern = r'(^(?:[+0]9)?[0-9]{10,12}$)';
+        RegExp regExp = new RegExp(pattern);
+        if (value?.length == 0) {
+          return 'Please enter mobile number';
+        } else if (!regExp.hasMatch(value!)) {
+          return 'Please enter valid mobile number';
+        }
+        return null;
+      },
       decoration: InputDecoration(
         labelText: 'Enter Phone Number',
         border: OutlineInputBorder(

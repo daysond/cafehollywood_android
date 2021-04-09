@@ -1,8 +1,7 @@
 import 'dart:math';
 import 'package:cafe_hollywood/models/table.dart';
-import 'package:cafe_hollywood/screens/OrderHistory/order_history_wrapper.dart';
 import 'package:cafe_hollywood/services/fs_service.dart';
-import 'package:cafe_hollywood/test.dart';
+// import 'package:cafe_hollywood/test.dart';
 import 'package:cafe_hollywood/screens/OrderHistory/order_page.dart';
 import 'package:cafe_hollywood/screens/cart/cart_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -25,7 +24,7 @@ class MainTabBar extends StatelessWidget {
     // );
     return Scaffold(
       body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.dark,
+        value: SystemUiOverlayStyle.light,
         child: MainTabHome(),
       ),
     );
@@ -43,7 +42,7 @@ class _MainTabHomeState extends State<MainTabHome> {
   MenuPage menuPage = MenuPage();
   CartPage cartPage = CartPage();
   OrderHistoryPage orderHistoryPage = OrderHistoryPage();
-  OrderHistoryWrapper historywrapper = OrderHistoryWrapper();
+  // OrderHistoryWrapper historywrapper = OrderHistoryWrapper();
   CupertinoTabController? _controller;
 
   @override
@@ -169,7 +168,7 @@ class _MainTabHomeState extends State<MainTabHome> {
                   case 3: //Cart
                     return cartPage;
                   case 4: //Order historywrapper
-                    return historywrapper;
+                    return orderHistoryPage;
                   default:
                     return HomePage(onlineOrderTapped);
                   // return StreamProvider<QuerySnapshot>.value(

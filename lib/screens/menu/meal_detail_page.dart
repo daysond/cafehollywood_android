@@ -181,7 +181,7 @@ class _MealDetailPageState extends State<MealDetailPage> {
                                         color: Colors.white),
                                   ),
                                   Text(
-                                    widget.meal.details ?? '',
+                                    widget.meal.details,
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w300,
