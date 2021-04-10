@@ -3,6 +3,7 @@ import 'package:cafe_hollywood/models/preference.dart';
 import 'package:cafe_hollywood/models/preference_item.dart';
 import 'package:cafe_hollywood/screens/menu/item_tile.dart';
 import 'package:cafe_hollywood/screens/menu/preference_tile.dart';
+import 'package:cafe_hollywood/services/app_setting.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,8 +13,11 @@ import 'package:cafe_hollywood/screens/shared/black_button.dart';
 class MealDetailPage extends StatefulWidget {
   final Meal meal;
   final bool isNewMeal;
+  final bool modifyMode;
+  void Function()? modifierCallBack;
 
-  MealDetailPage(this.meal, this.isNewMeal);
+  MealDetailPage(this.meal, this.isNewMeal, this.modifyMode,
+      {this.modifierCallBack});
 
   @override
   _MealDetailPageState createState() => _MealDetailPageState();
@@ -31,6 +35,12 @@ class _MealDetailPageState extends State<MealDetailPage> {
         _scrollController!.offset > (appBarHeight - kToolbarHeight);
   }
 
+  bool isFav = false;
+
+  bool get hasImage {
+    return widget.meal.imageURL != null;
+  }
+
   _scrollListener() {
     if (isShrink != lastStatus) {
       setState(() {
@@ -43,6 +53,7 @@ class _MealDetailPageState extends State<MealDetailPage> {
   void initState() {
     _scrollController = ScrollController();
     _scrollController!.addListener(_scrollListener);
+    getIsFav();
     super.initState();
   }
 
@@ -50,6 +61,14 @@ class _MealDetailPageState extends State<MealDetailPage> {
   void dispose() {
     _scrollController!.removeListener(_scrollListener);
     super.dispose();
+  }
+
+  getIsFav() async {
+    await widget.meal.isFavourite().then((value) {
+      setState(() {
+        isFav = value;
+      });
+    });
   }
 
   void cartButtonTapped() {
@@ -61,6 +80,11 @@ class _MealDetailPageState extends State<MealDetailPage> {
       Cart().didUpdateCart();
     }
 
+    Navigator.pop(context);
+  }
+
+  void saveModification() {
+    widget.modifierCallBack!.call();
     Navigator.pop(context);
   }
 
@@ -108,7 +132,6 @@ class _MealDetailPageState extends State<MealDetailPage> {
       }
       ;
     }
-    print(widget.meal.instruction);
 
     if (!widget.isNewMeal && widget.meal.instruction != null) {
       instructionTextController.text = widget.meal.instruction!;
@@ -122,7 +145,11 @@ class _MealDetailPageState extends State<MealDetailPage> {
           slivers: [
             SliverAppBar(
               leading: IconButton(
-                  icon: Icon(Icons.arrow_back),
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: hasImage ? Colors.white : Colors.black,
+                    size: 36,
+                  ),
                   color: isShrink ? Colors.black : Colors.white,
                   onPressed: () {
                     Navigator.pop(context);
@@ -151,17 +178,19 @@ class _MealDetailPageState extends State<MealDetailPage> {
                     Container(
                       decoration: BoxDecoration(
                           color: Colors.white,
-                          gradient: LinearGradient(
-                              begin: FractionalOffset.topCenter,
-                              end: FractionalOffset.bottomCenter,
-                              colors: [
-                                Colors.grey.withOpacity(0.0),
-                                Colors.black.withOpacity(0.9),
-                              ],
-                              stops: [
-                                0.0,
-                                1.0
-                              ])),
+                          gradient: hasImage
+                              ? LinearGradient(
+                                  begin: FractionalOffset.topCenter,
+                                  end: FractionalOffset.bottomCenter,
+                                  colors: [
+                                      Colors.grey.withOpacity(0.0),
+                                      Colors.black.withOpacity(0.9),
+                                    ],
+                                  stops: [
+                                      0.0,
+                                      1.0
+                                    ])
+                              : null),
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 32, 32, 16),
@@ -178,26 +207,37 @@ class _MealDetailPageState extends State<MealDetailPage> {
                                     style: TextStyle(
                                         fontSize: 24,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.white),
+                                        color: hasImage
+                                            ? Colors.white
+                                            : Colors.black),
                                   ),
                                   Text(
                                     widget.meal.details,
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w300,
-                                        color: Colors.white),
+                                        color: hasImage
+                                            ? Colors.white
+                                            : Colors.black),
                                   ),
                                 ]),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(bottom: 8),
                             child: GestureDetector(
-                              onTap: () {},
+                              onTap: () async {
+                                if (isFav) {
+                                  APPSetting().unfavouriteMeal(widget.meal.uid);
+                                } else {
+                                  APPSetting().favouriteMeal(widget.meal.uid);
+                                }
+                                setState(() {
+                                  isFav = !isFav;
+                                });
+                              },
                               child: ImageIcon(
                                 AssetImage('assets/heartEmpty.png'),
-                                color: widget.meal.isFavourite
-                                    ? Colors.red
-                                    : Colors.white,
+                                color: isFav ? Colors.red : Colors.white,
                               ),
                             ),
                           ),
@@ -207,7 +247,9 @@ class _MealDetailPageState extends State<MealDetailPage> {
                   ]),
                 ),
               ),
-              expandedHeight: MediaQuery.of(context).size.width * 9.0 / 16.0,
+              expandedHeight: hasImage
+                  ? MediaQuery.of(context).size.width * 9.0 / 16.0
+                  : 120,
             ),
             if (widget.meal.preferences != null)
               SliverList(
@@ -235,12 +277,21 @@ class _MealDetailPageState extends State<MealDetailPage> {
                 margin: EdgeInsets.only(bottom: 8),
                 width: MediaQuery.of(context).size.width,
                 height: 50,
-                child: new BlackButton(
-                  widget.isNewMeal ? 'Add To Cart' : 'Update Cart',
-                  cartButtonTapped,
-                  shouldEnableCartButton,
-                  subtitle: '\$${widget.meal.totalPrice.toStringAsFixed(2)}',
-                ),
+                child: widget.modifyMode
+                    ? BlackButton(
+                        'Save Modification',
+                        saveModification,
+                        shouldEnableCartButton,
+                        subtitle:
+                            '\$${widget.meal.totalPrice.toStringAsFixed(2)}',
+                      )
+                    : BlackButton(
+                        widget.isNewMeal ? 'Add To Cart' : 'Update Cart',
+                        cartButtonTapped,
+                        shouldEnableCartButton,
+                        subtitle:
+                            '\$${widget.meal.totalPrice.toStringAsFixed(2)}',
+                      ),
               ),
             ),
           ),

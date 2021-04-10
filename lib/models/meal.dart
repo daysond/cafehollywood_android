@@ -17,16 +17,17 @@ class Meal {
   String? instruction;
   ComboType? comboType;
   List<Preference>? preferences;
-
   bool isSelected = false;
   int quantity = 1;
 
-  bool get isFavourite {
-    return APPSetting().favouriteMealList.contains(uid);
-  }
-
   Meal(this.uid, this.name, this.price, this.mealDescription, this.details,
       {this.imageURL, this.comboMealTag, this.preferences, this.isBogo});
+
+  Future<bool> isFavourite() async {
+    return APPSetting()
+        .favouriteMealList()
+        .then((favList) => favList.contains(uid));
+  }
 
   Meal copy(Meal meal) {
     Meal newMeal = Meal(
@@ -129,6 +130,24 @@ class Meal {
 
       return addOnDetails.trimRight();
     }
+  }
+
+  bool get isModificationRequired {
+    if (preferences == null) return false;
+    bool isRequired = false;
+    preferences!.forEach((preference) {
+      if (preference.isRequired) {
+        for (var item in preference.preferenceItems) {
+          if (item.isSelected) {
+            isRequired = false;
+            break;
+          } else {
+            isRequired = true;
+          }
+        }
+      }
+    });
+    return isRequired;
   }
 
   Map<String, dynamic> get representation {

@@ -13,7 +13,7 @@ class CartItemTile extends StatelessWidget {
         Navigator.push(
             context,
             CupertinoPageRoute(
-                builder: (context) => MealDetailPage(meal, false)));
+                builder: (context) => MealDetailPage(meal, false, false)));
       },
       child: Card(
           margin: EdgeInsets.fromLTRB(10, 0, 10, 10),

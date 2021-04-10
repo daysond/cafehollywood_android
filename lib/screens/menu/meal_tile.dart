@@ -14,7 +14,7 @@ class MealTile extends StatelessWidget {
         Navigator.push(
             context,
             CupertinoPageRoute(
-                builder: (context) => MealDetailPage(meal, true)));
+                builder: (context) => MealDetailPage(meal, true, false)));
       },
       child: Card(
           margin: EdgeInsets.fromLTRB(8, 8, 8, 0),

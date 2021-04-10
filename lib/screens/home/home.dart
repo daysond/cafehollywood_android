@@ -15,8 +15,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  void _showPanel(Widget panel) {
+  void _showPanel(Widget panel, bool isScrollControlled) {
     showModalBottomSheet(
+        isScrollControlled: isScrollControlled,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
@@ -66,27 +67,38 @@ class _HomePageState extends State<HomePage> {
                     ButtonTheme(
                       minWidth: 145,
                       buttonColor: Colors.white,
-                      child: RaisedButton(
-                        onPressed: () => _showPanel(QuickOrderListView()),
-                        child: Text('Quick Order'),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            primary: Colors.white, minimumSize: Size(145, 40)),
+                        onPressed: () => _showPanel(QuickOrderListView(), true),
+                        child: Text(
+                          'Quick Order',
+                          style: TextStyle(color: Colors.black),
+                        ),
                       ),
                     ),
                     SizedBox(height: 8.0),
                     ButtonTheme(
                       minWidth: 145,
                       buttonColor: Colors.white,
-                      child: RaisedButton(
-                        onPressed: () => _showPanel(BookingPanel()),
-                        child: Text('Make Reservation'),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            primary: Colors.white, minimumSize: Size(145, 40)),
+                        onPressed: () => _showPanel(BookingPanel(), false),
+                        child: Text('Make Reservation',
+                            style: TextStyle(color: Colors.black)),
                       ),
                     ),
                     SizedBox(height: 8.0),
                     ButtonTheme(
                       minWidth: 145,
                       buttonColor: Colors.white,
-                      child: RaisedButton(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            primary: Colors.white, minimumSize: Size(145, 40)),
                         onPressed: widget.onlineOrderTapped,
-                        child: Text('Online Order Now'),
+                        child: Text('Online Order Now',
+                            style: TextStyle(color: Colors.black)),
                       ),
                     ),
                   ]),
