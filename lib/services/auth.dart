@@ -11,8 +11,8 @@ class AuthService {
     return _auth.currentUser != null;
   }
 
-  String get customerID {
-    return _auth.currentUser?.uid ?? "";
+  String? get customerID {
+    return _auth.currentUser?.uid;
   }
 
   String get displayName {
@@ -23,11 +23,11 @@ class AuthService {
     return _auth.currentUser?.phoneNumber ?? '';
   }
 
-  String? _currentUID(User? user) {
-    return user != null ? user.uid : null;
+  String _currentUID(User? user) {
+    return user != null ? user.uid : '';
   }
 
-  Stream<String?> get currentUserID {
+  Stream<String>? get currentUserID {
     return _auth.authStateChanges().map(_currentUID);
   }
 
@@ -80,10 +80,13 @@ class AuthService {
                 children: <Widget>[TextField(controller: _codeController)],
               ),
               actions: <Widget>[
-                FlatButton(
+                TextButton(
                   child: Text("submit"),
-                  textColor: Colors.white,
-                  color: Colors.black,
+                  style: TextButton.styleFrom(
+                      primary: Colors.black,
+                      textStyle: TextStyle(color: Colors.white)),
+                  // textColor: Colors.white,
+                  // color: Colors.black,
                   onPressed: () {
                     var _credential = PhoneAuthProvider.credential(
                         verificationId: verificationId,

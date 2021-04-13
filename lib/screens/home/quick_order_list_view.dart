@@ -33,6 +33,9 @@ class _QuickOrderListViewState extends State<QuickOrderListView> {
                 .contains(uid)) listToGet.add(uid);
           });
           fsService.getMeals(listToGet).then((value) {
+            value.forEach((element) {
+              APPSetting().recoverMealPreferenceData(element);
+            });
             setState(() {
               APPSetting().favouriteMeals.addAll(value);
             });

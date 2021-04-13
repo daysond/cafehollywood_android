@@ -150,6 +150,31 @@ class Meal {
     return isRequired;
   }
 
+  Map<String, dynamic> get preferencesInEncodedJSON {
+    Map<String, dynamic> data = {};
+
+    Map<String, dynamic> preferencesInfo = {};
+
+    if (instruction != null) data["instruction"] = instruction;
+
+    if (preferences != null) {
+      preferences!.forEach((preference) {
+        List<Map<String, int>> selectedItems = [];
+        preference.preferenceItems.forEach((item) {
+          if (item.isSelected) selectedItems.add({item.uid: item.quantity});
+        });
+
+        if (selectedItems.length > 0) {
+          preferencesInfo[preference.uid] = selectedItems;
+        }
+      });
+    }
+
+    data["preferences"] = preferencesInfo;
+
+    return data;
+  }
+
   Map<String, dynamic> get representation {
     return {
       "uid": uid,

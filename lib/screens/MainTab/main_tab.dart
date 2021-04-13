@@ -1,17 +1,17 @@
 import 'dart:math';
 import 'package:cafe_hollywood/models/table.dart';
+import 'package:cafe_hollywood/screens/MainTab/table_order_page.dart';
+import 'package:cafe_hollywood/screens/OrderHistory/order_tab_wrapper.dart';
+import 'package:cafe_hollywood/services/app_setting.dart';
+import 'package:cafe_hollywood/services/auth.dart';
 import 'package:cafe_hollywood/services/fs_service.dart';
-// import 'package:cafe_hollywood/test.dart';
 import 'package:cafe_hollywood/screens/OrderHistory/order_page.dart';
 import 'package:cafe_hollywood/screens/cart/cart_page.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:flutter/cupertino.dart';
 import 'package:cafe_hollywood/screens/home/home.dart';
 import 'package:cafe_hollywood/screens/menu/menuPage.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:provider/provider.dart';
 
@@ -23,6 +23,7 @@ class MainTabBar extends StatelessWidget {
     //   SystemUiOverlayStyle(statusBarIconBrightness: Brightness.dark),
     // );
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: MainTabHome(),
@@ -37,6 +38,7 @@ class MainTabHome extends StatefulWidget {
 }
 
 class _MainTabHomeState extends State<MainTabHome> {
+  final _msgController = TextEditingController();
   bool isButtonsCollapsed = true;
   bool isButtonHidden = true;
   MenuPage menuPage = MenuPage();
@@ -48,6 +50,7 @@ class _MainTabHomeState extends State<MainTabHome> {
   @override
   void initState() {
     super.initState();
+    startUpChecks();
     _controller = new CupertinoTabController();
   }
 
@@ -55,6 +58,75 @@ class _MainTabHomeState extends State<MainTabHome> {
   void dispose() {
     _controller!.dispose();
     super.dispose();
+  }
+
+  void startUpChecks() {
+    // FSService().addReservationListener()
+    print('doing start up checks');
+    FSService().checkActiveTable();
+    FSService().addunavailablityListener();
+    FSService().getCurrentVersions();
+    APPSetting().update();
+  }
+
+  void _updateButtonState() {
+    setState(() {
+      if (isButtonsCollapsed) {
+        isButtonHidden = false;
+      }
+      isButtonsCollapsed = !isButtonsCollapsed;
+    });
+  }
+
+  void showInputDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Text("How can we help you?"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[TextField(controller: _msgController)],
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: Text("Cancel"),
+            style: TextButton.styleFrom(
+                primary: Colors.black,
+                textStyle: TextStyle(color: Colors.white)),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: Text("submit"),
+            style: TextButton.styleFrom(
+                primary: Colors.black,
+                textStyle: TextStyle(color: Colors.white)),
+            // textColor: Colors.white,
+            // color: Colors.black,
+            onPressed: () {
+              // sendRequest();
+              if (DineInTable().tableNumber != null) {
+                String req = DineInTable().tableNumber! +
+                    ': ' +
+                    _msgController.text.trim();
+                FSService().sendRequest(req);
+              }
+
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  void sendRequest(String text) {
+    _updateButtonState.call();
+    if (DineInTable().tableNumber == null) return;
+    String req = 'Table ${DineInTable().tableNumber} request ${text}';
+    FSService().sendRequest(req);
   }
 
   Future<void> scanQRCode() async {
@@ -88,39 +160,19 @@ class _MainTabHomeState extends State<MainTabHome> {
 
     DineInTable().tableNumber = num;
     FSService().checkIfTableDoesExist(num);
-    // NetworkManager.shared.checkIfTableDoesExist(completion: { (error, tableExists) in
-
-    //     guard error == nil else {
-    //         print(error!.localizedDescription)
-    //         self.delegate?.failedReadingQRCode()
-    //         return
-    //     }
-
-    //     if let tableExists = tableExists {
-
-    //         switch tableExists {
-    //         case true:
-
-    //             NetworkManager.shared.addTableListener()
-
-    //             self.delegate?.found()
-
-    //         default:
-
-    //             self.delegate?.found()
-
-    //         }
-
-    //     }
-
-    // })
   }
 
   void displayErrorMessage(String msg) {}
 
   void onlineOrderTapped() {
-    print('setting state');
-    _controller!.index = 1;
+    // _controller!.index = 1;
+    print('hours :${APPSetting().businessHours.toString()}');
+    print('hst :${APPSetting().hstRate.toString()}');
+    print('mini: ${APPSetting().miniPurchase.toString()}');
+    print('fed tax: ${APPSetting().federalTaxRate.toString()}');
+    print('drink :${APPSetting().drinkCreditAmount.toString()}');
+    print('wing :${APPSetting().wingCreditAmout.toString()}');
+    print('version : ${APPSetting().versions.toString()}');
   }
 
   @override
@@ -168,26 +220,13 @@ class _MainTabHomeState extends State<MainTabHome> {
                   case 3: //Cart
                     return cartPage;
                   case 4: //Order historywrapper
-                    return orderHistoryPage;
+                    return StreamProvider<String>.value(
+                      initialData: '',
+                      value: AuthService().currentUserID,
+                      child: OrderTabWrapper(),
+                    );
                   default:
                     return HomePage(onlineOrderTapped);
-                  // return StreamProvider<QuerySnapshot>.value(
-                  //     value: FSService().activeOrderSnapshots,
-                  //     child: OrderHistoryPage());
-
-                  // default:
-                  //   return CupertinoPageScaffold(
-                  //       navigationBar: CupertinoNavigationBar(
-                  //         middle: Text(index.toString()),
-                  //       ),
-                  //       child: Center(
-                  //           child: Text(
-                  //             'this is button $index',
-                  //             style: CupertinoTheme.of(context)
-                  //                 .textTheme
-                  //                 .actionTextStyle
-                  //                 .copyWith(fontSize: 32),
-                  //           )));
                 }
               });
             }),
@@ -205,11 +244,11 @@ class _MainTabHomeState extends State<MainTabHome> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    print(DineInTable().tableOrders.length);
-                    DineInTable().tableOrders.forEach((element) {
-                      print(element.meals);
-                      print(element.orderID);
-                    });
+                    _updateButtonState.call();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TableOrderPage()));
                   },
                   child: ImageIcon(
                     AssetImage('assets/order.png'),
@@ -241,7 +280,9 @@ class _MainTabHomeState extends State<MainTabHome> {
             child: Column(
               children: [
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    sendRequest("waiter");
+                  },
                   child: ImageIcon(
                     AssetImage('assets/waiter.png'),
                     color: Colors.orange,
@@ -272,7 +313,9 @@ class _MainTabHomeState extends State<MainTabHome> {
             child: Column(
               children: [
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    sendRequest("bill");
+                  },
                   child: ImageIcon(
                     AssetImage('assets/receipt.png'),
                     color: Colors.orange,
@@ -303,7 +346,11 @@ class _MainTabHomeState extends State<MainTabHome> {
             child: Column(
               children: [
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    _msgController.text = '';
+                    _updateButtonState.call();
+                    showInputDialog.call();
+                  },
                   child: ImageIcon(
                     AssetImage('assets/note.png'),
                     color: Colors.orange,
@@ -330,7 +377,6 @@ class _MainTabHomeState extends State<MainTabHome> {
           duration: Duration(milliseconds: 250),
           curve: Curves.easeOutSine,
           onEnd: () {
-            print('ended');
             setState(() {
               isButtonHidden = isButtonsCollapsed;
             });
@@ -340,7 +386,9 @@ class _MainTabHomeState extends State<MainTabHome> {
             child: Column(
               children: [
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    sendRequest("water refill");
+                  },
                   child: ImageIcon(
                     AssetImage('assets/water.png'),
                     color: Colors.orange,
@@ -365,66 +413,23 @@ class _MainTabHomeState extends State<MainTabHome> {
               height: kToolbarHeight + 4,
               child: GestureDetector(
                 onTap: () {
-                  // scanQRCode();
+                  if (DineInTable().tableNumber == null) {
+                    // scanQRCode();
+                    DineInTable().tableNumber = '12';
+                    FSService().addTableListener();
+                    print('did set table to 12');
+                  } else {
+                    _updateButtonState.call();
+                  }
+
                   // Navigator.push(context,
                   //     MaterialPageRoute(builder: (context) => QRScanPage()));
-
-                  setState(() {
-                    if (isButtonsCollapsed) {
-                      isButtonHidden = false;
-                    }
-                    isButtonsCollapsed = !isButtonsCollapsed;
-                  });
                 },
                 child: ImageIcon(AssetImage('assets/mainButton.png'),
                     color: Colors.black),
               ),
-
-              //  FloatingActionButton(
-              //   heroTag: 'midButton',
-              //   backgroundColor: Colors.black,
-              //   child: Icon(
-              //     Icons.add,
-              //   ),
-              //   elevation: 0,
-              //   onPressed: () {
-              //     //TODO: SHOW CONTAINER OF 5 BUTTONS ON TOP OR OPENS CAMERA
-              //     scanQRCode();
-              //     // Navigator.push(context,
-              //     //     MaterialPageRoute(builder: (context) => QRScanPage()));
-
-              //     // setState(() {
-              //     //   if (isButtonsCollapsed) {
-              //     //     isButtonHidden = false;
-              //     //   }
-              //     //   isButtonsCollapsed = !isButtonsCollapsed;
-              //     // });
-              //   },
-              // ),
             )),
       ],
-    );
-  }
-}
-
-class DetailScreen extends StatefulWidget {
-  const DetailScreen(this.topic);
-  final String topic;
-
-  @override
-  _DetailScreenState createState() => _DetailScreenState();
-}
-
-class _DetailScreenState extends State<DetailScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text('Details'),
-      ),
-      child: Center(
-        child: Text('details for ${widget.topic}'),
-      ),
     );
   }
 }

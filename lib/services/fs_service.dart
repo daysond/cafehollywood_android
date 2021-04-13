@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:ffi';
-
 import 'package:cafe_hollywood/models/cart.dart';
 import 'package:cafe_hollywood/models/enums/combo_type.dart';
 import 'package:cafe_hollywood/models/enums/order_status.dart';
@@ -30,8 +28,11 @@ class FSService {
   factory FSService() => _instance ?? FSService._internal();
 
   StreamSubscription<DocumentSnapshot>? activeTableListener;
+  StreamSubscription<DocumentSnapshot>? unavailablityListener;
 
   final databaseRef = FirebaseFirestore.instance;
+  final resturantInfoRef =
+      FirebaseFirestore.instance.collection("restaurantInfo");
   String randomString(int strlen) {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -365,7 +366,8 @@ class FSService {
       customerActiveTableRef.set({});
 
       Cart().resetCart();
-      Navigator.pop(context);
+      Navigator.popUntil(context, (Route<dynamic> route) => route.isFirst);
+      // Navigator.pop(context);
     }).catchError((error) {
       print(error.toString());
     });
@@ -404,10 +406,15 @@ class FSService {
                 OrderStatusExt.statusFromRawValue(value as int);
             if (status != null) {
               // if status changed, update status
-              TableOrder order = DineInTable().tableOrders.firstWhere(
-                  (order) => order.orderID == key && order.status != status);
+              // TableOrder? order = DineInTable().tableOrders.firstWhere(
+              //     (order) => , orElse: () => null);
 
-              order.status = status;
+              int index = DineInTable().tableOrders.indexWhere(
+                  (order) => order.orderID == key && order.status != status);
+              // if index is -1, item not found.
+              if (index != -1) {
+                DineInTable().tableOrders[index].status = status;
+              }
 
               // NotificationCenter.default.post(name: .didUpdateDineInOrderStatus, object: nil)
               // in swift means TableOrderView. receiptTableView.reloadDate()
@@ -483,4 +490,163 @@ class FSService {
       }
     });
   }
+
+  Future sendRequest(String req) async {
+    String uid = randomString(4);
+    Map<String, String> data = {'request': req};
+    databaseRef.collection('requests').doc(uid).set(data).catchError((error) {
+      print(error.toString());
+      return error;
+    });
+  }
+
+  //start up checks & gets
+  void checkActiveTable() {
+    String? myID = AuthService().customerID;
+    if (myID == null) return;
+    databaseRef
+        .collection("customers")
+        .doc(myID)
+        .collection("activeTables")
+        .get()
+        .then((snapshot) {
+      if (snapshot.docs.length == 0) {
+        // no table found , do nothing
+        return;
+      } else {
+        String id = snapshot.docs.first.id;
+        print('found table id ${id}');
+        //1. table found, set up table number
+        DineInTable().tableNumber = id;
+        //2. set up table listener
+        addTableListener();
+      }
+    });
+  }
+
+  Future<Map<String, dynamic>?> getBusinessHours() {
+    return resturantInfoRef.doc("businessHours").get().then((snapshot) {
+      var data = snapshot.data();
+      print(data);
+      return data;
+    });
+  }
+
+  Future<Map<String, dynamic>?> getCredits() {
+    return databaseRef
+        .collection("restaurantInfo")
+        .doc("creditAmounts")
+        .get()
+        .then((snapshot) {
+      var data = snapshot.data();
+      print(data);
+      return data;
+      // if let data = snapshot?.data() as? [String : Int] {
+    });
+  }
+
+  Future<Map<String, dynamic>?> getTaxRates() {
+    return databaseRef
+        .collection("restaurantInfo")
+        .doc("taxRate")
+        .get()
+        .then((snapshot) {
+      var data = snapshot.data();
+      print(data);
+      return data;
+      // if let data = snapshot?.data() as? [String : Int] {
+    });
+  }
+
+  void addunavailablityListener() {
+    if (unavailablityListener != null) {
+      unavailablityListener?.cancel();
+    }
+
+    unavailablityListener = databaseRef
+        .collection("restaurantInfo")
+        .doc("unavailablity")
+        .snapshots()
+        .listen((snapshot) {
+      var data = snapshot.data();
+      if (data != null) {
+        print('unavailable data \n ${data}');
+        List<String> unavailableMeals =
+            (data["meals"] as List).map((e) => e as String).toList();
+        List<String> unavailableItems =
+            (data["items"] as List).map((e) => e as String).toList();
+        List<String> unavailableMenus =
+            (data["menus"] as List).map((e) => e as String).toList();
+        List<String> unavailableDates =
+            (data["reservationDates"] as List).map((e) => e as String).toList();
+        bool isTakingReservation = data["isTakingReservation"];
+        APPSetting().unavailableMeals = unavailableMeals;
+        APPSetting().unavailableItems = unavailableItems;
+        APPSetting().unavailableMenus = unavailableMenus;
+        APPSetting().unavailableDates = unavailableDates;
+        APPSetting().isTakingReservation = isTakingReservation;
+      }
+    });
+  }
+
+  void getCurrentVersions() {
+    databaseRef
+        .collection("restaurantInfo")
+        .doc("versions")
+        .get()
+        .then((snapshot) {
+      var data = snapshot.data();
+      if (data != null) {
+        APPSetting().didGetCurrentVersions(data);
+      }
+    });
+  }
 }
+
+/*todo
+    func addReservationListener() {
+        
+        if reservationlistener != nil {
+            reservationlistener?.remove()
+        }
+        
+        guard let myID = currentUserUid else { return }
+        
+        reservationlistener = databaseRef.collection("customers").document(myID).collection("reservations").addSnapshotListener({ (snapshot, error) in
+            
+            if let error = error {
+                print("cant not add listener, error \(error.localizedDescription)")
+            }
+   
+            snapshot?.documentChanges.forEach({ (change) in
+                
+                switch change.type {
+                    
+                case .added:
+                    
+                    APPSetting.shared.reservationIDs.append(change.document.documentID)
+                    return
+                    
+                case .modified:
+                    return
+                    
+                case .removed:
+                    APPSetting.shared.reservationIDs.removeAll { $0 == change.document.documentID  }
+                    APPSetting.shared.reservations.removeAll {$0.uid == change.document.documentID }
+                    return
+                
+                }
+                
+                
+            })
+            
+            if let docs = snapshot?.documents {
+                APPSetting.shared.reservationIDs = docs.map { $0.documentID }
+            }
+        })
+        
+        
+        
+    }
+
+ */

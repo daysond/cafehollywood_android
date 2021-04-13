@@ -84,6 +84,7 @@ class _MealDetailPageState extends State<MealDetailPage> {
   }
 
   void saveModification() {
+    APPSetting().saveMealPreference(widget.meal);
     widget.modifierCallBack!.call();
     Navigator.pop(context);
   }
@@ -137,7 +138,13 @@ class _MealDetailPageState extends State<MealDetailPage> {
       instructionTextController.text = widget.meal.instruction!;
     }
 
+    Color arrowColor() {
+      if (isShrink) return Colors.black;
+      return hasImage ? Colors.white : Colors.black;
+    }
+
     return CupertinoPageScaffold(
+      resizeToAvoidBottomInset: false,
       child: Stack(children: [
         CustomScrollView(
           controller: _scrollController,
@@ -147,7 +154,7 @@ class _MealDetailPageState extends State<MealDetailPage> {
               leading: IconButton(
                   icon: Icon(
                     Icons.arrow_back,
-                    color: hasImage ? Colors.white : Colors.black,
+                    color: arrowColor(),
                     size: 36,
                   ),
                   color: isShrink ? Colors.black : Colors.white,
