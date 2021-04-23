@@ -142,7 +142,7 @@ class _MealDetailPageState extends State<MealDetailPage> {
       // addToCartButton.backgroundColor = .lightGray
     } else {
       buttonTitle = widget.isNewMeal ? 'Add To Cart' : 'Update Cart';
-      setCartButtonState;
+      setCartButtonState();
     }
 
     if (!widget.isNewMeal && widget.meal.instruction != null) {
@@ -323,7 +323,8 @@ class _MealDetailPageState extends State<MealDetailPage> {
       child: new Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Special Instructions:'),
+          Text('Special Instructions:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
           SizedBox(height: 8),
           CupertinoTextField(
             placeholder: 'Any Special Instructions?',
@@ -372,10 +373,14 @@ class _MealDetailPageState extends State<MealDetailPage> {
                       widget.meal.quantity++;
                     });
                   },
-                  child: Icon(Icons.add),
+                  child: Icon(
+                    Icons.add_circle_outline,
+                    size: 36,
+                  ),
                 ),
                 SizedBox(width: 16),
-                Text(widget.meal.quantity.toString()),
+                Text(widget.meal.quantity.toString(),
+                    style: TextStyle(fontSize: 18)),
                 SizedBox(width: 16),
                 GestureDetector(
                     onTap: () {
@@ -385,7 +390,13 @@ class _MealDetailPageState extends State<MealDetailPage> {
                         }
                       });
                     },
-                    child: Icon(Icons.remove)),
+                    child: Icon(
+                      Icons.remove_circle_outline,
+                      size: 36,
+                      color: widget.meal.quantity == 1
+                          ? Colors.grey[400]
+                          : Colors.black,
+                    )),
               ],
             ),
           ),

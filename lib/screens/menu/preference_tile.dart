@@ -113,7 +113,7 @@ class _PreferenceTileState extends State<PreferenceTile>
           widget.preference.isRequired
               ? widget.preference.name + ' (Required)'
               : widget.preference.name,
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black, fontSize: 16),
         ),
         trailing: Transform.rotate(
           angle: _animation!.value,

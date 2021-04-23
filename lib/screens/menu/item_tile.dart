@@ -1,6 +1,5 @@
 import 'package:cafe_hollywood/models/preference_item.dart';
 import 'package:cafe_hollywood/services/app_setting.dart';
-import 'package:cafe_hollywood/test.dart';
 import 'package:flutter/material.dart';
 import 'package:cafe_hollywood/models/preference.dart';
 
@@ -39,17 +38,20 @@ class _ItemTileState extends State<ItemTile> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
-                widget.item.isSelected ? Icon(Icons.check) : SizedBox(width: 0),
+                widget.item.isSelected
+                    ? Icon(Icons.check_circle)
+                    : SizedBox(width: 0),
                 SizedBox(width: 8),
                 isNotAvailable
                     ? Text(
                         widget.item.name + ' Unavailable',
                         style: TextStyle(color: Colors.grey[600]),
                       )
-                    : Text(widget.item.name),
+                    : Text(widget.item.name, style: TextStyle(fontSize: 16)),
                 new Spacer(),
                 if (widget.item.price != null)
-                  Text('\$${widget.item.price!.toStringAsFixed(2)}'),
+                  Text('\$${widget.item.price!.toStringAsFixed(2)}',
+                      style: TextStyle(fontSize: 16)),
                 SizedBox(width: 8),
               ],
             ),
@@ -117,7 +119,9 @@ class _ItemTileState extends State<ItemTile> {
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
-                widget.item.isSelected ? Icon(Icons.check) : SizedBox(width: 0),
+                widget.item.isSelected
+                    ? Icon(Icons.check_circle)
+                    : SizedBox(width: 0),
                 SizedBox(width: 8),
                 Text(widget.item.name),
                 new Spacer(),
