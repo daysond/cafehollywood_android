@@ -13,16 +13,14 @@ class OrderManager extends ChangeNotifier {
   List<Receipt> pastOrders = [];
 
   void addRecepits(List<Receipt> receipts) {
-    print('adding receipt count ${pastOrders.length}');
     pastOrders.addAll(receipts);
-    print("after adding count ${pastOrders.length}");
-    receipts.forEach((element) {
-      print(element.orderID);
-    });
+    pastOrders.sort((a, b) => b.orderTimestamp.compareTo(a.orderTimestamp));
   }
 
   void addReceipt(Receipt receipt) {
     pastOrders.add(receipt);
+    pastOrders.sort((a, b) => b.orderTimestamp.compareTo(a.orderTimestamp));
+
     notifyListeners();
   }
 }

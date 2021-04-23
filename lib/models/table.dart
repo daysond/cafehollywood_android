@@ -50,11 +50,11 @@ class DineInTable extends ChangeNotifier {
   }
 
   List<MealInfo> get confirmedMeals {
-    return unconfirmedOrders.expand((element) => element.meals).toList();
+    return confirmedOrders.expand((element) => element.meals).toList();
   }
 
   List<MealInfo> get cancelledMeals {
-    return unconfirmedOrders.expand((element) => element.meals).toList();
+    return cancelledOrders.expand((element) => element.meals).toList();
   }
 
   Decimal get subTotal {
@@ -148,10 +148,11 @@ class DineInTable extends ChangeNotifier {
     // NotificationCenter.default.post(name: .didCloseTable, object: nil)
     //    @objc private func handleTableClosed()
     // isMenuOpened = false
-
+    print('reset table');
     tableNumber = null;
     timestamp = null;
-    tableOrders = [];
+    tableOrders.clear();
+    print(tableOrders.length);
 
     // Table.shared.shouldShowAllOrders = true
   }

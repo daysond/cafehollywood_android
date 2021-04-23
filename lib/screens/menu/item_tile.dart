@@ -1,4 +1,6 @@
 import 'package:cafe_hollywood/models/preference_item.dart';
+import 'package:cafe_hollywood/services/app_setting.dart';
+import 'package:cafe_hollywood/test.dart';
 import 'package:flutter/material.dart';
 import 'package:cafe_hollywood/models/preference.dart';
 
@@ -15,6 +17,10 @@ class ItemTile extends StatefulWidget {
 }
 
 class _ItemTileState extends State<ItemTile> {
+  bool get isNotAvailable {
+    return APPSetting().unavailableItems.contains(widget.item.uid);
+  }
+
   @override
   Widget build(BuildContext context) {
     int maxPick = widget.preference.maxPick;
@@ -23,6 +29,7 @@ class _ItemTileState extends State<ItemTile> {
     if (maxPick == 1 && maxItemQuantity == 1) {
       return GestureDetector(
         onTap: () {
+          if (isNotAvailable) return;
           widget.handleOnTap(widget.item.uid);
         },
         child: Card(
@@ -34,7 +41,12 @@ class _ItemTileState extends State<ItemTile> {
               children: [
                 widget.item.isSelected ? Icon(Icons.check) : SizedBox(width: 0),
                 SizedBox(width: 8),
-                Text(widget.item.name),
+                isNotAvailable
+                    ? Text(
+                        widget.item.name + ' Unavailable',
+                        style: TextStyle(color: Colors.grey[600]),
+                      )
+                    : Text(widget.item.name),
                 new Spacer(),
                 if (widget.item.price != null)
                   Text('\$${widget.item.price!.toStringAsFixed(2)}'),

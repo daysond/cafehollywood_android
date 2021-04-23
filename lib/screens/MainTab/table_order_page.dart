@@ -1,5 +1,6 @@
 import 'package:cafe_hollywood/models/meal_info.dart';
 import 'package:cafe_hollywood/models/table.dart';
+import 'package:cafe_hollywood/screens/cart/cart_total_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:group_list_view/group_list_view.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,6 +21,15 @@ class _TableOrderPageState extends State<TableOrderPage> {
   };
   @override
   Widget build(BuildContext context) {
+    print('-------------------');
+    print(DineInTable().confirmedMeals);
+    DineInTable().tableOrders.forEach((element) {
+      print(element.orderID);
+    });
+    print('-------------------');
+
+    print(data);
+    print('-------------------');
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 60,
@@ -38,26 +48,35 @@ class _TableOrderPageState extends State<TableOrderPage> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
               ),
             )
-          : GroupListView(
-              sectionsCount: data.keys.toList().length,
-              countOfItemInSection: (int section) {
-                return data.values.toList()[section].length;
-              },
-              itemBuilder: _itemBuilder,
-              groupHeaderBuilder: (BuildContext context, int section) {
-                return Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                  child: Text(
-                    data.keys.toList()[section],
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
-                );
-              },
-              separatorBuilder: (context, index) => SizedBox(height: 10),
-              sectionSeparatorBuilder: (context, section) =>
-                  SizedBox(height: 10),
-            ),
+          : Column(mainAxisSize: MainAxisSize.min, children: [
+              Flexible(
+                child: GroupListView(
+                  sectionsCount: data.keys.toList().length,
+                  countOfItemInSection: (int section) {
+                    return data.values.toList()[section].length;
+                  },
+                  itemBuilder: _itemBuilder,
+                  groupHeaderBuilder: (BuildContext context, int section) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 8),
+                      child: Text(
+                        data.keys.toList()[section],
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w600),
+                      ),
+                    );
+                  },
+                  separatorBuilder: (context, index) => SizedBox(height: 10),
+                  sectionSeparatorBuilder: (context, section) =>
+                      SizedBox(height: 10),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                child: CartTotalPanel(true),
+              ),
+            ]),
     );
   }
 

@@ -3,10 +3,17 @@ import 'package:cafe_hollywood/services/app_setting.dart';
 import 'package:cafe_hollywood/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingTile extends StatelessWidget {
   final SettingField field;
+  final _url = 'http://hollywood.cafe';
+  final _ig = 'instagram://user?username=markhamcafehollywood';
   SettingTile(this.field);
+
+  void _launchURL(String url) async {
+    await canLaunch(url) ? await launch(url) : throw 'could not launch $url';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +23,12 @@ class SettingTile extends StatelessWidget {
           case SettingField.logOut:
             AuthService().signOut();
             Navigator.pop(context);
+            break;
+          case SettingField.about:
+            _launchURL.call(_url);
+            break;
+          case SettingField.instagram:
+            _launchURL(_ig);
             break;
           default:
             return;

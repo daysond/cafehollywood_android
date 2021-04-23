@@ -66,6 +66,7 @@ class ReceiptDetailPage extends StatelessWidget {
           Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 8.0, 16),
               child: CartTotalPanel(
+                false,
                 receipt: receipt,
               )),
           Container(

@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:cafe_hollywood/models/table.dart';
 import 'package:cafe_hollywood/screens/MainTab/table_order_page.dart';
 import 'package:cafe_hollywood/screens/OrderHistory/order_tab_wrapper.dart';
+import 'package:cafe_hollywood/screens/auth_screens/authHome.dart';
 import 'package:cafe_hollywood/services/app_setting.dart';
 import 'package:cafe_hollywood/services/auth.dart';
 import 'package:cafe_hollywood/services/fs_service.dart';
@@ -38,6 +39,10 @@ class MainTabHome extends StatefulWidget {
 }
 
 class _MainTabHomeState extends State<MainTabHome> {
+  final GlobalKey<NavigatorState> homeTabNavKey = GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> menuTabNavKey = GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> cartTabNavKey = GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> orderTabNavKey = GlobalKey<NavigatorState>();
   final _msgController = TextEditingController();
   bool isButtonsCollapsed = true;
   bool isButtonHidden = true;
@@ -159,13 +164,15 @@ class _MainTabHomeState extends State<MainTabHome> {
     }
 
     DineInTable().tableNumber = num;
-    FSService().checkIfTableDoesExist(num);
+    FSService().checkIfTableDoesExist(num).then((value) {
+      print('table exist: ${value}');
+    });
   }
 
   void displayErrorMessage(String msg) {}
 
   void onlineOrderTapped() {
-    // _controller!.index = 1;
+    _controller!.index = 1;
     print('hours :${APPSetting().businessHours.toString()}');
     print('hst :${APPSetting().hstRate.toString()}');
     print('mini: ${APPSetting().miniPurchase.toString()}');
@@ -183,53 +190,70 @@ class _MainTabHomeState extends State<MainTabHome> {
     double sin120 = sin(120 * pi / 180);
     double cos120 = cos(120 * pi / 180);
 
+    final listOfKeys = [
+      homeTabNavKey,
+      menuTabNavKey,
+      homeTabNavKey,
+      cartTabNavKey,
+      orderTabNavKey
+    ];
+
     const double buttonWidth = 36.0;
     return Stack(
       children: [
-        CupertinoTabScaffold(
-            controller: _controller,
-            tabBar: CupertinoTabBar(
-              // iconSize: 30,
-              items: [
-                BottomNavigationBarItem(
-                    icon: Icon(CupertinoIcons.home), label: 'HOME'),
-                BottomNavigationBarItem(
-                    icon: ImageIcon(AssetImage('assets/menu.png')),
-                    label: 'MENU'),
-                BottomNavigationBarItem(
-                    icon: Icon(
-                      CupertinoIcons.circle,
-                      color: Colors.transparent,
-                    ),
-                    label: ''),
-                BottomNavigationBarItem(
-                    icon: Icon(CupertinoIcons.cart), label: 'CART'),
-                BottomNavigationBarItem(
-                    icon: ImageIcon(AssetImage('assets/invoice.png')),
-                    label: 'ORDERS'),
-              ],
-            ),
-            tabBuilder: (context, index) {
-              // index = _currentIndex;
-              return CupertinoTabView(builder: (context) {
-                switch (index) {
-                  case 0: //Home
-                    return HomePage(onlineOrderTapped);
-                  case 1: //Menu
-                    return menuPage;
-                  case 3: //Cart
-                    return cartPage;
-                  case 4: //Order historywrapper
-                    return StreamProvider<String>.value(
-                      initialData: '',
-                      value: AuthService().currentUserID,
-                      child: OrderTabWrapper(),
-                    );
-                  default:
-                    return HomePage(onlineOrderTapped);
-                }
-              });
-            }),
+        WillPopScope(
+          onWillPop: () async {
+            return !await listOfKeys[_controller!.index]
+                .currentState!
+                .maybePop();
+          },
+          child: CupertinoTabScaffold(
+              controller: _controller,
+              tabBar: CupertinoTabBar(
+                // iconSize: 30,
+                items: [
+                  BottomNavigationBarItem(
+                      icon: Icon(CupertinoIcons.home), label: 'HOME'),
+                  BottomNavigationBarItem(
+                      icon: ImageIcon(AssetImage('assets/menu.png')),
+                      label: 'MENU'),
+                  BottomNavigationBarItem(
+                      icon: Icon(
+                        CupertinoIcons.circle,
+                        color: Colors.transparent,
+                      ),
+                      label: ''),
+                  BottomNavigationBarItem(
+                      icon: Icon(CupertinoIcons.cart), label: 'CART'),
+                  BottomNavigationBarItem(
+                      icon: ImageIcon(AssetImage('assets/invoice.png')),
+                      label: 'ORDERS'),
+                ],
+              ),
+              tabBuilder: (context, index) {
+                // index = _currentIndex;
+                return CupertinoTabView(
+                    navigatorKey: listOfKeys[index],
+                    builder: (context) {
+                      switch (index) {
+                        case 0: //Home
+                          return HomePage(onlineOrderTapped);
+                        case 1: //Menu
+                          return menuPage;
+                        case 3: //Cart
+                          return cartPage;
+                        case 4: //Order historywrapper
+                          return StreamProvider<String>.value(
+                            initialData: '',
+                            value: AuthService().currentUserID,
+                            child: OrderTabWrapper(),
+                          );
+                        default:
+                          return HomePage(onlineOrderTapped);
+                      }
+                    });
+              }),
+        ),
         AnimatedPositioned(
           bottom: isButtonsCollapsed ? -26 : (radius - padding),
           left: radius - 18,
@@ -413,11 +437,52 @@ class _MainTabHomeState extends State<MainTabHome> {
               height: kToolbarHeight + 4,
               child: GestureDetector(
                 onTap: () {
+                  if (AuthService().customerID == null) {
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => AlertDialog(
+                              title: Text('Account Required.'),
+                              content: Text(
+                                  'Please log in first to use this feature.'),
+                              actions: [
+                                TextButton(
+                                  child: Text("Log in/Sign up"),
+                                  style: TextButton.styleFrom(
+                                      primary: Colors.black,
+                                      textStyle:
+                                          TextStyle(color: Colors.white)),
+                                  // textColor: Colors.white,
+                                  // color: Colors.black,
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pop(); // to pop the dialog box
+                                    AuthHomePage.showAuthHome(context);
+                                  },
+                                ),
+                                TextButton(
+                                  child: Text("Cancel"),
+                                  style: TextButton.styleFrom(
+                                      primary: Colors.black,
+                                      textStyle:
+                                          TextStyle(color: Colors.white)),
+                                  // textColor: Colors.white,
+                                  // color: Colors.black,
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pop(); // to pop the dialog box
+                                  },
+                                ),
+                              ],
+                            ));
+                    return;
+                  }
+
                   if (DineInTable().tableNumber == null) {
-                    // scanQRCode();
-                    DineInTable().tableNumber = '12';
-                    FSService().addTableListener();
-                    print('did set table to 12');
+                    scanQRCode();
+                    // DineInTable().tableNumber = '12';
+                    // FSService().addTableListener();
+                    // print('did set table to 12');
                   } else {
                     _updateButtonState.call();
                   }

@@ -41,12 +41,29 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   Future<List<Receipt>> fetchOrder(QuerySnapshot changeSnapshot) async {
     List<Future<Receipt?>> futures = [];
     changeSnapshot.docChanges.forEach((change) async {
+      void updateStatus(OrderStatus newStatus, bool shouldCloseOrder) {
+        activeReceipts.asMap().forEach((index, r) {
+          if (r.orderID == change.doc.id) {
+            r.status = newStatus;
+            if (shouldCloseOrder) {
+              var r = activeReceipts.removeAt(index);
+              OrderManager().addReceipt(r);
+              fsService.closeOrder(r.orderID, r.status, r.orderTimestamp);
+            }
+            setState(() {});
+          }
+        });
+      }
+
+      //ADDED
       if (change.type == DocumentChangeType.added) {
         print('TAG 1 added. doc id ${change.doc.id}');
         futures.add(FSService().getReceipt(change.doc.id));
 
         // setState(() {});
       }
+
+      //MODIFIED
       if (change.type == DocumentChangeType.modified) {
         final data = change.doc.data();
         OrderStatus? newStatus =
@@ -54,33 +71,46 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
         if (newStatus != null) {
           switch (newStatus) {
             case OrderStatus.cancelled:
-            //close order
+              //close order
+              updateStatus(newStatus, true);
+              break;
             case OrderStatus.completed:
-            // close order
+              // close order
+              updateStatus(newStatus, true);
+              break;
             default:
-              activeReceipts.forEach((r) {
-                if (r.orderID == change.doc.id) {
-                  r.status = newStatus;
-                }
-              });
+              updateStatus(newStatus, false);
           }
         }
       }
+      //REMOVED
       if (change.type == DocumentChangeType.removed) {
+        OrderStatus? newStatus = OrderStatusExt.statusFromRawValue(
+            change.doc.data()?['status'] as int);
+        if (newStatus != null) {
+          updateStatus(newStatus, true);
+        }
         //DEL ORDER FROM THE LIST HERE
-        activeReceipts.asMap().forEach((index, r) {
-          if (r.orderID == change.doc.id) {
-            OrderManager().addReceipt(activeReceipts.removeAt(index));
-            // DO SOMETHING HERE
-          }
-        });
+        // activeReceipts.asMap().forEach((index, r) {
+        //   if (r.orderID == change.doc.id) {
+        //     OrderManager().addReceipt(activeReceipts.removeAt(index));
+        //   }
+        // });
       }
     });
 
     await Future.wait(futures).then((receipts) {
       if (receipts.isNotEmpty) {
         receipts.forEach((element) {
-          if (element != null) activeReceipts.add(element);
+          if (element != null) {
+            if (element.status == OrderStatus.completed ||
+                element.status == OrderStatus.cancelled) {
+              // close order
+            } else {
+              activeReceipts.add(element);
+            }
+          }
+          ;
         });
       }
       // activeReceipts = activeReceipts..addAll(receipts);
@@ -94,9 +124,10 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
 
   @override
   void initState() {
+    //get past receipts
     FSService().getPastReceipts();
+    //monitor new ones
     addUpcomingOrderListener();
-    // TODO: implement initState
     super.initState();
   }
 

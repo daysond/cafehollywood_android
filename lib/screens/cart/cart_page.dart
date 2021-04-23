@@ -5,6 +5,7 @@ import 'package:cafe_hollywood/screens/cart/cart_item_tile.dart';
 import 'package:cafe_hollywood/screens/cart/cart_total_widget.dart';
 import 'package:cafe_hollywood/screens/cart/checkout_page.dart';
 import 'package:cafe_hollywood/screens/shared/black_button.dart';
+import 'package:cafe_hollywood/services/app_setting.dart';
 import 'package:cafe_hollywood/services/auth.dart';
 import 'package:cafe_hollywood/services/fs_service.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,8 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
+  bool isButtonEnable = true;
+  String buttonTitle = '';
   void checkout() async {
     if (!AuthService().isAuth) {
       Navigator.push(
@@ -49,9 +52,21 @@ class _CartPageState extends State<CartPage> {
     super.dispose();
   }
 
+  void setButton() {
+    if (APPSetting().isRestaurantOpen == false) {
+      isButtonEnable = false;
+      buttonTitle = "Kitchen Closed";
+    } else {
+      isButtonEnable = true;
+      buttonTitle =
+          DineInTable().tableNumber == null ? 'Check Out' : 'Send Order';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Cart().addListener(updatePage);
+    setButton();
     // return CupertinoPageScaffold(child: CustomScrollView());
     return CupertinoPageScaffold(
         child: SafeArea(
@@ -117,18 +132,13 @@ class _CartPageState extends State<CartPage> {
           if (Cart().meals.length != 0)
             Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 8.0, 16),
-                child: CartTotalPanel()),
+                child: CartTotalPanel(false)),
           if (Cart().meals.length != 0)
             Container(
                 margin: EdgeInsets.only(bottom: 8),
                 width: MediaQuery.of(context).size.width,
                 height: 40,
-                child: BlackButton(
-                    DineInTable().tableNumber == null
-                        ? 'Check Out'
-                        : 'Send Order',
-                    checkout,
-                    true)),
+                child: BlackButton(buttonTitle, checkout, isButtonEnable)),
         ],
       ),
     ));

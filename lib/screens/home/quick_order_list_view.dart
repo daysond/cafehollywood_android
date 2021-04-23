@@ -75,6 +75,8 @@ class _QuickOrderListViewState extends State<QuickOrderListView> {
   bool shouldEnableButton() {
     bool shouldEnable = false;
     for (var meal in APPSetting().favouriteMeals) {
+      if (meal.isSelected && APPSetting().unavailableMeals.contains(meal.uid))
+        return false;
       if (meal.isSelected && meal.isModificationRequired) {
         return false;
       } else if (meal.isSelected && !meal.isModificationRequired) {
@@ -137,6 +139,7 @@ class _FavMealTileState extends State<FavMealTile> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        if (APPSetting().unavailableMeals.contains(widget.meal.uid)) return;
         setState(() {
           widget.meal.isSelected = !widget.meal.isSelected;
           widget.updateViewCallBack.call();
@@ -159,7 +162,12 @@ class _FavMealTileState extends State<FavMealTile> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(widget.meal.name),
+                    APPSetting().unavailableMeals.contains(widget.meal.uid)
+                        ? Text(
+                            widget.meal.name + ' - Unavailable',
+                            style: TextStyle(color: Colors.grey[700]),
+                          )
+                        : Text(widget.meal.name),
                     SizedBox(height: 8),
                     Text('\$' + widget.meal.price.toString()),
                     SizedBox(height: 8),

@@ -66,13 +66,14 @@ class FSService {
       String menuTitle = doc.data()['menuTitle'];
       String imageURL = doc.data()['imageURL'];
       String menuDetail = doc.data()['menuDetail'];
+      bool isAvailable = doc.data()['isAvailable'];
       List<String> mealsInUID = (doc.data()['mealsInUID'] as List)
           .map((uid) => uid as String)
           .toList();
       bool isTakeOutOnly = doc.data()['isTakeOutOnly'];
 
       Menu menu = Menu(uid, menuTitle, mealsInUID, '${imageURL}.png',
-          isTakeOutOnly, menuDetail);
+          isTakeOutOnly, menuDetail, isAvailable);
 
       return menu;
     }).toList();
@@ -225,7 +226,24 @@ class FSService {
         .snapshots();
   }
 
+  void closeOrder(String id, OrderStatus status, String timestamp) {
+    var activeOrderRef = databaseRef
+        .collection("customers")
+        .doc(APPSetting().customerUID)
+        .collection("activeOrders");
+
+    var orderRef = databaseRef
+        .collection("customers")
+        .doc(APPSetting().customerUID)
+        .collection("orders");
+
+    activeOrderRef.doc(id).delete();
+
+    orderRef.doc(id).set({"status": status.rawValue, "timestamp": timestamp});
+  }
+
   Future<List<Receipt>?> getPastReceipts() async {
+    print('getting past receipts');
     var customerOrdersRef = databaseRef
         .collection('customers')
         .doc(APPSetting().customerUID)
@@ -238,7 +256,7 @@ class FSService {
     List<Receipt> receipts = [];
 
     return customerOrdersRef.get().then((value) async {
-      if (value.docs != null) {
+      if (value.docs.length != 0) {
         final docs = value.docs;
 
         docs.forEach((doc) {
@@ -246,7 +264,11 @@ class FSService {
         });
 
         await Future.wait(futures).then((result) {
-          if (result.isNotEmpty) receipts = result as List<Receipt>;
+          if (result.isNotEmpty) {
+            result.forEach((element) {
+              if (element != null) receipts.add(element);
+            });
+          }
         });
         print('did get receipts');
         OrderManager().addRecepits(receipts);
@@ -387,6 +409,7 @@ class FSService {
         databaseRef.collection("activeTables").doc(DineInTable().tableNumber);
 
     activeTableListener = activeTableRef.snapshots().listen((snapshot) {
+      print('did add listener to table');
       var data = snapshot.data();
       if (data == null) return;
       if (data.length == 0) {
@@ -394,7 +417,7 @@ class FSService {
       }
       data.forEach((key, value) {
         if (key == "isTableActive") {
-          if (value as int == 0) {
+          if (value as bool == false) {
             closeTable();
           }
         } else {
@@ -433,6 +456,7 @@ class FSService {
   }
 
   void closeTable() {
+    print('closeing table');
     if (DineInTable().tableNumber == null || AuthService().customerID == null) {
       return;
     }
@@ -575,14 +599,14 @@ class FSService {
             (data["meals"] as List).map((e) => e as String).toList();
         List<String> unavailableItems =
             (data["items"] as List).map((e) => e as String).toList();
-        List<String> unavailableMenus =
-            (data["menus"] as List).map((e) => e as String).toList();
+        // List<String> unavailableMenus =
+        //     (data["menus"] as List).map((e) => e as String).toList();
         List<String> unavailableDates =
             (data["reservationDates"] as List).map((e) => e as String).toList();
         bool isTakingReservation = data["isTakingReservation"];
         APPSetting().unavailableMeals = unavailableMeals;
         APPSetting().unavailableItems = unavailableItems;
-        APPSetting().unavailableMenus = unavailableMenus;
+        // APPSetting().unavailableMenus = unavailableMenus;
         APPSetting().unavailableDates = unavailableDates;
         APPSetting().isTakingReservation = isTakingReservation;
       }

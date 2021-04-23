@@ -9,7 +9,7 @@ class SettingPage extends StatelessWidget {
     SettingField.name,
     SettingField.phone,
     SettingField.filler,
-    SettingField.favourite,
+    // SettingField.favourite,
     SettingField.reservation,
     SettingField.filler,
     SettingField.about,
@@ -55,37 +55,5 @@ class SettingPage extends StatelessWidget {
         ),
       ),
     );
-    //   body: SafeArea(
-    //     child: new NestedScrollView(
-    //       physics: ScrollPhysics(),
-    //       headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-    //         return <Widget>[
-    //           new SliverAppBar(
-    //             backgroundColor: Colors.white,
-    //             iconTheme: IconThemeData(color: Colors.black),
-    //             title: Padding(
-    //               padding: const EdgeInsets.only(left: 8),
-    //               child: Text(
-    //                 'Hi',
-    //                 style: TextStyle(fontSize: 28, color: Colors.black),
-    //               ),
-    //             ),
-    //             floating: false,
-    //             // toolbarHeight: 80,
-    //             // forceElevated: true,
-    //             pinned: true,
-
-    //             // snap: false,
-    //           ),
-    //         ];
-    //       },
-    //       body: ListView.builder(
-    //           itemCount: fields.length,
-    //           itemBuilder: (context, index) {
-    //             return SettingTile(fields[index]);
-    //           }),
-    //     ),
-    //   ),
-    // );
   }
 }

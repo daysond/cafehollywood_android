@@ -30,6 +30,7 @@ class _MealDetailPageState extends State<MealDetailPage> {
   double appBarHeight = 0;
   bool shouldHideBlackButton = false;
   bool shouldEnableCartButton = false;
+  String buttonTitle = '';
   bool get isShrink {
     return _scrollController!.hasClients &&
         _scrollController!.offset > (appBarHeight - kToolbarHeight);
@@ -104,11 +105,7 @@ class _MealDetailPageState extends State<MealDetailPage> {
     setState(() {});
   }
 
-  @override
-  Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size;
-    appBarHeight = screenSize.width * 9.0 / 16.0;
-
+  void setCartButtonState() {
     if (widget.meal.preferences == null) {
       shouldEnableCartButton = true;
     } else {
@@ -131,7 +128,21 @@ class _MealDetailPageState extends State<MealDetailPage> {
           shouldEnableCartButton = true;
         }
       }
-      ;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.of(context).size;
+    appBarHeight = screenSize.width * 9.0 / 16.0;
+
+    if (APPSetting().unavailableMeals.contains(widget.meal.uid)) {
+      shouldEnableCartButton = false;
+      buttonTitle = 'Unavailable';
+      // addToCartButton.backgroundColor = .lightGray
+    } else {
+      buttonTitle = widget.isNewMeal ? 'Add To Cart' : 'Update Cart';
+      setCartButtonState;
     }
 
     if (!widget.isNewMeal && widget.meal.instruction != null) {
@@ -244,7 +255,7 @@ class _MealDetailPageState extends State<MealDetailPage> {
                               },
                               child: ImageIcon(
                                 AssetImage('assets/heartEmpty.png'),
-                                color: isFav ? Colors.red : Colors.white,
+                                color: isFav ? Colors.red : Colors.grey[300],
                               ),
                             ),
                           ),
@@ -293,7 +304,7 @@ class _MealDetailPageState extends State<MealDetailPage> {
                             '\$${widget.meal.totalPrice.toStringAsFixed(2)}',
                       )
                     : BlackButton(
-                        widget.isNewMeal ? 'Add To Cart' : 'Update Cart',
+                        buttonTitle,
                         cartButtonTapped,
                         shouldEnableCartButton,
                         subtitle:

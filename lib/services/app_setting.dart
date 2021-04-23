@@ -48,7 +48,7 @@ class APPSetting {
 
   List<String> unavailableItems = [];
 
-  List<String> unavailableMenus = [];
+  // List<String> unavailableMenus = [];
 
   List<String> unavailableDates = [];
 
@@ -71,6 +71,46 @@ class APPSetting {
   Decimal? wingCreditAmout;
 
   var businessHours;
+  /*
+  map
+   eg: '1' -> '11:00-22:00'
+                  swift     flutter 
+    case sunday = 1          7
+    case monday = 2          1
+    case tuesday = 3         2
+    case wednesday = 4       3
+    case thursday = 5        4
+    case friday = 6          5
+    case saturday = 7        6
+   */
+
+  bool get isRestaurantOpen {
+    if (businessHours == null) return false;
+    var now = DateTime.now();
+    int weekday = 0; //weekday in swift, starts from Sunday
+    int tempWeekday = now.weekday; // weekday in flutter, starts from Monday
+    weekday = tempWeekday == 7 ? 1 : tempWeekday + 1;
+    int hour = now.hour;
+    int min = now.minute;
+    List<String> hours =
+        businessHours[weekday.toString()].toString().split('-');
+    String openHour = hours[0].split(':').first;
+    String openMin = hours[0].split(':').last;
+    String closeHour = hours[1].split(':').first;
+    String closeMin = hours[1].split(':').last;
+    if (openHour == '24') openHour == '00';
+
+    if (hour < int.parse(openHour) || hour >= int.parse(closeHour))
+      return false;
+
+    if (hour == int.parse(openHour) && min < int.parse(openMin)) return false;
+
+    if (int.parse(closeMin) == 00) {
+      if (hour == int.parse(closeHour) - 1 && min > 30) return false;
+    }
+
+    return true;
+  }
 
   Future<List<String>> favouriteMealList() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

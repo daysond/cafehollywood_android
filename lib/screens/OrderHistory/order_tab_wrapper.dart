@@ -4,6 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class OrderTabWrapper extends StatelessWidget {
+  void _showAuthHome(BuildContext context) {
+    showModalBottomSheet(
+        isScrollControlled: true,
+        barrierColor: Colors.grey,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        context: context,
+        builder: (context) {
+          return SafeArea(child: AuthHomePage());
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     final uid = Provider.of<String>(context);
@@ -25,12 +38,9 @@ class OrderTabWrapper extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => AuthHomePage()));
-                        },
+                        style: ElevatedButton.styleFrom(
+                            primary: Colors.black, minimumSize: Size(120, 40)),
+                        onPressed: () => _showAuthHome(context),
                         child: Text('Sign In/Up')),
                     Text(
                       'Please log in first.',

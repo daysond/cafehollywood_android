@@ -1,4 +1,5 @@
 import 'package:cafe_hollywood/screens/MainTab/main_tab.dart';
+import 'package:cafe_hollywood/services/fs_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -55,15 +56,19 @@ class AuthService {
         phoneNumber: phone,
         timeout: Duration(seconds: 0),
         verificationCompleted: (AuthCredential authCredential) {
-          _auth
-              .signInWithCredential(authCredential)
-              .then((UserCredential result) {
-            Navigator.of(context).pop(); // to pop the dialog box
-            Navigator.of(context).pushReplacementNamed('/home');
-          }).catchError((e) {
-            // return e.toString();
-            print(e.toString());
-          });
+          print('------------');
+          print('completed');
+          print('------------');
+          // _auth
+          //     .signInWithCredential(authCredential)
+          //     .then((UserCredential result) {
+          Navigator.of(context).pop(); // to pop the dialog box
+          // Navigator.of(context).pushReplacementNamed('/home');
+          // }
+          // ).catchError((e) {
+          //   // return e.toString();
+          //   print(e.toString());
+          // });
         },
         verificationFailed: (FirebaseAuthException exception) {
           print(exception.toString());
@@ -98,15 +103,17 @@ class AuthService {
                         _auth.currentUser!
                             .updateProfile(displayName: displayName);
                       }
+                      FSService().checkActiveTable();
 
-                      Navigator.of(context).pop(); // to pop the dialog box
+                      Navigator.of(context).pop; // to pop the dialog box
                       Navigator.push(
                           context,
                           CupertinoPageRoute(
                               builder: (context) => MainTabBar()));
                       // Navigator.of(context).pushReplacementNamed('/home');
                     }).catchError((e) {
-                      return "error";
+                      print(e.toString());
+                      return e.toString();
                     });
                   },
                 )

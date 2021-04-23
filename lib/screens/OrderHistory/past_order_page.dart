@@ -7,7 +7,7 @@ import 'package:cafe_hollywood/models/receipt.dart';
 import 'package:cafe_hollywood/screens/OrderHistory/receipt_tile.dart';
 
 class PastOrderPage extends StatefulWidget {
-  List<Receipt> orders;
+  final List<Receipt> orders;
 
   PastOrderPage(this.orders);
 

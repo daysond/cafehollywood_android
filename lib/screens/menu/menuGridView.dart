@@ -16,22 +16,31 @@ class MenuGridView extends StatefulWidget {
 }
 
 class _MenuGridViewState extends State<MenuGridView> {
+  List<Menu> menus = [];
+
+  @override
+  void didChangeDependencies() {
+    List<Menu> foodMenus = Provider.of<List<Menu>>(context);
+    menus = foodMenus.where((element) => element.isAvailable).toList();
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final foodMenus = Provider.of<List<Menu>>(context);
+    // final foodMenus = Provider.of<List<Menu>>(context);
 
     // print('foodmenu ${foodMenus.length}');
 
-    if (foodMenus != null) {
+    if (menus.length != []) {
       return GridView.builder(
           padding: EdgeInsets.symmetric(horizontal: 8),
-          itemCount: foodMenus.length,
+          itemCount: menus.length,
           gridDelegate:
               new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
           itemBuilder: (context, index) {
             return GestureDetector(
               child: Image.asset(
-                'assets/${foodMenus[index].imageURL}',
+                'assets/${menus[index].imageURL}',
                 fit: BoxFit.cover,
               ),
               onTap: () {
@@ -40,10 +49,10 @@ class _MenuGridViewState extends State<MenuGridView> {
                   builder: (context) {
                     return ChangeNotifierProvider(
                         create: (context) => Cart(),
-                        child: MealListPage(foodMenus[index]));
+                        child: MealListPage(menus[index]));
                   },
                 ));
-                print('$index ${foodMenus[index].menuTitle}');
+                print('$index ${menus[index].menuTitle}');
               },
             );
           });

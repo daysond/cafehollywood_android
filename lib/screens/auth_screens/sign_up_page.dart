@@ -95,7 +95,7 @@ class _SignUpPageState extends State<SignUpPage> {
       try {
         final auth = AuthService();
 
-        var result = await auth.createUserWithPhone(_phone!, _name!, context);
+        var result = await auth.createUserWithPhone(_phone!, _name, context);
         if (_phone == "" || result == "error") {
           setState(() {
             _warning = "Your phone number could not be validated";

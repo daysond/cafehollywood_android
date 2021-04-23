@@ -59,7 +59,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           if (instructionTextController.text != '') {
                             setState(() {
                               Cart().orderNote = instructionTextController.text;
-                              option.subTitle = Cart().orderNote!;
+                              option.subTitle = Cart().orderNote;
                             });
                             Navigator.pop(context);
                           }
@@ -104,9 +104,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   CustomOption note = CustomOption(
       'NOTE',
       'notes',
-      Cart().orderNote == null || Cart().orderNote == ''
-          ? '(Any food alergy?)'
-          : Cart().orderNote!,
+      Cart().orderNote == '' ? '(Any food alergy?)' : Cart().orderNote,
       OptionType.note);
 
   @override
@@ -158,11 +156,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ),
             ),
           ),
-          Expanded(
-            child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 8.0, 16),
-                child: CartTotalPanel()),
-          ),
+          Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 8.0, 16),
+              child: CartTotalPanel(false)),
           Container(
               margin: EdgeInsets.only(bottom: 8),
               width: MediaQuery.of(context).size.width,

@@ -2,6 +2,7 @@ import 'package:cafe_hollywood/screens/auth_screens/authHome.dart';
 import 'package:cafe_hollywood/screens/auth_screens/setting_page.dart';
 
 import 'package:cafe_hollywood/screens/home/booking_panel.dart';
+import 'package:cafe_hollywood/services/app_setting.dart';
 import 'package:cafe_hollywood/services/auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,30 @@ class _HomePageState extends State<HomePage> {
         builder: (context) {
           return SafeArea(child: AuthHomePage());
         });
+  }
+
+  void showMessage(String title, String msg) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[Text(msg)],
+        ),
+        actions: <Widget>[
+          TextButton(
+              child: Text("OK"),
+              style: TextButton.styleFrom(
+                  primary: Colors.black,
+                  textStyle: TextStyle(color: Colors.white)),
+              onPressed: () {
+                Navigator.of(context).pop();
+              }),
+        ],
+      ),
+    );
   }
 
   // void _showQuickOrderPanel() {
@@ -84,7 +109,10 @@ class _HomePageState extends State<HomePage> {
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             primary: Colors.white, minimumSize: Size(145, 40)),
-                        onPressed: () => _showPanel(BookingPanel(), false),
+                        onPressed: () => APPSetting().isTakingReservation
+                            ? _showPanel(BookingPanel(), false)
+                            : showMessage('Sorry!',
+                                'We are currently not accepting reservations.'),
                         child: Text('Make Reservation',
                             style: TextStyle(color: Colors.black)),
                       ),

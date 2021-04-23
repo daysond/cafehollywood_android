@@ -23,6 +23,7 @@ class _MealListPageState extends State<MealListPage> {
 
   bool lastStatus = true;
   double appBarHeight = 0;
+  bool shouldUseDefault = false;
   bool get isShrink {
     return _scrollController!.hasClients &&
         _scrollController!.offset > (appBarHeight - kToolbarHeight);
@@ -49,6 +50,18 @@ class _MealListPageState extends State<MealListPage> {
     super.dispose();
   }
 
+  loadImage() async {
+    String imagePath = 'assets/${widget.menu.headerImageURL}.png';
+    try {
+      final bundle = DefaultAssetBundle.of(context);
+      await bundle.load(imagePath);
+      return AssetImage(imagePath);
+    } catch (e) {
+      shouldUseDefault = true;
+      return null;
+    }
+  }
+
   void viewCartButtonHandler() {
     Navigator.of(context).push(
       CupertinoPageRoute(
@@ -61,7 +74,7 @@ class _MealListPageState extends State<MealListPage> {
   @override
   Widget build(BuildContext context) {
     print(widget.menu.mealsInUID);
-
+    loadImage();
     Size screenSize = MediaQuery.of(context).size;
     appBarHeight = screenSize.width * 9.0 / 16.0;
     return ChangeNotifierProvider.value(
@@ -98,35 +111,51 @@ class _MealListPageState extends State<MealListPage> {
                             background: Container(
                               decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: NetworkImage(
-                                      "https://images.pexels.com/photos/396547/pexels-photo-396547.jpeg?auto=compress&cs=tinysrgb&h=350"),
+                                    fit: BoxFit.cover,
+                                    image: AssetImage(
+                                        'assets/${shouldUseDefault ? 'cafe' : widget.menu.headerImageURL}.png')),
+                              ),
+                              child: Stack(children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      gradient: LinearGradient(
+                                          begin: FractionalOffset.topCenter,
+                                          end: FractionalOffset.bottomCenter,
+                                          colors: [
+                                            Colors.grey.withOpacity(0.0),
+                                            Colors.black.withOpacity(0.9),
+                                          ],
+                                          stops: [
+                                            0.0,
+                                            1.0
+                                          ])),
                                 ),
-                              ),
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 32, 32, 16),
-                                child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        widget.menu.menuTitle,
-                                        style: TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white),
-                                      ),
-                                      Text(
-                                        widget.menu.menuDetail,
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w300,
-                                            color: Colors.white),
-                                      ),
-                                    ]),
-                              ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(16, 32, 32, 16),
+                                  child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          widget.menu.menuTitle,
+                                          style: TextStyle(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white),
+                                        ),
+                                        Text(
+                                          widget.menu.menuDetail,
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w300,
+                                              color: Colors.white),
+                                        ),
+                                      ]),
+                                ),
+                              ]),
                             ),
                           ),
                         ),

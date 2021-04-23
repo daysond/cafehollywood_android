@@ -95,7 +95,7 @@ class Cart extends ChangeNotifier {
     return DateTime.now().millisecondsSinceEpoch.toString();
   }
 
-  String? orderNote;
+  String orderNote = '';
 
   String? pickupTime;
 
@@ -130,7 +130,7 @@ class Cart extends ChangeNotifier {
     needsUtensil = true;
     giftOptionContent = {};
     selectedGiftOption = null;
-    orderNote = null;
+    orderNote = '';
 
     notifyListeners();
   }
